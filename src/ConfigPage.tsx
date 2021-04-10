@@ -94,7 +94,7 @@ const useSingleChildValue = <T extends string | number>({
     uid && getFirstChildUidByBlockUid(uid)
   );
   const [value, setValue] = useState(
-    (uid && transform(getTextByBlockUid(valueUid))) || defaultValue
+    (valueUid && transform(getTextByBlockUid(valueUid))) || defaultValue
   );
   const onChange = useCallback(
     (v: T) => {
@@ -580,11 +580,12 @@ export const createConfigObserver = ({
   createHTMLObserver({
     className: "rm-title-display",
     tag: "H1",
-    callback: (d: HTMLHeadingElement) => {
-      if (d.innerText === title) {
+    callback: (d: HTMLElement) => {
+      const h = d as HTMLHeadingElement;
+      if (h.innerText === title) {
         const uid = getPageUidByPageTitle(title);
         const attribute = `data-roamjs-${uid}`;
-        const containerParent = d.parentElement?.parentElement;
+        const containerParent = h.parentElement?.parentElement;
         if (containerParent && !containerParent.hasAttribute(attribute)) {
           containerParent.setAttribute(attribute, "true");
           const parent = document.createElement("div");

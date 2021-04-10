@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "npm t",
-    "build": "ncc build src/index.tsx -o dist",
+    "build": "ncc build src/index.ts -o dist",
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
     "prepublishOnly": "npm run build",

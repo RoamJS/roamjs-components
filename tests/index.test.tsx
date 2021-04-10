@@ -1,8 +1,5 @@
-import React from 'react';
-import Package from '../src';
-import { render } from '@testing-library/react';
+import { createConfigObserver } from "../src";
 
-test('Renders Package', () => {
-    const { container } = render(<Package/>);
-    expect(container).toBeInTheDocument();
-})
+test("Renders Package", () => {
+  createConfigObserver({ title: "roam/js/test", config: { tabs: [] } });
+});

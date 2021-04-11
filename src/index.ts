@@ -1,1 +1,1 @@
-export * from "./ConfigPage";
+export { createConfigObserver } from "./ConfigPage";

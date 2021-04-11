@@ -17,6 +17,7 @@
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]

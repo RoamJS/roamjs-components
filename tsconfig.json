@@ -3,7 +3,7 @@
     "jsx": "react",
     "target": "es2015",
     "allowJs": false,
-    "lib": ["es2019", "DOM"],
+    "lib": ["DOM", "esnext"],
     "module": "ESNext",
     "moduleResolution": "node",
     "declaration": true,

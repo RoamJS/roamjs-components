@@ -22,7 +22,8 @@
   ],
   "peerDependencies": {
     "react": "^16.8.0 || ^17",
-    "react-dom": "^16.8.0 || ^17"
+    "react-dom": "^16.8.0 || ^17",
+    "@blueprintjs/core": "^3.42.0"
   },
   "dependencies": {
     "@blueprintjs/core": "^3.42.0",

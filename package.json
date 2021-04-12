@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "npm t",
-    "build": "ncc build src/index.ts -o dist",
+    "build": "ncc build src/index.ts -o dist -e react -e react-dom -e @blueprintjs/core",
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
     "prepublishOnly": "npm run build",

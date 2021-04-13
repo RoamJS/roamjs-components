@@ -26,8 +26,8 @@ const ExternalLogin = ({
     setLoading(true);
     getPopoutUrl()
       .then((url) => {
-        const width = 400;
-        const height = 350;
+        const width = 600;
+        const height = 525;
         const left = window.screenX + (window.innerWidth - width) / 2;
         const top = window.screenY + (window.innerHeight - height) / 2;
         const loginWindow = window.open(

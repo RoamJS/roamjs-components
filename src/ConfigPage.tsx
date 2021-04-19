@@ -577,31 +577,33 @@ export const createConfigObserver = ({
       ],
     });
   }
-  createHTMLObserver({
-    className: "rm-title-display",
-    tag: "H1",
-    callback: (d: HTMLElement) => {
-      const h = d as HTMLHeadingElement;
-      if (h.innerText === title) {
-        const uid = getPageUidByPageTitle(title);
-        const attribute = `data-roamjs-${uid}`;
-        const containerParent = h.parentElement?.parentElement;
-        if (containerParent && !containerParent.hasAttribute(attribute)) {
-          containerParent.setAttribute(attribute, "true");
-          const parent = document.createElement("div");
-          parent.id = `${title.replace("roam/js/", "roamjs-")}-config`;
-          containerParent.insertBefore(
-            parent,
-            d.parentElement?.nextElementSibling || null
-          );
-          ReactDOM.render(
-            <ConfigPage id={title.replace("roam/js/", "")} config={config} />,
-            parent
-          );
+  if (config.tabs.length) {
+    createHTMLObserver({
+      className: "rm-title-display",
+      tag: "H1",
+      callback: (d: HTMLElement) => {
+        const h = d as HTMLHeadingElement;
+        if (h.innerText === title) {
+          const uid = getPageUidByPageTitle(title);
+          const attribute = `data-roamjs-${uid}`;
+          const containerParent = h.parentElement?.parentElement;
+          if (containerParent && !containerParent.hasAttribute(attribute)) {
+            containerParent.setAttribute(attribute, "true");
+            const parent = document.createElement("div");
+            parent.id = `${title.replace("roam/js/", "roamjs-")}-config`;
+            containerParent.insertBefore(
+              parent,
+              d.parentElement?.nextElementSibling || null
+            );
+            ReactDOM.render(
+              <ConfigPage id={title.replace("roam/js/", "")} config={config} />,
+              parent
+            );
+          }
         }
-      }
-    },
-  });
+      },
+    });
+  }
 };
 
 export default ConfigPage;

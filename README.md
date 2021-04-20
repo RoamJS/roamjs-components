@@ -18,7 +18,7 @@ This is an observer that will render the `ConfigPage` UI on the page of your cho
                 * `text` Renders a text input.
                 * `number` Renders a number input.
                 * `flag` Renders a boolean checkbox.
-                * `multitext` Renders a text input that could have multiple child values.
-                * `pages` Similar to multitext, but all values are a Roam page.
+                * `multitext` Renders a text input that could have multiple child values. Used for an array of string values.
+                * `pages` Similar to multitext, but all values are Roam pages.
                 * `oauth` Renders a login button based on the service provider
             * `defaultValue` The default value filled in on page creation. Field is optional and type based on type above

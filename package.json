@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "npm t",
-    "build": "ncc build src/index.ts -o dist -e react -e react-dom -e @blueprintjs/core",
+    "build": "ncc build src/index.ts -o dist -e react -e react-dom -e @blueprintjs/core -e @blueprintjs/select",
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
     "prepublishOnly": "npm run build",
@@ -23,7 +23,8 @@
   "peerDependencies": {
     "react": "^16.8.0 || ^17",
     "react-dom": "^16.8.0 || ^17",
-    "@blueprintjs/core": "^3.42.0"
+    "@blueprintjs/core": "^3.42.0",
+    "@blueprintjs/select": "^3.16.0"
   },
   "dependencies": {
     "@blueprintjs/core": "^3.42.0",

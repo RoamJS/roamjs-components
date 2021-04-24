@@ -24,6 +24,7 @@ import {
 import Description from "./Description";
 import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";
 import { toTitle } from "./hooks";
+import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 
 type TextField = {
@@ -57,8 +58,22 @@ type OauthField = {
   options: ExternalLoginOptions;
 };
 
+type SelectField = {
+  type: "select";
+  defaultValue?: string;
+  options: {
+    items: string[];
+  };
+};
+
 type ArrayField = PagesField | MultiTextField;
-type UnionField = ArrayField | TextField | NumberField | OauthField | FlagField;
+type UnionField =
+  | ArrayField
+  | TextField
+  | NumberField
+  | OauthField
+  | FlagField
+  | SelectField;
 
 type Field<T extends UnionField> = T & {
   title: string;
@@ -279,6 +294,36 @@ const NumberPanel: FieldPanel<NumberField> = ({
   );
 };
 
+const SelectPanel: FieldPanel<SelectField> = ({
+  title,
+  uid,
+  parentUid,
+  order,
+  description,
+  defaultValue = "",
+  options: { items },
+}) => {
+  const { value, onChange } = useSingleChildValue({
+    defaultValue: defaultValue || items[0],
+    title,
+    uid,
+    parentUid,
+    order,
+    transform: (s) => s,
+  });
+  return (
+    <Label>
+      {title}
+      <Description description={description} />
+      <MenuItemSelect
+        activeItem={value}
+        onItemSelect={(e) => onChange(e)}
+        items={items}
+      />
+    </Label>
+  );
+};
+
 const FlagPanel: FieldPanel<FlagField> = ({
   title,
   uid: initialUid,
@@ -376,6 +421,7 @@ const Panels = {
   pages: PagesPanel,
   oauth: OauthPanel,
   multitext: MultiTextPanel,
+  select: SelectPanel,
 } as { [UField in UnionField as UField["type"]]: FieldPanel<UField> };
 
 type ConfigTab = {

@@ -21,4 +21,18 @@ This is an observer that will render the `ConfigPage` UI on the page of your cho
                 * `multitext` Renders a text input that could have multiple child values.
                 * `pages` Similar to multitext, but all values are a Roam page.
                 * `oauth` Renders a login button based on the service provider
+                * `select` Renders a dropdown with the configured options
             * `defaultValue` The default value filled in on page creation. Field is optional and type based on type above
+            * `options` An extra object of options for configuring a field, based on the type above.
+                * `text` None
+                * `number` None
+                * `flag` None
+                * `multitext` None
+                * `pages` None
+                * `oauth`  
+                    * `service: string` The name of the service provider, used on the login button
+                    * `getPopoutUrl: () => Promise<string>` A getter retrieving the url needed to begin the oauth process
+                    * `getAuthData: (d: string) => Promise<Record<string, string>>` A getter that takes in a stringified JSON object from the oauth popout window and retrieves the auth related data.
+                    * `ServiceIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>` The SVG Icon to render next to the login button.
+                * `select`
+                    * `items: string[]` The set of valid options for this dopdown 

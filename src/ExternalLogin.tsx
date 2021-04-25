@@ -1,5 +1,6 @@
 import { Button, Icon, Spinner } from "@blueprintjs/core";
 import React, { useState, useCallback } from "react";
+import { createBlock, getTreeByBlockUid } from "roam-client";
 import { toTitle } from "./hooks";
 
 export type ExternalLoginOptions = {
@@ -40,17 +41,21 @@ const ExternalLogin = ({
             loginWindow.close();
             getAuthData(e.data)
               .then((rr) => {
-                const blockUid = window.roamAlphaAPI.util.generateUID();
-                window.roamAlphaAPI.createBlock({
-                  location: { "parent-uid": parentUid, order: 0 },
-                  block: { string: "oauth", uid: blockUid },
-                });
+                const existingTree = getTreeByBlockUid(
+                  parentUid
+                ).children.find((t) => /oauth/i.test(t.text));
+                const blockUid =
+                  existingTree?.uid ||
+                  createBlock({ node: { text: "oauth" }, parentUid });
 
                 const { label = "Default Account", ...oauthData } = rr;
                 const labelUid = window.roamAlphaAPI.util.generateUID();
                 window.roamAlphaAPI.createBlock({
                   block: { string: label, uid: labelUid },
-                  location: { "parent-uid": blockUid, order: 0 },
+                  location: {
+                    "parent-uid": blockUid,
+                    order: existingTree?.children?.length || 0,
+                  },
                 });
 
                 const valueUid = window.roamAlphaAPI.util.generateUID();

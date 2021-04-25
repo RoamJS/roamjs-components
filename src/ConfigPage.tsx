@@ -407,13 +407,17 @@ const OauthPanel: FieldPanel<OauthField> = ({
         parentUid={parentUid}
         {...options}
       />
-      <ul style={{ marginTop: 16 }}>
+      <ul style={{ marginTop: 16, padding: 0 }}>
         {accounts.map((act) => (
           <li
             key={act.uid}
-            style={{ display: "flex", justifyContent: "space-between" }}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            <span>{act.text}</span>
+            <span style={{ minWidth: 192 }}>{act.text}</span>
             <Button text={"Log Out"} onClick={() => deleteBlock(act.uid)} />
           </li>
         ))}

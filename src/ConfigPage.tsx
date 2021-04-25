@@ -15,6 +15,7 @@ import {
   createBlock,
   createHTMLObserver,
   createPage,
+  deleteBlock,
   getFirstChildUidByBlockUid,
   getPageUidByPageTitle,
   getTextByBlockUid,
@@ -389,27 +390,34 @@ const OauthPanel: FieldPanel<OauthField> = ({
   const [accounts, setAccounts] = useState(() =>
     uid
       ? getTreeByBlockUid(uid).children.map((v) => ({
-          text: v.text,
+          text: v.children[0]?.text ? v.text : "Default Account",
           uid: v.uid,
+          data: v.children[0]?.text || v.text,
         }))
       : []
   );
   return (
     <>
-      {!accounts.length && (
-        <>
-          <Label>
-            Log In
-            <Description description={description} />
-          </Label>
-          <ExternalLogin
-            onSuccess={(acc) => setAccounts([...accounts, acc])}
-            parentUid={parentUid}
-            {...options}
-          />
-        </>
-      )}
-      {!!accounts.length && <span>Successfully logged in</span>}
+      <Label>
+        Log In
+        <Description description={description} />
+      </Label>
+      <ExternalLogin
+        onSuccess={(acc) => setAccounts([...accounts, acc])}
+        parentUid={parentUid}
+        {...options}
+      />
+      <ul style={{ marginTop: 16 }}>
+        {accounts.map((act) => (
+          <li
+            key={act.uid}
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
+            <span>{act.text}</span>
+            <Button text={"Log Out"} onClick={() => deleteBlock(act.uid)} />
+          </li>
+        ))}
+      </ul>
     </>
   );
 };

@@ -17,7 +17,7 @@ const ExternalLogin = ({
   getAuthData,
   ServiceIcon,
 }: {
-  onSuccess: (block: { text: string; uid: string }) => void;
+  onSuccess: (block: { text: string; uid: string; data: string }) => void;
   parentUid: string;
 } & ExternalLoginOptions): React.ReactElement => {
   const [loading, setLoading] = useState(false);
@@ -45,19 +45,27 @@ const ExternalLogin = ({
                   location: { "parent-uid": parentUid, order: 0 },
                   block: { string: "oauth", uid: blockUid },
                 });
+
+                const { label = "Default Account", ...oauthData } = rr;
+                const labelUid = window.roamAlphaAPI.util.generateUID();
+                window.roamAlphaAPI.createBlock({
+                  block: { string: label, uid: labelUid },
+                  location: { "parent-uid": blockUid, order: 0 },
+                });
+
                 const valueUid = window.roamAlphaAPI.util.generateUID();
                 const block = {
-                  string: JSON.stringify(rr),
+                  string: JSON.stringify(oauthData),
                   uid: valueUid,
                 };
                 window.roamAlphaAPI.createBlock({
-                  location: { "parent-uid": blockUid, order: 0 },
+                  location: { "parent-uid": labelUid, order: 0 },
                   block,
                 });
                 window.roamAlphaAPI.updateBlock({
                   block: { open: false, string: "oauth", uid: blockUid },
                 });
-                onSuccess({ text: block.string, uid: block.uid });
+                onSuccess({ text: label, uid: block.uid, data: block.string });
               })
               .finally(() =>
                 window.removeEventListener("message", messageEventListener)

@@ -418,7 +418,13 @@ const OauthPanel: FieldPanel<OauthField> = ({
             }}
           >
             <span style={{ minWidth: 192 }}>{act.text}</span>
-            <Button text={"Log Out"} onClick={() => deleteBlock(act.uid)} />
+            <Button
+              text={"Log Out"}
+              onClick={() => {
+                deleteBlock(act.uid);
+                setAccounts(accounts.filter((a) => act.uid !== a.uid));
+              }}
+            />
           </li>
         ))}
       </ul>

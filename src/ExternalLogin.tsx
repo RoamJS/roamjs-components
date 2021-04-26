@@ -75,7 +75,7 @@ const ExternalLogin = ({
                 window.roamAlphaAPI.updateBlock({
                   block: { open: false, string: "oauth", uid: blockUid },
                 });
-                onSuccess({ text: label, uid: block.uid, data: block.string });
+                onSuccess({ text: label, uid: labelUid, data: block.string });
               })
               .finally(() =>
                 window.removeEventListener("message", messageEventListener)

@@ -48,7 +48,12 @@ const ExternalLogin = ({
                   existingTree?.uid ||
                   createBlock({ node: { text: "oauth" }, parentUid });
 
-                const { label = "Default Account", ...oauthData } = rr;
+                const label = rr.label || "Default Account";
+                const oauthData = Object.fromEntries(
+                  Object.keys(rr)
+                    .filter((k) => k !== "label")
+                    .map((k) => [k, rr[k]])
+                );
                 const labelUid = window.roamAlphaAPI.util.generateUID();
                 window.roamAlphaAPI.createBlock({
                   block: { string: label, uid: labelUid },

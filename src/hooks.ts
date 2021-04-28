@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { TreeNode } from "roam-client";
 
 export const toTitle = (id: string): string =>
   id
@@ -42,4 +43,49 @@ export const useArrowKeyDown = <T>({
     activeIndex,
     onKeyDown,
   };
+};
+
+const toFlexRegex = (key: string): RegExp =>
+  new RegExp(`^\\s*${key}\\s*$`, "i");
+
+export const getSettingValueFromTree = ({
+  tree,
+  key,
+  defaultValue = "",
+}: {
+  tree: TreeNode[];
+  key: string;
+  defaultValue?: string;
+}): string => {
+  const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
+  const value = node ? node.children[0].text.trim() : defaultValue;
+  return value;
+};
+
+export const getSettingIntFromTree = ({
+  tree,
+  key,
+  defaultValue = 0,
+}: {
+  tree: TreeNode[];
+  key: string;
+  defaultValue?: number;
+}): number => {
+  const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
+  const value = node?.children?.[0]?.text?.trim?.() || "";
+  return isNaN(Number(value)) ? defaultValue : parseInt(value);
+};
+
+export const getSettingValuesFromTree = ({
+  tree,
+  key,
+  defaultValue = [],
+}: {
+  tree: TreeNode[];
+  key: string;
+  defaultValue?: string[];
+}): string[] => {
+  const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
+  const value = node ? node.children.map((t) => t.text.trim()) : defaultValue;
+  return value;
 };

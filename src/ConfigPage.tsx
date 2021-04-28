@@ -407,7 +407,7 @@ const OauthPanel: FieldPanel<OauthField> = ({
         parentUid={parentUid}
         {...options}
       />
-      <ul style={{ marginTop: 16, padding: 0 }}>
+      <ul style={{ marginTop: 8, padding: 0 }}>
         {accounts.map((act) => (
           <li
             key={act.uid}
@@ -415,6 +415,7 @@ const OauthPanel: FieldPanel<OauthField> = ({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              marginTop: 8,
             }}
           >
             <span style={{ minWidth: 192 }}>{act.text}</span>

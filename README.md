@@ -11,7 +11,7 @@ This is an observer that will render the `ConfigPage` UI on the page of your cho
     * `tabs: object[]` The first level tabs grouping your fields. They map to first level blocks on the Roam Page.
         * `id: string` The name of the tab to use in both the Roam UI and in the tab label. The `home` id inserts blocks at the top level of Roam.
         * `toggleable: boolean` Whether this tab should be able to turn on and off. Turning a tab off disables the rest of the nested fields.
-        * `fields: object[]` The set of field metadata grouped in this tab.
+        * `fields: object[]` The set of field metadata grouped in this tab. If fields is empty, it will be assumed that this tab is a state container for the extension not meant to be interacted with by the user.
             * `title: string` The name of the field, displayed on the nested tag and in the Roam block.
             * `description: string` The description of the field with renders next to each field label as a tooltip.
             * `type: string` The field type, with only the following valid values:
@@ -35,4 +35,4 @@ This is an observer that will render the `ConfigPage` UI on the page of your cho
                     * `getAuthData: (d: string) => Promise<Record<string, string>>` A getter that takes in a stringified JSON object from the oauth popout window and retrieves the auth related data.
                     * `ServiceIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>` The SVG Icon to render next to the login button.
                 * `select`
-                    * `items: string[]` The set of valid options for this dopdown 
+                    * `items: string[]` The set of valid options for this dopdown

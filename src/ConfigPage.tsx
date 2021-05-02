@@ -565,7 +565,8 @@ const ConfigPage = ({
   id: string;
   config: Config;
 }): React.ReactElement => {
-  const [selectedTabId, setSelectedTabId] = useState(config.tabs[0].id);
+  const userTabs = config.tabs.filter((t) => t.fields.length);
+  const [selectedTabId, setSelectedTabId] = useState(userTabs[0]?.id);
   const onTabsChange = useCallback((tabId: string) => setSelectedTabId(tabId), [
     setSelectedTabId,
   ]);
@@ -580,7 +581,7 @@ const ConfigPage = ({
         onChange={onTabsChange}
         selectedTabId={selectedTabId}
       >
-        {config.tabs.map(({ id: tabId, fields, toggleable }, i) => (
+        {userTabs.map(({ id: tabId, fields, toggleable }, i) => (
           <Tab
             id={tabId}
             key={tabId}

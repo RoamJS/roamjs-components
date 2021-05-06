@@ -2,6 +2,26 @@
     
 This is a collection of common UI components used by RoamJS extensions and services made available to make development easier for other Roam developers.
 
+## Pre-Requisites
+
+This library is built on [blueprint](https://blueprintjs.com/docs/#core), a component library developed by Palantir and the primary front end framework used by Roam. It was chosen to build most of the components in this library for consistency with Roam's frontend. 
+
+You will therefore need to install the following peer dependencies when using this library:
+
+```bash
+npm install react react-dom @blueprintjs/core @blueprintjs/select roamjs-components
+```
+
+If you're using TypeScript, you will additionally need to install:
+
+```bash
+npm install @types/react @types/react-dom
+```
+
+## Utilities
+
+The following are a list of methods used to help interface with the RoamJS Components found in this library.
+
 ### createConfigObserver({title, config})
 
 This is an observer that will render the `ConfigPage` UI on the page of your choosing.
@@ -36,3 +56,40 @@ This is an observer that will render the `ConfigPage` UI on the page of your cho
                     * `ServiceIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>` The SVG Icon to render next to the login button.
                 * `select`
                     * `items: string[]` The set of valid options for this dopdown
+
+### createOverlayRender(id, Overlay)
+
+Creates a render function for the component `Overlay` mounted on a parent from the id passed to [getRenderRoot](#getRenderRoot(id)), unmounting when the overlay closes.
+* `id: string` The id passed to the parent element rendering the Overlay, interpolated inside of `roamjs-${id}-root`.
+* `Overlay: ({onClose: () => void}) => ReactElement` The React component rendered with a `onClose` prop to handle unmounting.
+
+### getRenderRoot(id)
+
+This creates a `div` appended to Roam's natural react root, most commonly used as its own root element for overlay components.
+* `id: string` The id of the parent element, interpolated inside of `roamjs-${id}-root`.
+
+### getSettingIntFromTree({tree, key, defaultValue})
+
+This is a utility method for grabbing the integer value of a node from a tree by a given key.
+* `tree: TextNode[]` The array of `TextNode` to search through.
+* `key: string` The key used to find the desired node
+* `defaultValue?: number` The default value the getter should have if there are no nodes with the specified key, defaulted to 0.
+
+### getSettingValueFromTree
+
+This is a utility method for grabbing the string value of a node from a tree by a given key.
+* `tree: TextNode[]` The array of `TextNode` to search through.
+* `key: string` The key used to find the desired node
+* `defaultValue?: number` The default value the getter should have if there are no nodes with the specified key, defaulted to an empty string.
+
+### getSettingValuesFromTree
+
+This is a utility method for grabbing the string value of a node from a tree by a given key.
+* `tree: TextNode[]` The array of `TextNode` to search through.
+* `key: string` The key used to find the desired node
+* `defaultValue?: number` The default value the getter should have if there are no nodes with the specified key, defaulted to an empty string.
+
+## Components
+
+The following are a list of React components commonly used across RoamJS extensions.
+

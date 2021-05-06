@@ -1,5 +1,7 @@
+import React from "react";
 import { useCallback, useState } from "react";
-import { TreeNode } from "roam-client";
+import ReactDOM from "react-dom";
+import { TextNode } from "roam-client";
 
 export const toTitle = (id: string): string =>
   id
@@ -45,15 +47,40 @@ export const useArrowKeyDown = <T>({
   };
 };
 
+export const createOverlayRender = <T extends Record<string, unknown>>(
+  id: string,
+  Overlay: (props: { onClose: () => void } & T) => React.ReactElement
+) => (props: T): void => {
+  const parent = getRenderRoot(id);
+  ReactDOM.render(
+    React.createElement(Overlay, {
+      ...props,
+      onClose: () => {
+        ReactDOM.unmountComponentAtNode(parent);
+        parent.remove();
+      },
+    }),
+    parent
+  );
+};
+
 const toFlexRegex = (key: string): RegExp =>
   new RegExp(`^\\s*${key}\\s*$`, "i");
+
+export const getRenderRoot = (id: string): HTMLDivElement => {
+  const app = document.getElementById("app");
+  const newRoot = document.createElement("div");
+  newRoot.id = `roamjs-${id}-root`;
+  app?.parentElement?.appendChild(newRoot);
+  return newRoot;
+};
 
 export const getSettingValueFromTree = ({
   tree,
   key,
   defaultValue = "",
 }: {
-  tree: TreeNode[];
+  tree: TextNode[];
   key: string;
   defaultValue?: string;
 }): string => {
@@ -67,7 +94,7 @@ export const getSettingIntFromTree = ({
   key,
   defaultValue = 0,
 }: {
-  tree: TreeNode[];
+  tree: TextNode[];
   key: string;
   defaultValue?: number;
 }): number => {
@@ -81,7 +108,7 @@ export const getSettingValuesFromTree = ({
   key,
   defaultValue = [],
 }: {
-  tree: TreeNode[];
+  tree: TextNode[];
   key: string;
   defaultValue?: string[];
 }): string[] => {

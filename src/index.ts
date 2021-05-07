@@ -7,3 +7,5 @@ export {
   getSettingValueFromTree,
   getSettingValuesFromTree,
 } from "./hooks";
+
+export { default as MenuItemSelect } from './MenuItemSelect';

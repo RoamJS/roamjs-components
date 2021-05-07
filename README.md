@@ -57,6 +57,12 @@ This is an observer that will render the `ConfigPage` UI on the page of your cho
                 * `select`
                     * `items: string[]` The set of valid options for this dopdown
 
+### createComponentRender(FC, className)
+
+Creates a render function for the component `FC` rendered inside of a `ComponentContainer` component. A `ComponentContainer` simulates standard Roam `{{components}}` in that they are meant to be rendered in a block with an edit pencil icon to edit the block if necessary.
+* `FC: ReactElement` The component rendered with a `blockUid` prop that references the block the component is rendered in.
+* `className` An optional class name to pass to the surrounding `ComponentContainer`.
+
 ### createOverlayRender(id, Overlay)
 
 Creates a render function for the component `Overlay` mounted on a parent from the id passed to [getRenderRoot](#getRenderRoot(id)), unmounting when the overlay closes.

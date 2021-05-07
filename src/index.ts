@@ -1,3 +1,4 @@
+export { createComponentRender } from "./ComponentContainer";
 export { createConfigObserver } from "./ConfigPage";
 export {
   createOverlayRender,

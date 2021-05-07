@@ -38,7 +38,9 @@ export const createComponentRender = (
     b.parentElement.onmousedown = (e: MouseEvent) => e.stopPropagation();
     const blockUid = getBlockUidFromTarget(b);
     const possibleBlockId = b.closest(".roam-block")?.id;
-    const blockId = possibleBlockId?.endsWith?.(blockUid) ? possibleBlockId : undefined;
+    const blockId = possibleBlockId?.endsWith?.(blockUid)
+      ? possibleBlockId
+      : undefined;
     renderWithUnmount(
       <ComponentContainer blockId={blockId} className={className}>
         <Fc blockUid={getBlockUidFromTarget(b)} />

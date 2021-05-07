@@ -99,6 +99,10 @@ This is a utility method for grabbing the string value of a node from a tree by 
 
 The following are a list of React components commonly used across RoamJS extensions.
 
+### BlockErrorBoundary
+
+An Error Boundary to wrap around components meant to live within blocks to catch any React Errors. The error message will interpolate inside of a `{ERROR}` placeholder within the `message` prop and output as a child block.
+
 ### MenuItemSelect
 
 A standard Select using blueprint's MenuItem component as the item rendered.

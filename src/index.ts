@@ -8,4 +8,5 @@ export {
   getSettingValuesFromTree,
 } from "./hooks";
 
+export { default as BlockErrorBoundary } from './BlockErrorBoundary';
 export { default as MenuItemSelect } from './MenuItemSelect';

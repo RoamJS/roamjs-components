@@ -611,11 +611,12 @@ const fieldsToChildren = (t: ConfigTab) =>
     .filter((f) => !!f.defaultValue)
     .map((f) => ({
       text: f.title,
-      children: !f.defaultValue
-        ? []
-        : f.type === "pages"
-        ? f.defaultValue.map((v) => ({ text: v }))
-        : [{ text: `${f.defaultValue}` }],
+      children:
+        f.type === "flag"
+          ? []
+          : f.type === "pages" || f.type === "multitext"
+          ? f.defaultValue?.map((v) => ({ text: v }))
+          : [{ text: `${f.defaultValue}` }],
     }));
 
 export const createConfigObserver = ({

@@ -41,12 +41,14 @@ export const createComponentRender = (
     const blockId = possibleBlockId?.endsWith?.(blockUid)
       ? possibleBlockId
       : undefined;
-    renderWithUnmount(
-      <ComponentContainer blockId={blockId} className={className}>
-        <Fc blockUid={getBlockUidFromTarget(b)} />
-      </ComponentContainer>,
-      b.parentElement
-    );
+    if (blockUid) {
+      renderWithUnmount(
+        <ComponentContainer blockId={blockId} className={className}>
+          <Fc blockUid={blockUid} />
+        </ComponentContainer>,
+        b.parentElement
+      );
+    }
   }
 };
 

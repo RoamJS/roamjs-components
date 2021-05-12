@@ -14,4 +14,7 @@ export {
 export { default as BlockErrorBoundary } from "./BlockErrorBoundary";
 export { default as Description } from "./Description";
 export { default as MenuItemSelect } from "./MenuItemSelect";
-export { default as WarningToast } from "./WarningToast";
+export {
+  default as WarningToast,
+  render as renderWarningToast,
+} from "./WarningToast";

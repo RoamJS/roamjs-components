@@ -119,6 +119,10 @@ The following are a list of React components commonly used across RoamJS extensi
 
 An Error Boundary to wrap around components meant to live within blocks to catch any React Errors. The error message will interpolate inside of a `{ERROR}` placeholder within the `message` prop and output as a child block.
 
+### Description
+
+An info icon with a tooltip, used to give help text to UI components.
+
 ### MenuItemSelect
 
 A standard Select using blueprint's MenuItem component as the item rendered.

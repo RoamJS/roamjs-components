@@ -6,6 +6,8 @@ export {
   getSettingIntFromTree,
   getSettingValueFromTree,
   getSettingValuesFromTree,
+  setInputSetting,
+  setInputSettings,
 } from "./hooks";
 
 export { default as BlockErrorBoundary } from './BlockErrorBoundary';

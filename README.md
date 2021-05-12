@@ -95,6 +95,22 @@ This is a utility method for grabbing the string value of a node from a tree by 
 * `key: string` The key used to find the desired node
 * `defaultValue?: number` The default value the getter should have if there are no nodes with the specified key, defaulted to an empty string.
 
+### setInputSetting
+
+This is a utility method for setting a value to a key by making it a descendant of node in the tree.
+* `blockUid: string` The uid of the root block housing all of settings.
+* `value: string` The value to assign to the setting
+* `key: string` The setting name
+* `index?: number` The index where the setting should be created if new, defaulted to 0
+
+### setInputSettings
+
+This is a utility method for setting multiple values to a key by making it a descendant of node in the tree.
+* `blockUid: string` The uid of the root block housing all of settings.
+* `values: string` The set of values to assign to the setting
+* `key: string` The setting name
+* `index?: number` The index where the setting should be created if new, defaulted to 0
+
 ## Components
 
 The following are a list of React components commonly used across RoamJS extensions.

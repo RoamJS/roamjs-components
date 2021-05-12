@@ -1,7 +1,12 @@
 import React from "react";
 import { useCallback, useState } from "react";
 import ReactDOM from "react-dom";
-import { TextNode } from "roam-client";
+import {
+  createBlock,
+  deleteBlock,
+  getTreeByBlockUid,
+  TextNode,
+} from "roam-client";
 
 export const toTitle = (id: string): string =>
   id
@@ -132,4 +137,70 @@ export const renderWithUnmount = (
     }
   });
   unmountObserver.observe(document.body, { childList: true, subtree: true });
+};
+
+export const setInputSetting = ({
+  blockUid,
+  value,
+  key,
+  index = 0,
+}: {
+  blockUid: string;
+  value: string;
+  key: string;
+  index?: number;
+}): void => {
+  const tree = getTreeByBlockUid(blockUid);
+  const keyNode = tree.children.find((t) => toFlexRegex(key).test(t.text));
+  if (keyNode && keyNode.children.length) {
+    window.roamAlphaAPI.updateBlock({
+      block: { uid: keyNode.children[0].uid, string: value },
+    });
+  } else if (!keyNode) {
+    const uid = window.roamAlphaAPI.util.generateUID();
+    window.roamAlphaAPI.createBlock({
+      location: { "parent-uid": blockUid, order: index },
+      block: { string: key, uid },
+    });
+    window.roamAlphaAPI.createBlock({
+      location: { "parent-uid": uid, order: 0 },
+      block: { string: value },
+    });
+  } else {
+    window.roamAlphaAPI.createBlock({
+      location: { "parent-uid": keyNode.uid, order: 0 },
+      block: { string: value },
+    });
+  }
+};
+
+export const setInputSettings = ({
+  blockUid,
+  values,
+  key,
+  index = 0,
+}: {
+  blockUid: string;
+  values: string[];
+  key: string;
+  index?: number;
+}): void => {
+  const tree = getTreeByBlockUid(blockUid);
+  const keyNode = tree.children.find((t) => toFlexRegex(key).test(t.text));
+  if (keyNode) {
+    keyNode.children
+      .filter(({ text }) => !values.includes(text))
+      .forEach(({ uid }) => deleteBlock(uid));
+    values
+      .filter((v) => !keyNode.children.some(({ text }) => text === v))
+      .forEach((text, order) =>
+        createBlock({ node: { text }, order, parentUid: keyNode.uid })
+      );
+  } else {
+    createBlock({
+      parentUid: blockUid,
+      order: index,
+      node: { text: key, children: values.map((text) => ({ text })) },
+    });
+  }
 };

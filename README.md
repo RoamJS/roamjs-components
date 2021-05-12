@@ -95,6 +95,14 @@ This is a utility method for grabbing the string value of a node from a tree by 
 * `key: string` The key used to find the desired node
 * `defaultValue?: number` The default value the getter should have if there are no nodes with the specified key, defaulted to an empty string.
 
+### addInputSetting
+
+This is a utility method for adding a value as part of multiple to a key by making it a descendant of node in the tree.
+* `blockUid: string` The uid of the root block housing all of settings.
+* `value: string` The value to add to the setting
+* `key: string` The setting name
+* `index?: number` The index where the setting should be created if new, defaulted to 0
+
 ### setInputSetting
 
 This is a utility method for setting a value to a key by making it a descendant of node in the tree.

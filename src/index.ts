@@ -1,6 +1,7 @@
 export { createComponentRender } from "./ComponentContainer";
 export { createConfigObserver } from "./ConfigPage";
 export {
+  addInputSetting,
   createOverlayRender,
   getRenderRoot,
   getSettingIntFromTree,

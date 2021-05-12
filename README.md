@@ -134,3 +134,7 @@ An info icon with a tooltip, used to give help text to UI components.
 ### MenuItemSelect
 
 A standard Select using blueprint's MenuItem component as the item rendered.
+
+### WarningToast
+
+Renders a yellow warning message, then unmounts itself upon dismissing.

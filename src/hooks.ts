@@ -105,7 +105,7 @@ export const getSettingIntFromTree = ({
 }): number => {
   const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
   const value = node?.children?.[0]?.text?.trim?.() || "";
-  return isNaN(Number(value)) ? defaultValue : Number(value);
+  return !value || isNaN(Number(value)) ? defaultValue : Number(value);
 };
 
 export const getSettingValuesFromTree = ({

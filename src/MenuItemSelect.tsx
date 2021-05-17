@@ -1,8 +1,4 @@
-import {
-  Button,
-  IButtonProps,
-  MenuItem,
-} from "@blueprintjs/core";
+import { Button, IButtonProps, MenuItem } from "@blueprintjs/core";
 import { ISelectProps, Select } from "@blueprintjs/select";
 import React, { ReactText } from "react";
 

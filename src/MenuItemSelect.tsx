@@ -1,7 +1,6 @@
 import {
   Button,
   IButtonProps,
-  IPopoverProps,
   MenuItem,
 } from "@blueprintjs/core";
 import { ISelectProps, Select } from "@blueprintjs/select";
@@ -10,7 +9,7 @@ import React, { ReactText } from "react";
 const MenuItemSelect = <T extends ReactText>(
   props: Omit<ISelectProps<T>, "itemRenderer"> & {
     ButtonProps?: IButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
-  } & { PopoverProps?: IPopoverProps }
+  }
 ): JSX.Element => {
   const TypeSelect = Select.ofType<T>();
   return (
@@ -28,7 +27,7 @@ const MenuItemSelect = <T extends ReactText>(
       popoverProps={{
         minimal: true,
         captureDismiss: true,
-        ...props.PopoverProps,
+        ...props.popoverProps,
       }}
     >
       <Button

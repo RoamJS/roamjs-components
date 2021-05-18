@@ -130,7 +130,7 @@ export const renderWithUnmount = (
   const unmountObserver = new MutationObserver((ms) => {
     const parentRemoved = ms
       .flatMap((m) => Array.from(m.removedNodes))
-      .some((n) => n.parentElement?.contains(p));
+      .some((n) => n === p || n.contains(p));
     if (parentRemoved) {
       unmountObserver.disconnect();
       ReactDOM.unmountComponentAtNode(p);

@@ -10,6 +10,8 @@ export type ExternalLoginOptions = {
   ServiceIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
 };
 
+const targetOrigin = process.env.CUSTOM_ROAMJS_ORIGIN || "https://roamjs.com";
+
 const ExternalLogin = ({
   onSuccess,
   parentUid,
@@ -37,7 +39,7 @@ const ExternalLogin = ({
           `left=${left},top=${top},width=${width},height=${height},status=1`
         );
         const messageEventListener = (e: MessageEvent) => {
-          if (e.origin === "https://roamjs.com" && loginWindow) {
+          if (e.origin === targetOrigin && loginWindow) {
             loginWindow.close();
             getAuthData(e.data)
               .then((rr) => {

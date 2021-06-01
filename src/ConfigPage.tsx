@@ -18,9 +18,13 @@ import {
   deleteBlock,
   getFirstChildUidByBlockUid,
   getPageUidByPageTitle,
+  getShallowTreeByParentUid,
   getTextByBlockUid,
   getTreeByBlockUid,
   getTreeByPageName,
+  localStorageGet,
+  localStorageRemove,
+  localStorageSet,
 } from "roam-client";
 import Description from "./Description";
 import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";
@@ -387,8 +391,14 @@ const OauthPanel: FieldPanel<OauthField> = ({
   description,
   options,
 }) => {
-  const [accounts, setAccounts] = useState(() =>
-    uid
+  const key = `oauth-${options.service}`;
+  const [useLocal, setUseLocal] = useState(!!localStorageGet(key));
+  const [accounts, setAccounts] = useState<
+    { text: string; uid: string; data: string }[]
+  >(() =>
+    useLocal
+      ? JSON.parse(localStorageGet(key) as string)
+      : uid
       ? getTreeByBlockUid(uid).children.map((v) => ({
           text: v.children[0]?.text ? v.text : "Default Account",
           uid: v.uid,
@@ -396,8 +406,51 @@ const OauthPanel: FieldPanel<OauthField> = ({
         }))
       : []
   );
+  const onCheck = useCallback(
+    (e) => {
+      const checked = (e.target as HTMLInputElement).checked;
+      setUseLocal(checked);
+      if (checked) {
+        if (uid) {
+          getShallowTreeByParentUid(uid).forEach(({ uid: u }) =>
+            deleteBlock(u)
+          );
+        }
+        localStorageSet(key, JSON.stringify(accounts));
+      } else {
+        localStorageRemove(key);
+        if (uid) {
+          accounts.forEach(({ text, uid: u, data }, order) => {
+            window.roamAlphaAPI.createBlock({
+              location: { "parent-uid": uid, order },
+              block: { string: text, uid: u },
+            });
+            window.roamAlphaAPI.createBlock({
+              location: { "parent-uid": u, order: 0 },
+              block: { string: data },
+            });
+          });
+        }
+      }
+    },
+    [setUseLocal, accounts, uid, key]
+  );
   return (
     <>
+      <Checkbox
+        labelElement={
+          <>
+            Store Locally
+            <Description
+              description={
+                "If checked, sensitive authentication data will be stored locally on your machine and will require re-logging in per device. If unchecked, sensitive authentication data will be stored in Roam Graph."
+              }
+            />
+          </>
+        }
+        checked={useLocal}
+        onChange={onCheck}
+      />
       <Label>
         Log In
         <Description description={description} />

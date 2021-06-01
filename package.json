@@ -31,7 +31,7 @@
     "@blueprintjs/select": "^3.16.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "roam-client": "^1.59.0"
+    "roam-client": "^1.68.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.10",

@@ -4,8 +4,13 @@ import ReactDOM from "react-dom";
 import {
   createBlock,
   deleteBlock,
+  getFirstChildTextByBlockUid,
+  getPageUidByPageTitle,
+  getShallowTreeByParentUid,
   getTreeByBlockUid,
+  localStorageGet,
   TextNode,
+  toConfig,
 } from "roam-client";
 
 export const toTitle = (id: string): string =>
@@ -121,6 +126,30 @@ export const getSettingValuesFromTree = ({
   const value = node ? node.children.map((t) => t.text.trim()) : defaultValue;
   return value;
 };
+
+export const getOauth = (service: string, label?:string): string => {
+  const fromStorage = localStorageGet(`oauth-${service}`);
+  if (fromStorage) {
+    const accounts = JSON.parse(fromStorage) as {text: string, data: string}[];
+    return (label ? accounts.find(({text}) => text === label)?.data : accounts[0]?.data) || '{}';
+  }
+  const tree = getShallowTreeByParentUid(getPageUidByPageTitle(toConfig(service)));
+  const node = tree.find((s) => toFlexRegex('oauth').test(s.text.trim()));
+  if (!node) {
+    return '{}';
+  }
+  const nodeChildren = getShallowTreeByParentUid(node.uid);
+  const index = label ? nodeChildren.findIndex(t => toFlexRegex(label).test(t.text)): 0
+  const labelNode = nodeChildren[index];
+  if (!labelNode) {
+    return '{}';
+  }
+  if (labelNode.text.startsWith('{') && labelNode.text.endsWith('}')) {
+    return labelNode.text;
+  }
+  const data = getFirstChildTextByBlockUid(labelNode.uid);
+  return data || '{}';
+}
 
 export const renderWithUnmount = (
   el: React.ReactElement,

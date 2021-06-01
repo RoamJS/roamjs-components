@@ -1,6 +1,11 @@
 import { Button, Icon, Spinner } from "@blueprintjs/core";
 import React, { useState, useCallback } from "react";
-import { createBlock, getTreeByBlockUid } from "roam-client";
+import {
+  createBlock,
+  getTreeByBlockUid,
+  localStorageGet,
+  localStorageSet,
+} from "roam-client";
 import { toTitle } from "./hooks";
 
 export type ExternalLoginOptions = {
@@ -14,6 +19,7 @@ const targetOrigin = process.env.CUSTOM_ROAMJS_ORIGIN || "https://roamjs.com";
 
 const ExternalLogin = ({
   onSuccess,
+  useLocal,
   parentUid,
   service,
   getPopoutUrl,
@@ -22,6 +28,7 @@ const ExternalLogin = ({
 }: {
   onSuccess: (block: { text: string; uid: string; data: string }) => void;
   parentUid: string;
+  useLocal?: boolean;
 } & ExternalLoginOptions): React.ReactElement => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -43,41 +50,50 @@ const ExternalLogin = ({
             loginWindow.close();
             getAuthData(e.data)
               .then((rr) => {
-                const existingTree = getTreeByBlockUid(
-                  parentUid
-                ).children.find((t) => /oauth/i.test(t.text));
-                const blockUid =
-                  existingTree?.uid ||
-                  createBlock({ node: { text: "oauth" }, parentUid });
-
-                const label = rr.label || "Default Account";
-                const oauthData = Object.fromEntries(
-                  Object.keys(rr)
-                    .filter((k) => k !== "label")
-                    .map((k) => [k, rr[k]])
-                );
                 const labelUid = window.roamAlphaAPI.util.generateUID();
-                window.roamAlphaAPI.createBlock({
-                  block: { string: label, uid: labelUid },
-                  location: {
-                    "parent-uid": blockUid,
-                    order: existingTree?.children?.length || 0,
-                  },
-                });
+                const label = rr.label || "Default Account";
+                const oauthData = JSON.stringify(
+                  Object.fromEntries(
+                    Object.keys(rr)
+                      .filter((k) => k !== "label")
+                      .map((k) => [k, rr[k]])
+                  )
+                );
+                const account = { text: label, uid: labelUid, data: oauthData };
+                if (useLocal) {
+                  const key = `oauth-${service}`;
+                  const accounts = JSON.parse(localStorageGet(key) as string);
+                  localStorageSet(key, JSON.stringify([...accounts, account]));
+                } else {
+                  const existingTree = getTreeByBlockUid(
+                    parentUid
+                  ).children.find((t) => /oauth/i.test(t.text));
+                  const blockUid =
+                    existingTree?.uid ||
+                    createBlock({ node: { text: "oauth" }, parentUid });
 
-                const valueUid = window.roamAlphaAPI.util.generateUID();
-                const block = {
-                  string: JSON.stringify(oauthData),
-                  uid: valueUid,
-                };
-                window.roamAlphaAPI.createBlock({
-                  location: { "parent-uid": labelUid, order: 0 },
-                  block,
-                });
-                window.roamAlphaAPI.updateBlock({
-                  block: { open: false, string: "oauth", uid: blockUid },
-                });
-                onSuccess({ text: label, uid: labelUid, data: block.string });
+                  window.roamAlphaAPI.createBlock({
+                    block: { string: label, uid: labelUid },
+                    location: {
+                      "parent-uid": blockUid,
+                      order: existingTree?.children?.length || 0,
+                    },
+                  });
+
+                  const valueUid = window.roamAlphaAPI.util.generateUID();
+                  const block = {
+                    string: oauthData,
+                    uid: valueUid,
+                  };
+                  window.roamAlphaAPI.createBlock({
+                    location: { "parent-uid": labelUid, order: 0 },
+                    block,
+                  });
+                  window.roamAlphaAPI.updateBlock({
+                    block: { open: false, string: "oauth", uid: blockUid },
+                  });
+                }
+                onSuccess(account);
               })
               .finally(() =>
                 window.removeEventListener("message", messageEventListener)

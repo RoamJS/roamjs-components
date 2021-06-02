@@ -443,7 +443,7 @@ const OauthPanel: FieldPanel<OauthField> = ({
             Store Locally
             <Description
               description={
-                "If checked, sensitive authentication data will be stored locally on your machine and will require re-logging in per device. If unchecked, sensitive authentication data will be stored in Roam Graph."
+                "If checked, sensitive authentication data will be stored locally on your machine and will require re-logging in per device. If unchecked, sensitive authentication data will be stored in your Roam Graph."
               }
             />
           </>
@@ -456,6 +456,7 @@ const OauthPanel: FieldPanel<OauthField> = ({
         <Description description={description} />
       </Label>
       <ExternalLogin
+        useLocal={useLocal}
         onSuccess={(acc) => setAccounts([...accounts, acc])}
         parentUid={parentUid}
         {...options}
@@ -475,7 +476,17 @@ const OauthPanel: FieldPanel<OauthField> = ({
             <Button
               text={"Log Out"}
               onClick={() => {
-                deleteBlock(act.uid);
+                if (useLocal) {
+                  const accts = JSON.parse(localStorageGet(key) as string) as {
+                    uid: string;
+                  }[];
+                  localStorageSet(
+                    key,
+                    JSON.stringify(accts.filter((a) => act.uid !== a.uid))
+                  );
+                } else {
+                  deleteBlock(act.uid);
+                }
                 setAccounts(accounts.filter((a) => act.uid !== a.uid));
               }}
             />

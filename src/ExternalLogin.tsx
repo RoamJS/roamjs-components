@@ -60,18 +60,18 @@ const ExternalLogin = ({
                   )
                 );
                 const account = { text: label, uid: labelUid, data: oauthData };
+
+                const existingTree = getTreeByBlockUid(
+                  parentUid
+                ).children.find((t) => /oauth/i.test(t.text));
+                const blockUid =
+                  existingTree?.uid ||
+                  createBlock({ node: { text: "oauth" }, parentUid });
                 if (useLocal) {
                   const key = `oauth-${service}`;
                   const accounts = JSON.parse(localStorageGet(key) as string);
                   localStorageSet(key, JSON.stringify([...accounts, account]));
                 } else {
-                  const existingTree = getTreeByBlockUid(
-                    parentUid
-                  ).children.find((t) => /oauth/i.test(t.text));
-                  const blockUid =
-                    existingTree?.uid ||
-                    createBlock({ node: { text: "oauth" }, parentUid });
-
                   window.roamAlphaAPI.createBlock({
                     block: { string: label, uid: labelUid },
                     location: {

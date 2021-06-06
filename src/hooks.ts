@@ -145,8 +145,11 @@ export const getOauth = (service: string, label?: string): string => {
       text: string;
       data: string;
     }[];
-    const { data, ...node } =
-      (label ? accounts.find(({ text }) => text === label) : accounts[0]) || {};
+    const accountNode =
+      (label ? accounts.find(({ text }) => text === label) : accounts[0]) ||
+      ({} as { data?: string });
+    const data = accountNode.data;
+    const node = restOp(accountNode, ["data"]);
     return data ? JSON.stringify({ ...JSON.parse(data), node }) : "{}";
   }
   const tree = getShallowTreeByParentUid(
@@ -179,7 +182,7 @@ export const getOauth = (service: string, label?: string): string => {
     uid,
     time: uid ? getEditTimeByBlockUid(uid) : 0,
   };
-  return JSON.stringify(obj) || "{}";
+  return JSON.stringify(obj);
 };
 
 export const renderWithUnmount = (

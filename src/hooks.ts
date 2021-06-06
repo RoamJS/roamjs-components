@@ -6,6 +6,7 @@ import {
   deleteBlock,
   getEditTimeByBlockUid,
   getFirstChildTextByBlockUid,
+  getFirstChildUidByBlockUid,
   getPageUidByPageTitle,
   getShallowTreeByParentUid,
   getTreeByBlockUid,
@@ -161,7 +162,10 @@ export const getOauth = (service: string, label?: string): string => {
   return (
     JSON.stringify({
       ...JSON.parse(data),
-      node: { uid: labelNode.uid, time: getEditTimeByBlockUid(labelNode.uid) },
+      node: {
+        uid: getFirstChildUidByBlockUid(labelNode.uid),
+        time: getEditTimeByBlockUid(labelNode.uid),
+      },
     }) || "{}"
   );
 };

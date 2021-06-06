@@ -6,7 +6,7 @@ import {
   localStorageGet,
   localStorageSet,
 } from "roam-client";
-import { toTitle } from "./hooks";
+import { restOp, toTitle } from "./hooks";
 
 export type ExternalLoginOptions = {
   service: string;
@@ -52,13 +52,7 @@ const ExternalLogin = ({
               .then((rr) => {
                 const labelUid = window.roamAlphaAPI.util.generateUID();
                 const label = rr.label || "Default Account";
-                const oauthData = JSON.stringify(
-                  Object.fromEntries(
-                    Object.keys(rr)
-                      .filter((k) => k !== "label")
-                      .map((k) => [k, rr[k]])
-                  )
-                );
+                const oauthData = JSON.stringify(restOp(rr, ["label"]));
                 const account = {
                   text: label,
                   uid: labelUid,

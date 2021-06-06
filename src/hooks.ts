@@ -13,6 +13,17 @@ import {
   toConfig,
 } from "roam-client";
 
+// getting a  __rest is not a function error. Not sure why
+export const restOp = (
+  rr: Record<string, unknown>,
+  omit: string[]
+): Record<string, unknown> =>
+  Object.fromEntries(
+    Object.keys(rr)
+      .filter((k) => !omit.includes(k))
+      .map((k) => [k, rr[k]])
+  );
+
 export const toTitle = (id: string): string =>
   id
     .split("-")
@@ -154,25 +165,21 @@ export const getOauth = (service: string, label?: string): string => {
     return "{}";
   }
   if (labelNode.text.startsWith("{") && labelNode.text.endsWith("}")) {
-    return JSON.stringify({
-      ...JSON.parse(labelNode.text),
-      node: {
-        uid: labelNode.uid,
-        time: getEditTimeByBlockUid(labelNode.uid),
-      },
-    });
+    const obj = JSON.parse(labelNode.text);
+    obj.node = {
+      uid: labelNode.uid,
+      time: getEditTimeByBlockUid(labelNode.uid),
+    };
+    return JSON.stringify(obj);
   }
   const dataNode = getShallowTreeByParentUid(labelNode.uid)[0];
   const uid = dataNode?.uid || "";
-  return (
-    JSON.stringify({
-      ...JSON.parse(dataNode?.text || "{}"),
-      node: {
-        uid,
-        time: uid ? getEditTimeByBlockUid(uid) : 0,
-      },
-    }) || "{}"
-  );
+  const obj = JSON.parse(dataNode?.text || "{}");
+  obj.node = {
+    uid,
+    time: uid ? getEditTimeByBlockUid(uid) : 0,
+  };
+  return JSON.stringify(obj) || "{}";
 };
 
 export const renderWithUnmount = (

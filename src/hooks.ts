@@ -5,8 +5,6 @@ import {
   createBlock,
   deleteBlock,
   getEditTimeByBlockUid,
-  getFirstChildTextByBlockUid,
-  getFirstChildUidByBlockUid,
   getPageUidByPageTitle,
   getShallowTreeByParentUid,
   getTreeByBlockUid,

@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import {
   createBlock,
   deleteBlock,
+  getEditTimeByBlockUid,
   getFirstChildTextByBlockUid,
   getPageUidByPageTitle,
   getShallowTreeByParentUid,
@@ -127,29 +128,43 @@ export const getSettingValuesFromTree = ({
   return value;
 };
 
-export const getOauth = (service: string, label?:string): string => {
+export const getOauth = (service: string, label?: string): string => {
   const fromStorage = localStorageGet(`oauth-${service}`);
   if (fromStorage) {
-    const accounts = JSON.parse(fromStorage) as {text: string, data: string}[];
-    return (label ? accounts.find(({text}) => text === label)?.data : accounts[0]?.data) || '{}';
+    const accounts = JSON.parse(fromStorage) as {
+      text: string;
+      data: string;
+    }[];
+    const { data, ...node } =
+      (label ? accounts.find(({ text }) => text === label) : accounts[0]) || {};
+    return data ? JSON.stringify({ ...JSON.parse(data), node }) : "{}";
   }
-  const tree = getShallowTreeByParentUid(getPageUidByPageTitle(toConfig(service)));
-  const node = tree.find((s) => toFlexRegex('oauth').test(s.text.trim()));
+  const tree = getShallowTreeByParentUid(
+    getPageUidByPageTitle(toConfig(service))
+  );
+  const node = tree.find((s) => toFlexRegex("oauth").test(s.text.trim()));
   if (!node) {
-    return '{}';
+    return "{}";
   }
   const nodeChildren = getShallowTreeByParentUid(node.uid);
-  const index = label ? nodeChildren.findIndex(t => toFlexRegex(label).test(t.text)): 0
+  const index = label
+    ? nodeChildren.findIndex((t) => toFlexRegex(label).test(t.text))
+    : 0;
   const labelNode = nodeChildren[index];
   if (!labelNode) {
-    return '{}';
+    return "{}";
   }
-  if (labelNode.text.startsWith('{') && labelNode.text.endsWith('}')) {
+  if (labelNode.text.startsWith("{") && labelNode.text.endsWith("}")) {
     return labelNode.text;
   }
   const data = getFirstChildTextByBlockUid(labelNode.uid);
-  return data || '{}';
-}
+  return (
+    JSON.stringify({
+      ...JSON.parse(data),
+      node: { uid: labelNode.uid, time: getEditTimeByBlockUid(labelNode.uid) },
+    }) || "{}"
+  );
+};
 
 export const renderWithUnmount = (
   el: React.ReactElement,

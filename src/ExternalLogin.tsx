@@ -59,7 +59,12 @@ const ExternalLogin = ({
                       .map((k) => [k, rr[k]])
                   )
                 );
-                const account = { text: label, uid: labelUid, data: oauthData };
+                const account = {
+                  text: label,
+                  uid: labelUid,
+                  data: oauthData,
+                  time: new Date().valueOf(),
+                };
 
                 const existingTree = getTreeByBlockUid(
                   parentUid

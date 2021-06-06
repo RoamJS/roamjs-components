@@ -156,7 +156,13 @@ export const getOauth = (service: string, label?: string): string => {
     return "{}";
   }
   if (labelNode.text.startsWith("{") && labelNode.text.endsWith("}")) {
-    return labelNode.text;
+    return JSON.stringify({
+      ...JSON.parse(labelNode.text),
+      node: {
+        uid: labelNode.uid,
+        time: getEditTimeByBlockUid(labelNode.uid),
+      },
+    });
   }
   const dataNode = getShallowTreeByParentUid(labelNode.uid)[0];
   const uid = dataNode?.uid || "";

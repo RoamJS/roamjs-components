@@ -34,12 +34,13 @@ import {
 } from "roam-client";
 import { getRenderRoot, toTitle, toFlexRegex, setInputSetting } from "./hooks";
 
+/* coming soon -.- 
 declare global {
   interface Window {
-    //coming soon -.- [key: `roamjs${string}Token`]: string;
-    [key: string]: string;
+    [key: `roamjs${string}Token`]: string;
   }
 }
+*/
 
 export const HIGHLIGHT = "3px dashed yellowgreen";
 
@@ -188,7 +189,10 @@ export const runService = ({
         isOpen={true}
         onConfirm={() => {
           const tokenField = `roamjs${toCamel(id)}Token`;
-          if (window[tokenField]) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          const tokenValue = window[tokenField] as string;
+          if (tokenValue) {
             createPage({
               title,
               tree: [
@@ -196,13 +200,15 @@ export const runService = ({
                   text: "token",
                   children: [
                     {
-                      text: window[tokenField],
+                      text: tokenValue,
                       children: [],
                     },
                   ],
                 },
               ],
             });
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             delete window[tokenField];
           }
           ReactDOM.unmountComponentAtNode(root);

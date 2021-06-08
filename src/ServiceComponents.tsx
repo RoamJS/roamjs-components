@@ -27,6 +27,7 @@ import {
   getRoamUrl,
   getTreeByPageName,
   localStorageGet,
+  localStorageRemove,
   localStorageSet,
   PullBlock,
   TreeNode,
@@ -55,12 +56,8 @@ const toCamel = (service: string) =>
 export const getTokenFromTree = (tree: TreeNode[]): string =>
   tree.find((t) => /token/i.test(t.text))?.children?.[0]?.text || "";
 
-const isTokenInTree = (tree: TreeNode[]): boolean => !!getTokenFromTree(tree);
-
-export const isFieldInTree =
-  (field = "$^") =>
-  (tree: TreeNode[]): boolean =>
-    tree.some((t) => new RegExp(field, "i").test(t.text));
+export const isFieldInTree = (field = "$^") => (tree: TreeNode[]): boolean =>
+  tree.some((t) => new RegExp(field, "i").test(t.text));
 
 export const useIsFieldSet = (field: string): boolean => {
   const service = useService();
@@ -234,7 +231,7 @@ export type StageContent = (props: StageProps) => React.ReactElement;
 type GetStage = (setting?: string) => StageContent;
 type StageConfig = {
   component: StageContent;
-  check?: (tree: TreeNode[]) => boolean;
+  check?: (tree: TreeNode[], service: string) => boolean;
   setting?: string;
   isMain?: boolean;
 };
@@ -312,11 +309,13 @@ const RequestTokenContent: StageContent = ({ openPanel }) => {
   const onSubmit = useCallback(() => {
     if (useLocal) {
       localStorageSet(`token-${service}`, value);
+      setInputSetting({ blockUid: pageUid, key: "token", value: "" });
     } else {
+      localStorageRemove(`token-${service}`);
       setInputSetting({ blockUid: pageUid, key: "token", value });
     }
     nextStage();
-  }, [value, nextStage, pageUid]);
+  }, [value, nextStage, pageUid, useLocal]);
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (
@@ -339,7 +338,7 @@ const RequestTokenContent: StageContent = ({ openPanel }) => {
         <InputGroup value={value} onChange={onChange} onKeyDown={onKeyDown} />
       </Label>
       <Checkbox
-        labelElement={<Label>Store Locally</Label>}
+        label={"Store Locally"}
         checked={useLocal}
         onChange={(e) => setUseLocal((e.target as HTMLInputElement).checked)}
       />
@@ -375,7 +374,7 @@ const SettingsContent: StageContent = ({ openPanel }) => {
 };
 
 export const TOKEN_STAGE = {
-  check: isTokenInTree,
+  check: (_: TreeNode[], service: string) => !!getToken(service),
   component: RequestTokenContent,
   setting: "Token",
 };
@@ -418,7 +417,9 @@ export const ServiceDashboard: React.FC<{
       }
       const tree = getTreeByPageName(title);
       const index = stages.findIndex((s) =>
-        s.check ? !s.check(tree) : s.isMain || !isFieldInTree(s.setting)(tree)
+        s.check
+          ? !s.check(tree, service)
+          : s.isMain || !isFieldInTree(s.setting)(tree)
       );
       setProgress(index / mainIndex);
       if (index < mainIndex) {
@@ -426,7 +427,7 @@ export const ServiceDashboard: React.FC<{
       }
       return stages.slice(index)[0].component;
     },
-    [title, stages, setProgress, setShowProgress]
+    [title, stages, setProgress, setShowProgress, service]
   );
   const settings = useMemo(
     () =>

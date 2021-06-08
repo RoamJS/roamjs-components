@@ -56,10 +56,8 @@ const toCamel = (service: string) =>
 export const getTokenFromTree = (tree: TreeNode[]): string =>
   tree.find((t) => /token/i.test(t.text))?.children?.[0]?.text || "";
 
-export const isFieldInTree =
-  (field = "$^") =>
-  (tree: TreeNode[]): boolean =>
-    tree.some((t) => new RegExp(field, "i").test(t.text));
+export const isFieldInTree = (field = "$^") => (tree: TreeNode[]): boolean =>
+  tree.some((t) => new RegExp(field, "i").test(t.text));
 
 export const useIsFieldSet = (field: string): boolean => {
   const service = useService();
@@ -303,7 +301,9 @@ const RequestTokenContent: StageContent = ({ openPanel }) => {
   const pageUid = usePageUid();
   const service = useService();
   const [value, setValue] = useState(getToken(service));
-  const [useLocal, setUseLocal] = useState(false);
+  const [useLocal, setUseLocal] = useState(
+    !!localStorageGet(`token-${service}`)
+  );
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value),
     [setValue]

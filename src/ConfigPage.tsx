@@ -530,9 +530,10 @@ const FieldTabs = ({
   order: number;
 } & ConfigTab) => {
   const [uid, setUid] = useState(initialUid);
-  const subTree = useMemo(() => (uid ? getTreeByBlockUid(uid) : undefined), [
-    uid,
-  ]);
+  const subTree = useMemo(
+    () => (uid ? getTreeByBlockUid(uid) : undefined),
+    [uid]
+  );
   const [parentUid, parentTree] = useMemo(
     () =>
       /home/i.test(id)
@@ -554,9 +555,10 @@ const FieldTabs = ({
   const [selectedTabId, setSelectedTabId] = useState(
     enabled ? fields[0].title : "enabled"
   );
-  const onTabsChange = useCallback((tabId: string) => setSelectedTabId(tabId), [
-    setSelectedTabId,
-  ]);
+  const onTabsChange = useCallback(
+    (tabId: string) => setSelectedTabId(tabId),
+    [setSelectedTabId]
+  );
   return (
     <Tabs
       vertical
@@ -631,9 +633,10 @@ const ConfigPage = ({
 }): React.ReactElement => {
   const userTabs = config.tabs.filter((t) => t.fields.length);
   const [selectedTabId, setSelectedTabId] = useState(userTabs[0]?.id);
-  const onTabsChange = useCallback((tabId: string) => setSelectedTabId(tabId), [
-    setSelectedTabId,
-  ]);
+  const onTabsChange = useCallback(
+    (tabId: string) => setSelectedTabId(tabId),
+    [setSelectedTabId]
+  );
   const pageUid = getPageUidByPageTitle(`roam/js/${id}`);
   const tree = getTreeByPageName(`roam/js/${id}`);
   return (

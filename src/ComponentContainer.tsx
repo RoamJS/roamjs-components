@@ -30,26 +30,28 @@ const ComponentContainer: React.FunctionComponent<{
   );
 };
 
-export const createComponentRender = (
-  Fc: (props: { blockUid: string }) => React.ReactElement,
-  className?: string
-) => (b: HTMLButtonElement): void => {
-  if (b.parentElement) {
-    b.parentElement.onmousedown = (e: MouseEvent) => e.stopPropagation();
-    const blockUid = getBlockUidFromTarget(b);
-    const possibleBlockId = b.closest(".roam-block")?.id;
-    const blockId = possibleBlockId?.endsWith?.(blockUid)
-      ? possibleBlockId
-      : undefined;
-    if (blockUid) {
-      renderWithUnmount(
-        <ComponentContainer blockId={blockId} className={className}>
-          <Fc blockUid={blockUid} />
-        </ComponentContainer>,
-        b.parentElement
-      );
+export const createComponentRender =
+  (
+    Fc: (props: { blockUid: string }) => React.ReactElement,
+    className?: string
+  ) =>
+  (b: HTMLButtonElement): void => {
+    if (b.parentElement) {
+      b.parentElement.onmousedown = (e: MouseEvent) => e.stopPropagation();
+      const blockUid = getBlockUidFromTarget(b);
+      const possibleBlockId = b.closest(".roam-block")?.id;
+      const blockId = possibleBlockId?.endsWith?.(blockUid)
+        ? possibleBlockId
+        : undefined;
+      if (blockUid) {
+        renderWithUnmount(
+          <ComponentContainer blockId={blockId} className={className}>
+            <Fc blockUid={blockUid} />
+          </ComponentContainer>,
+          b.parentElement
+        );
+      }
     }
-  }
-};
+  };
 
 export default ComponentContainer;

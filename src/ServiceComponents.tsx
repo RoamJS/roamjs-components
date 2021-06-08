@@ -57,8 +57,10 @@ export const getTokenFromTree = (tree: TreeNode[]): string =>
 
 const isTokenInTree = (tree: TreeNode[]): boolean => !!getTokenFromTree(tree);
 
-export const isFieldInTree = (field = "$^") => (tree: TreeNode[]): boolean =>
-  tree.some((t) => new RegExp(field, "i").test(t.text));
+export const isFieldInTree =
+  (field = "$^") =>
+  (tree: TreeNode[]): boolean =>
+    tree.some((t) => new RegExp(field, "i").test(t.text));
 
 export const useIsFieldSet = (field: string): boolean => {
   const service = useService();

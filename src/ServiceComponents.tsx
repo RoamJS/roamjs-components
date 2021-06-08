@@ -56,8 +56,10 @@ const toCamel = (service: string) =>
 export const getTokenFromTree = (tree: TreeNode[]): string =>
   tree.find((t) => /token/i.test(t.text))?.children?.[0]?.text || "";
 
-export const isFieldInTree = (field = "$^") => (tree: TreeNode[]): boolean =>
-  tree.some((t) => new RegExp(field, "i").test(t.text));
+export const isFieldInTree =
+  (field = "$^") =>
+  (tree: TreeNode[]): boolean =>
+    tree.some((t) => new RegExp(field, "i").test(t.text));
 
 export const useIsFieldSet = (field: string): boolean => {
   const service = useService();

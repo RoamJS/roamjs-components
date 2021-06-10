@@ -86,7 +86,7 @@ export const createOverlayRender = <T extends Record<string, unknown>>(
 };
 
 export const toFlexRegex = (key: string): RegExp =>
-  new RegExp(`^\\s*${key}\\s*$`, "i");
+  new RegExp(`^\\s*${key}\\s*(#\\.[\\w\\d-]*\\s*)?$`, "i");
 
 export const getRenderRoot = (id: string): HTMLDivElement => {
   const app = document.getElementById("app");

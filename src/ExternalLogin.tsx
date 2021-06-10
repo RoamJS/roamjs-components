@@ -60,9 +60,9 @@ const ExternalLogin = ({
                   time: new Date().valueOf(),
                 };
 
-                const existingTree = getTreeByBlockUid(parentUid).children.find(
-                  (t) => /oauth/i.test(t.text)
-                );
+                const existingTree = getTreeByBlockUid(
+                  parentUid
+                ).children.find((t) => /oauth/i.test(t.text));
                 const blockUid =
                   existingTree?.uid ||
                   createBlock({ node: { text: "oauth" }, parentUid });

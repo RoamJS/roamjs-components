@@ -378,10 +378,10 @@ const SettingsContent: StageContent = ({ openPanel }) => {
 };
 
 export const TOKEN_STAGE = {
-  check: (_: TreeNode[], service: string) => !!getToken(service),
+  check: (_: TreeNode[], service: string): boolean => !!getToken(service),
   component: RequestTokenContent,
   setting: "Token",
-};
+} as const;
 
 export const MainStage = (Content: StageContent): StageConfig => ({
   isMain: true,

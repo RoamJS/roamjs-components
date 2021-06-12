@@ -68,22 +68,24 @@ export const useArrowKeyDown = <T>({
   };
 };
 
-export const createOverlayRender = <T extends Record<string, unknown>>(
-  id: string,
-  Overlay: (props: { onClose: () => void } & T) => React.ReactElement
-) => (props: T): void => {
-  const parent = getRenderRoot(id);
-  ReactDOM.render(
-    React.createElement(Overlay, {
-      ...props,
-      onClose: () => {
-        ReactDOM.unmountComponentAtNode(parent);
-        parent.remove();
-      },
-    }),
-    parent
-  );
-};
+export const createOverlayRender =
+  <T extends Record<string, unknown>>(
+    id: string,
+    Overlay: (props: { onClose: () => void } & T) => React.ReactElement
+  ) =>
+  (props: T): void => {
+    const parent = getRenderRoot(id);
+    ReactDOM.render(
+      React.createElement(Overlay, {
+        ...props,
+        onClose: () => {
+          ReactDOM.unmountComponentAtNode(parent);
+          parent.remove();
+        },
+      }),
+      parent
+    );
+  };
 
 export const toFlexRegex = (key: string): RegExp =>
   new RegExp(`^\\s*${key}\\s*(#\\.[\\w\\d-]*\\s*)?$`, "i");
@@ -177,7 +179,10 @@ export const getOauth = (service: string, label?: string): string => {
   }
   const dataNode = getShallowTreeByParentUid(labelNode.uid)[0];
   const uid = dataNode?.uid || "";
-  const obj = JSON.parse(dataNode?.text || "{}");
+  if (!dataNode?.text) {
+    return "{}";
+  }
+  const obj = JSON.parse(dataNode.text);
   obj.node = {
     uid,
     time: uid ? getEditTimeByBlockUid(uid) : 0,

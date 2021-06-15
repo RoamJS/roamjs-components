@@ -19,6 +19,7 @@ export { default as MenuItemSelect } from "./MenuItemSelect";
 export {
   TOKEN_STAGE as SERVICE_TOKEN_STAGE,
   MainStage as WrapServiceMainStage,
+  runService,
   ServiceDashboard,
   StageContent,
   useAuthenticatedAxiosDelete as useAuthenticatedDelete,

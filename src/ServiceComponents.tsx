@@ -155,7 +155,7 @@ export const runService = ({
     title,
     callback: (d: HTMLDivElement) => {
       const parent = document.createElement("div");
-      parent.id = "roamjs-static-site-dashboard";
+      parent.id = `roamjs-${id}-dashboard`;
       const child = d.firstElementChild;
       if (child) {
         const ref = child.firstElementChild?.nextElementSibling;

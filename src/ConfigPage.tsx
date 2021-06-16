@@ -534,22 +534,19 @@ const FieldTabs = ({
     () => (uid ? getTreeByBlockUid(uid) : undefined),
     [uid]
   );
-  const [parentUid, parentTree] = useMemo(
+  const parentUid = useMemo(
     () =>
       /home/i.test(id)
-        ? [pageUid, getTreeByBlockUid(pageUid).children]
-        : [
-            subTree?.uid ||
-              (toggleable
-                ? ""
-                : createBlock({
-                    parentUid: pageUid,
-                    order,
-                    node: { text: id },
-                  })),
-            subTree?.children || [],
-          ],
-    [uid, subTree, id, toggleable]
+        ? pageUid
+        : subTree?.uid ||
+          (toggleable
+            ? ""
+            : createBlock({
+                parentUid: pageUid,
+                order,
+                node: { text: id },
+              })),
+    [pageUid, subTree, id, toggleable]
   );
   const [enabled, setEnabled] = useState(!toggleable || !!parentUid);
   const [selectedTabId, setSelectedTabId] = useState(
@@ -612,8 +609,9 @@ const FieldTabs = ({
                 order={i}
                 parentUid={parentUid}
                 uid={
-                  parentTree.find((t) => new RegExp(title, "i").test(t.text))
-                    ?.uid || ""
+                  getShallowTreeByParentUid(parentUid).find((t) =>
+                    new RegExp(title, "i").test(t.text)
+                  )?.uid || ""
                 }
               />
             }

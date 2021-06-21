@@ -10,6 +10,7 @@ export {
   setInputSetting,
   setInputSettings,
   toFlexRegex,
+  toTitle as idToTitle,
 } from "./hooks";
 
 export { default as BlockErrorBoundary } from "./BlockErrorBoundary";
@@ -17,7 +18,7 @@ export { createComponentRender } from "./ComponentContainer";
 export { createConfigObserver } from "./ConfigPage";
 export { default as Description } from "./Description";
 export { default as MenuItemSelect } from "./MenuItemSelect";
-export { default as PageInput } from './PageInput';
+export { default as PageInput } from "./PageInput";
 export {
   TOKEN_STAGE as SERVICE_TOKEN_STAGE,
   SERVICE_GUIDE_HIGHLIGHT,
@@ -38,7 +39,7 @@ export {
   NextButton as ServiceNextButton,
   useSetMetadata as useServiceSetMetadata,
   useGetMetadata as useServiceGetMetadata,
-} from './ServiceComponents';
+} from "./ServiceComponents";
 export {
   default as WarningToast,
   render as renderWarningToast,

@@ -28,7 +28,8 @@ export const toTitle = (id: string): string =>
   id
     .split("-")
     .map((s) => `${s.substring(0, 1).toUpperCase()}${s.substring(1)}`)
-    .join(" ");
+    .join(" ")
+    .replace(/_/g, " ");
 
 export const useArrowKeyDown = <T>({
   results,
@@ -147,7 +148,7 @@ export const getOauthAccounts = (service: string): string[] => {
       text: string;
       data: string;
     }[];
-    return accounts.map(a => a.text);
+    return accounts.map((a) => a.text);
   }
   const tree = getShallowTreeByParentUid(
     getPageUidByPageTitle(toConfig(service))
@@ -156,8 +157,8 @@ export const getOauthAccounts = (service: string): string[] => {
   if (!node) {
     return [];
   }
-  return getShallowTreeByParentUid(node.uid).map(t => t.text);
-}
+  return getShallowTreeByParentUid(node.uid).map((t) => t.text);
+};
 
 export const getOauth = (service: string, label?: string): string => {
   const fromStorage = localStorageGet(`oauth-${service}`);

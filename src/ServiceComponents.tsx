@@ -43,7 +43,7 @@ declare global {
 }
 */
 
-export const HIGHLIGHT = "3px dashed yellowgreen";
+export const SERVICE_GUIDE_HIGHLIGHT = "3px dashed yellowgreen";
 
 const toCamel = (service: string) =>
   service

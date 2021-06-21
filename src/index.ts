@@ -2,6 +2,7 @@ export {
   addInputSetting,
   createOverlayRender,
   getOauth,
+  getOauthAccounts,
   getRenderRoot,
   getSettingIntFromTree,
   getSettingValueFromTree,

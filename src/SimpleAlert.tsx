@@ -30,9 +30,7 @@ const SimpleAlert = ({
       onConfirm={onConfirm}
       {...cancelProps}
     >
-      <div className={Classes.ALERT_CONTENTS}>
-        {content}
-      </div>
+      <div className={Classes.ALERT_CONTENTS}>{content}</div>
     </Alert>
   );
 };

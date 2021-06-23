@@ -14,8 +14,11 @@ export {
 } from "./hooks";
 
 export { default as BlockErrorBoundary } from "./BlockErrorBoundary";
-export { createComponentRender } from "./ComponentContainer";
-export { createConfigObserver } from "./ConfigPage";
+export {
+  default as ComponentContainer,
+  createComponentRender,
+} from "./ComponentContainer";
+export { default as ConfigPage, createConfigObserver } from "./ConfigPage";
 export { default as Description } from "./Description";
 export { default as MenuItemSelect } from "./MenuItemSelect";
 export { default as PageInput } from "./PageInput";
@@ -40,6 +43,10 @@ export {
   useSetMetadata as useServiceSetMetadata,
   useGetMetadata as useServiceGetMetadata,
 } from "./ServiceComponents";
+export {
+  default as SimpleAlert,
+  render as renderSimpleAlert,
+} from "./SimpleAlert";
 export {
   default as WarningToast,
   render as renderWarningToast,

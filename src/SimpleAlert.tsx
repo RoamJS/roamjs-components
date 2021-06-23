@@ -5,18 +5,34 @@ import { createOverlayRender } from "./hooks";
 type Props = {
   content: string;
   onConfirm: () => void;
+  canCancel?: boolean;
 };
 
 const SimpleAlert = ({
   onClose,
   content,
   onConfirm,
+  canCancel,
 }: {
   onClose: () => void;
 } & Props): React.ReactElement => {
+  const cancelProps = canCancel
+    ? {
+        cancelButtonText: "Cancel",
+        canOutsideClickCancel: true,
+        canEscapeKeyCancel: true,
+      }
+    : {};
   return (
-    <Alert isOpen={true} onClose={onClose} onConfirm={onConfirm}>
-      <div className={Classes.ALERT_BODY}>{content}</div>
+    <Alert
+      isOpen={true}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      {...cancelProps}
+    >
+      <div className={Classes.ALERT_CONTENTS}>
+        {content}
+      </div>
     </Alert>
   );
 };

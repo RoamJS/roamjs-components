@@ -1,11 +1,11 @@
 import { Button, IButtonProps, MenuItem } from "@blueprintjs/core";
-import { ISelectProps, Select } from "@blueprintjs/select";
+import { SelectProps, Select } from "@blueprintjs/select";
 import React, { ReactText } from "react";
 
 const MenuItemSelect = <T extends ReactText>(
-  props: Omit<ISelectProps<T>, "itemRenderer"> & {
+  props: Omit<SelectProps<T>, "itemRenderer"> & {
     ButtonProps?: IButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
-  }
+  } & { emptyValueText?: string }
 ): JSX.Element => {
   const TypeSelect = Select.ofType<T>();
   return (
@@ -28,7 +28,13 @@ const MenuItemSelect = <T extends ReactText>(
     >
       <Button
         {...props.ButtonProps}
-        text={props.activeItem}
+        text={
+          props.activeItem || (
+            <i style={{ opacity: 0.5 }}>
+              {props.emptyValueText || "Choose..."}
+            </i>
+          )
+        }
         rightIcon="double-caret-vertical"
       />
     </TypeSelect>

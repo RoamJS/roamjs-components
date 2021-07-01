@@ -19,6 +19,11 @@ export {
   createComponentRender,
 } from "./ComponentContainer";
 export { default as ConfigPage, createConfigObserver } from "./ConfigPage";
+export {
+  default as CursorMenu,
+  render as renderCursorMenu,
+  getCoordsFromTextarea,
+} from "./CursorMenu";
 export { default as Description } from "./Description";
 export { default as MenuItemSelect } from "./MenuItemSelect";
 export { default as PageInput } from "./PageInput";

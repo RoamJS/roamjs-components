@@ -9,6 +9,7 @@ import {
   Tab,
   Tabs,
 } from "@blueprintjs/core";
+import { TimePicker } from "@blueprintjs/datetime";
 import React, { useCallback, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import {
@@ -26,6 +27,7 @@ import {
   localStorageRemove,
   localStorageSet,
 } from "roam-client";
+import startOfDay from "date-fns/startOfDay";
 import Description from "./Description";
 import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";
 import { toTitle } from "./hooks";
@@ -35,6 +37,11 @@ import PageInput from "./PageInput";
 type TextField = {
   type: "text";
   defaultValue?: string;
+};
+
+type TimeField = {
+  type: "time";
+  defaultValue?: Date;
 };
 
 type NumberField = {
@@ -75,6 +82,7 @@ type ArrayField = PagesField | MultiTextField;
 type UnionField =
   | ArrayField
   | TextField
+  | TimeField
   | NumberField
   | OauthField
   | FlagField
@@ -94,7 +102,7 @@ type FieldPanel<T extends UnionField, U = Record<string, unknown>> = (
     U
 ) => React.ReactElement;
 
-const useSingleChildValue = <T extends string | number>({
+const useSingleChildValue = <T extends string | number | Date>({
   defaultValue,
   uid: initialUid,
   title,
@@ -270,6 +278,37 @@ const TextPanel: FieldPanel<TextField> = ({
           onChange(e.target.value)
         }
       />
+    </Label>
+  );
+};
+
+const TimePanel: FieldPanel<TimeField> = ({
+  title,
+  uid,
+  parentUid,
+  order,
+  description,
+  defaultValue = startOfDay(new Date()),
+}) => {
+  const { value, onChange } = useSingleChildValue({
+    defaultValue,
+    title,
+    uid,
+    parentUid,
+    order,
+    transform: (s) => {
+      const d = new Date();
+      const [hours, minutes] = s.split(":");
+      d.setHours(Number(hours));
+      d.setMinutes(Number(minutes));
+      return d;
+    },
+  });
+  return (
+    <Label>
+      {title}
+      <Description description={description} />
+      <TimePicker value={value} onChange={onChange} />
     </Label>
   );
 };
@@ -499,6 +538,7 @@ const OauthPanel: FieldPanel<OauthField> = ({
 
 const Panels = {
   text: TextPanel,
+  time: TimePanel,
   number: NumberPanel,
   flag: FlagPanel,
   pages: PagesPanel,

@@ -33,6 +33,7 @@ import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";
 import { toTitle } from "./hooks";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
+import format from "date-fns/format";
 
 type TextField = {
   type: "text";
@@ -109,6 +110,7 @@ const useSingleChildValue = <T extends string | number | Date>({
   parentUid,
   order,
   transform,
+  toStr,
 }: {
   title: string;
   parentUid: string;
@@ -116,6 +118,7 @@ const useSingleChildValue = <T extends string | number | Date>({
   uid?: string;
   defaultValue: T;
   transform: (s: string) => T;
+  toStr: (t: T) => string;
 }): { value: T; onChange: (v: T) => void } => {
   const [uid, setUid] = useState(initialUid);
   const [valueUid, setValueUid] = useState(
@@ -129,12 +132,12 @@ const useSingleChildValue = <T extends string | number | Date>({
       setValue(v);
       if (valueUid) {
         window.roamAlphaAPI.updateBlock({
-          block: { string: `${v}`, uid: valueUid },
+          block: { string: toStr(v), uid: valueUid },
         });
       } else if (uid) {
         const newValueUid = window.roamAlphaAPI.util.generateUID();
         window.roamAlphaAPI.createBlock({
-          block: { string: `${v}`, uid: newValueUid },
+          block: { string: toStr(v), uid: newValueUid },
           location: { order: 0, "parent-uid": uid },
         });
         setValueUid(newValueUid);
@@ -147,7 +150,7 @@ const useSingleChildValue = <T extends string | number | Date>({
         setTimeout(() => setUid(newUid));
         const newValueUid = window.roamAlphaAPI.util.generateUID();
         window.roamAlphaAPI.createBlock({
-          block: { string: `${v}`, uid: newValueUid },
+          block: { string: toStr(v), uid: newValueUid },
           location: { order: 0, "parent-uid": newUid },
         });
         setValueUid(newValueUid);
@@ -267,6 +270,7 @@ const TextPanel: FieldPanel<TextField> = ({
     parentUid,
     order,
     transform: (s) => s,
+    toStr: (s) => s,
   });
   return (
     <Label>
@@ -303,12 +307,13 @@ const TimePanel: FieldPanel<TimeField> = ({
       d.setMinutes(Number(minutes));
       return d;
     },
+    toStr: (v) => format(v, "HH:mm"),
   });
   return (
     <Label>
       {title}
       <Description description={description} />
-      <TimePicker value={value} onChange={onChange} />
+      <TimePicker value={value} onChange={onChange} showArrowButtons />
     </Label>
   );
 };
@@ -328,6 +333,7 @@ const NumberPanel: FieldPanel<NumberField> = ({
     parentUid,
     order,
     transform: parseInt,
+    toStr: (v) => `${v}`,
   });
   return (
     <Label>
@@ -354,6 +360,7 @@ const SelectPanel: FieldPanel<SelectField> = ({
     parentUid,
     order,
     transform: (s) => s,
+    toStr: (s) => s,
   });
   return (
     <Label>

@@ -35,21 +35,24 @@ const PageInput = ({
     [value]
   );
   const inputRef = useRef<HTMLInputElement>(null);
-  const onEnter = useCallback((value) => {
-    if (isOpen) {
-      setValue(value);
-      close();
-    } else if (onConfirm) {
-      onConfirm();
-    }
-  }, [setValue, close, onConfirm, isOpen]);
+  const onEnter = useCallback(
+    (value) => {
+      if (isOpen) {
+        setValue(value);
+        close();
+      } else if (onConfirm) {
+        onConfirm();
+      }
+    },
+    [setValue, close, onConfirm, isOpen]
+  );
   const { activeIndex, onKeyDown } = useArrowKeyDown({
     onEnter,
     results: items,
   });
   return (
     <Popover
-      portalClassName={'roamjs-page-input'}
+      portalClassName={"roamjs-page-input"}
       captureDismiss={true}
       isOpen={isOpen}
       onOpened={open}

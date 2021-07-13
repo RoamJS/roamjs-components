@@ -23,6 +23,7 @@ import {
   getTextByBlockUid,
   getTreeByBlockUid,
   getTreeByPageName,
+  InputTextNode,
   localStorageGet,
   localStorageRemove,
   localStorageSet,
@@ -79,7 +80,15 @@ type SelectField = {
   };
 };
 
-type ArrayField = PagesField | MultiTextField;
+type CustomField = {
+  type: "custom";
+  defaultValue?: InputTextNode[];
+  options: {
+    component: React.FC<{ parentUid: string; uid?: string }>;
+  };
+};
+
+type ArrayField = PagesField | MultiTextField | CustomField;
 type UnionField =
   | ArrayField
   | TextField
@@ -543,6 +552,22 @@ const OauthPanel: FieldPanel<OauthField> = ({
   );
 };
 
+const CustomPanel: FieldPanel<CustomField> = ({
+  description,
+  title,
+  uid,
+  options: { component: Component },
+  parentUid,
+}) => (
+  <>
+    <Label>
+      {title}
+      <Description description={description} />
+    </Label>
+    <Component uid={uid} parentUid={parentUid} />
+  </>
+);
+
 const Panels = {
   text: TextPanel,
   time: TimePanel,
@@ -552,6 +577,7 @@ const Panels = {
   oauth: OauthPanel,
   multitext: MultiTextPanel,
   select: SelectPanel,
+  custom: CustomPanel,
 } as { [UField in UnionField as UField["type"]]: FieldPanel<UField> };
 
 type ConfigTab = {
@@ -726,6 +752,8 @@ const fieldsToChildren = (t: ConfigTab) =>
       children:
         f.type === "flag"
           ? []
+          : f.type === "custom"
+          ? (f.defaultValue || [])
           : f.type === "pages" || f.type === "multitext"
           ? f.defaultValue?.map((v) => ({ text: v }))
           : [{ text: `${f.defaultValue}` }],

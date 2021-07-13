@@ -9,6 +9,7 @@ import {
 import { restOp, toTitle } from "./hooks";
 import randomstring from "randomstring";
 import axios from "axios";
+import Cryptr from "cryptr";
 
 export type ExternalLoginOptions = {
   service: string;
@@ -43,8 +44,9 @@ const ExternalLogin = ({
         const left = window.screenX + (window.innerWidth - width) / 2;
         const top = window.screenY + (window.innerHeight - height) / 2;
         const otp = randomstring.generate(8);
+        const key = randomstring.generate(16);
         const loginWindow = window.open(
-          `${url}&state=${service}_${otp}`,
+          `${url}&state=${service}_${otp}_${key}`,
           `roamjs:${service}:login`,
           `left=${left},top=${top},width=${width},height=${height},status=1`
         );
@@ -115,7 +117,8 @@ const ExternalLogin = ({
             })
             .then((r) => {
               if (r.data.auth) {
-                processAuthData(r.data.auth);
+                const auth = new Cryptr(key).decrypt(r.data.auth);
+                processAuthData(auth);
               } else {
                 intervalListener = window.setTimeout(authInterval, 1000);
               }

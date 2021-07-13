@@ -7,6 +7,8 @@ import {
   localStorageSet,
 } from "roam-client";
 import { restOp, toTitle } from "./hooks";
+import randomstring from "randomstring";
+import axios from "axios";
 
 export type ExternalLoginOptions = {
   service: string;
@@ -40,65 +42,91 @@ const ExternalLogin = ({
         const height = 525;
         const left = window.screenX + (window.innerWidth - width) / 2;
         const top = window.screenY + (window.innerHeight - height) / 2;
+        const otp = randomstring.generate(8);
         const loginWindow = window.open(
-          url,
+          `${url}&state=${service}_${otp}`,
           `roamjs:${service}:login`,
           `left=${left},top=${top},width=${width},height=${height},status=1`
         );
+        let intervalListener = 0;
+        const processAuthData = (data: string) => {
+          loginWindow?.close?.();
+          getAuthData(data)
+            .then((rr) => {
+              const labelUid = window.roamAlphaAPI.util.generateUID();
+              const label = rr.label || "Default Account";
+              const oauthData = JSON.stringify(restOp(rr, ["label"]));
+              const account = {
+                text: label,
+                uid: labelUid,
+                data: oauthData,
+                time: new Date().valueOf(),
+              };
+
+              const existingTree = getTreeByBlockUid(parentUid).children.find(
+                (t) => /oauth/i.test(t.text)
+              );
+              const blockUid =
+                existingTree?.uid ||
+                createBlock({ node: { text: "oauth" }, parentUid });
+              if (useLocal) {
+                const key = `oauth-${service}`;
+                const accounts = JSON.parse(localStorageGet(key) as string);
+                localStorageSet(key, JSON.stringify([...accounts, account]));
+              } else {
+                window.roamAlphaAPI.createBlock({
+                  block: { string: label, uid: labelUid },
+                  location: {
+                    "parent-uid": blockUid,
+                    order: existingTree?.children?.length || 0,
+                  },
+                });
+
+                const valueUid = window.roamAlphaAPI.util.generateUID();
+                const block = {
+                  string: oauthData,
+                  uid: valueUid,
+                };
+                window.roamAlphaAPI.createBlock({
+                  location: { "parent-uid": labelUid, order: 0 },
+                  block,
+                });
+                window.roamAlphaAPI.updateBlock({
+                  block: { open: false, string: "oauth", uid: blockUid },
+                });
+              }
+              onSuccess(account);
+            })
+            .finally(() => {
+              window.removeEventListener("message", messageEventListener);
+              window.clearTimeout(intervalListener);
+            });
+        };
         const messageEventListener = (e: MessageEvent) => {
           if (e.origin === targetOrigin && loginWindow) {
-            loginWindow.close();
-            getAuthData(e.data)
-              .then((rr) => {
-                const labelUid = window.roamAlphaAPI.util.generateUID();
-                const label = rr.label || "Default Account";
-                const oauthData = JSON.stringify(restOp(rr, ["label"]));
-                const account = {
-                  text: label,
-                  uid: labelUid,
-                  data: oauthData,
-                  time: new Date().valueOf(),
-                };
-
-                const existingTree = getTreeByBlockUid(parentUid).children.find(
-                  (t) => /oauth/i.test(t.text)
-                );
-                const blockUid =
-                  existingTree?.uid ||
-                  createBlock({ node: { text: "oauth" }, parentUid });
-                if (useLocal) {
-                  const key = `oauth-${service}`;
-                  const accounts = JSON.parse(localStorageGet(key) as string);
-                  localStorageSet(key, JSON.stringify([...accounts, account]));
-                } else {
-                  window.roamAlphaAPI.createBlock({
-                    block: { string: label, uid: labelUid },
-                    location: {
-                      "parent-uid": blockUid,
-                      order: existingTree?.children?.length || 0,
-                    },
-                  });
-
-                  const valueUid = window.roamAlphaAPI.util.generateUID();
-                  const block = {
-                    string: oauthData,
-                    uid: valueUid,
-                  };
-                  window.roamAlphaAPI.createBlock({
-                    location: { "parent-uid": labelUid, order: 0 },
-                    block,
-                  });
-                  window.roamAlphaAPI.updateBlock({
-                    block: { open: false, string: "oauth", uid: blockUid },
-                  });
-                }
-                onSuccess(account);
-              })
-              .finally(() =>
-                window.removeEventListener("message", messageEventListener)
-              );
+            processAuthData(e.data);
           }
         };
+        const authInterval = () => {
+          axios
+            .post(`https://lambda.roamjs.com/auth`, {
+              service,
+              otp,
+            })
+            .then((r) => {
+              if (r.data.auth) {
+                processAuthData(r.data.auth);
+              } else {
+                intervalListener = window.setTimeout(authInterval, 1000);
+              }
+            })
+            .catch((e) => {
+              if (e.response?.status !== 400) {
+                intervalListener = window.setTimeout(authInterval, 1000);
+              }
+            });
+        };
+        authInterval();
         window.addEventListener("message", messageEventListener);
       })
       .catch((e) => setError(e.message))

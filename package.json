@@ -28,6 +28,8 @@
     "@blueprintjs/core": "^3.42.0",
     "@blueprintjs/datetime": "^3.23.5",
     "@blueprintjs/select": "^3.16.0",
+    "axios": "^0.21.1",
+    "randomstring": "^1.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "roam-client": "^1.71.0"
@@ -38,6 +40,7 @@
     "@testing-library/user-event": "^13.1.9",
     "@types/jest": "^26.0.23",
     "@types/marked": "^2.0.3",
+    "@types/randomstring": "^1.1.7",
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.6",
     "@typescript-eslint/eslint-plugin": "^4.26.1",

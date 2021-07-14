@@ -702,7 +702,7 @@ const ConfigPage = ({
   id: string;
   config: Config;
 }): React.ReactElement => {
-  const userTabs = config.tabs.filter((t) => t.fields.length);
+  const userTabs = config.tabs.filter((t) => t.fields.length || t.toggleable);
   const [selectedTabId, setSelectedTabId] = useState(userTabs[0]?.id);
   const onTabsChange = useCallback(
     (tabId: string) => setSelectedTabId(tabId),

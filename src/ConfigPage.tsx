@@ -711,7 +711,7 @@ const ConfigPage = ({
   const pageUid = getPageUidByPageTitle(`roam/js/${id}`);
   const tree = getTreeByPageName(`roam/js/${id}`);
   return (
-    <Card>
+    <Card style={{ color: "#202B33" }}>
       <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>
       <Tabs
         vertical
@@ -765,8 +765,9 @@ export const createConfigObserver = ({
 }: {
   title: string;
   config: Config;
-}): void => {
-  if (!getPageUidByPageTitle(title)) {
+}): { pageUid: string } => {
+  const pageUid =
+    getPageUidByPageTitle(title) ||
     createPage({
       title,
       tree: [
@@ -783,7 +784,6 @@ export const createConfigObserver = ({
           })),
       ],
     });
-  }
   if (config.tabs.length) {
     createHTMLObserver({
       className: "rm-title-display",
@@ -811,6 +811,9 @@ export const createConfigObserver = ({
       },
     });
   }
+  return {
+    pageUid,
+  };
 };
 
 export default ConfigPage;

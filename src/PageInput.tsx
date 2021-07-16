@@ -53,6 +53,7 @@ const PageInput = ({
   return (
     <Popover
       portalClassName={"roamjs-page-input"}
+      targetClassName={"roamjs-page-input-target"}
       captureDismiss={true}
       isOpen={isOpen}
       onOpened={open}

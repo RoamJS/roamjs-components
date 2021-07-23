@@ -673,7 +673,6 @@ const FieldTabs = ({
             key={title}
             title={title}
             disabled={!enabled}
-            style={{ width: "100%" }}
             panel={
               <Panel
                 {...field}
@@ -712,7 +711,12 @@ const ConfigPage = ({
   const pageUid = getPageUidByPageTitle(`roam/js/${id}`);
   const tree = getTreeByPageName(`roam/js/${id}`);
   return (
-    <Card style={{ color: "#202B33" }}>
+    <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
+      <style>
+        {`.roamjs-config-panel .bp3-tab-panel {
+  width: 100;
+}`}
+      </style>
       <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>
       <Tabs
         vertical
@@ -725,7 +729,6 @@ const ConfigPage = ({
             id={tabId}
             key={tabId}
             title={tabId}
-            style={{ width: "100%" }}
             panel={
               <FieldTabs
                 id={tabId}

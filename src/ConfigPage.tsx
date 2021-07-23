@@ -714,7 +714,7 @@ const ConfigPage = ({
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
       <style>
         {`.roamjs-config-panel .bp3-tab-panel {
-  width: 100;
+  width: 100%;
 }`}
       </style>
       <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>

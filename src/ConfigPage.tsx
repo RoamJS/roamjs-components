@@ -673,7 +673,7 @@ const FieldTabs = ({
             key={title}
             title={title}
             disabled={!enabled}
-            style={{width: '100%'}}
+            style={{ width: "100%" }}
             panel={
               <Panel
                 {...field}
@@ -725,7 +725,7 @@ const ConfigPage = ({
             id={tabId}
             key={tabId}
             title={tabId}
-            style={{width: '100%'}}
+            style={{ width: "100%" }}
             panel={
               <FieldTabs
                 id={tabId}

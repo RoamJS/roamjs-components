@@ -22,11 +22,7 @@ const Toast = ({
       <BPToast
         intent={intent}
         onDismiss={onClose}
-        message={
-          <Markdown>
-            {content}
-          </Markdown>
-        }
+        message={<Markdown>{content}</Markdown>}
         timeout={timeout}
       />
     </Toaster>

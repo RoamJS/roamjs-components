@@ -52,6 +52,7 @@ export {
   default as SimpleAlert,
   render as renderSimpleAlert,
 } from "./SimpleAlert";
+export { default as Toast, render as renderToast } from "./Toast";
 export {
   default as WarningToast,
   render as renderWarningToast,

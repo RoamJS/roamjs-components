@@ -1,9 +1,10 @@
 import React from "react";
 import { createOverlayRender } from "./hooks";
 import { Intent, Position, Toast as BPToast, Toaster } from "@blueprintjs/core";
+import Markdown from "markdown-to-jsx";
 
 type ToastProps = {
-  content?: React.ReactNode;
+  content?: string;
   timeout?: number;
   intent?: Intent;
 };
@@ -21,7 +22,11 @@ const Toast = ({
       <BPToast
         intent={intent}
         onDismiss={onClose}
-        message={content}
+        message={
+          <Markdown>
+            {content}
+          </Markdown>
+        }
         timeout={timeout}
       />
     </Toaster>

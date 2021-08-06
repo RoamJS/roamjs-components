@@ -10,9 +10,10 @@ import {
   Tabs,
 } from "@blueprintjs/core";
 import { TimePicker } from "@blueprintjs/datetime";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import {
+  addOldRoamJSDependency,
   createBlock,
   createHTMLObserver,
   createPage,
@@ -35,6 +36,7 @@ import { toTitle } from "./hooks";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
+import axios from "axios";
 
 type TextField = {
   type: "text";
@@ -588,6 +590,7 @@ type ConfigTab = {
 
 type Config = {
   tabs: ConfigTab[];
+  versioning?: boolean;
 };
 
 const FieldTabs = ({
@@ -710,6 +713,31 @@ const ConfigPage = ({
   );
   const pageUid = getPageUidByPageTitle(`roam/js/${id}`);
   const tree = getTreeByPageName(`roam/js/${id}`);
+  const [currentVersion, setCurrentVersion] = useState("");
+  useEffect(() => {
+    if (config.versioning) {
+      addOldRoamJSDependency("versioning");
+      const scriptVersionMatch =
+        document.currentScript &&
+        (document.currentScript as HTMLScriptElement).src.match(
+          new RegExp(
+            `${id}\\/(\\d\\d\\d\\d-\\d\\d-\\d\\d-\\d\\d-\\d\\d)\\/main.js/`
+          )
+        );
+      if (scriptVersionMatch) {
+        setCurrentVersion(scriptVersionMatch[1]);
+      } else {
+        axios
+          .get("https://api.roamjs.com/versions?limit=1&id=roam42")
+          .then(({ data: { versions } }) => {
+            setCurrentVersion(versions[0] || "Version Not Found");
+          })
+          .catch(() => {
+            setCurrentVersion("Version Not Found");
+          });
+      }
+    }
+  }, [config.versioning, id, setCurrentVersion]);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
       <style>
@@ -717,7 +745,27 @@ const ConfigPage = ({
   width: 100%;
 }`}
       </style>
-      <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>
+        {currentVersion && (
+          <span>
+            <span style={{ color: "#cccccc", fontSize: 8 }}>
+              {currentVersion}
+            </span>
+            <Button
+              icon={"git-branch"}
+              minimal
+              onClick={() =>
+                window.roamjs?.extension.versioning.switch({
+                  id,
+                  currentVersion,
+                })
+              }
+              style={{ marginRight: 4 }}
+            />
+          </span>
+        )}
+      </div>
       <Tabs
         vertical
         id={`${id}-config-tabs`}

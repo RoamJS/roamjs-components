@@ -728,7 +728,7 @@ const ConfigPage = ({
         setCurrentVersion(scriptVersionMatch[1]);
       } else {
         axios
-          .get("https://api.roamjs.com/versions?limit=1&id=roam42")
+          .get(`https://api.roamjs.com/versions?limit=1&id=${id}`)
           .then(({ data: { versions } }) => {
             setCurrentVersion(versions[0] || "Version Not Found");
           })
@@ -750,7 +750,7 @@ const ConfigPage = ({
         {currentVersion && (
           <span>
             <span style={{ color: "#cccccc", fontSize: 8 }}>
-              {currentVersion}
+              v{currentVersion}
             </span>
             <Button
               icon={"git-branch"}
@@ -761,7 +761,7 @@ const ConfigPage = ({
                   currentVersion,
                 })
               }
-              style={{ marginRight: 4 }}
+              style={{ marginLeft: 4 }}
             />
           </span>
         )}

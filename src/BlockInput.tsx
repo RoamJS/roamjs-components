@@ -6,35 +6,32 @@ import {
   InputGroup,
 } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { getAllPageNames } from "roam-client";
+import { getAllBlockUidsAndTexts } from "roam-client";
 import { useArrowKeyDown } from "./hooks";
 
-const searchPagesByString = (q: string, pages: string[]) =>
-  pages.filter((a) => a.toLowerCase().includes(q.toLowerCase())).slice(0, 9);
+const searchBlocksByString = (q:string, blocks: {text:string; uid: string}[]) => {
+  const regex = new RegExp(q, "i");
+  return blocks.filter((a) => regex.test(a.text)).slice(0, 9);
+};
 
-const PageInput = ({
+const BlockInput = ({
   value,
   setValue,
   onBlur,
   onConfirm,
-  extra = [],
 }: {
   value: string;
   setValue: (q: string) => void;
   onBlur?: (v: string) => void;
   onConfirm?: () => void;
-  extra?: string[];
 }): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
-  const allPages = useMemo(
-    () => [...getAllPageNames(), ...extra].map((p) => p.toLowerCase()),
-    [extra]
-  );
+  const allBlocks = useMemo(getAllBlockUidsAndTexts, []);
   const items = useMemo(
-    () => (value && isOpen ? searchPagesByString(value, allPages) : []),
-    [value, allPages]
+    () => (value && isOpen ? searchBlocksByString(value, allBlocks) : []),
+    [value, allBlocks]
   );
   const inputRef = useRef<HTMLInputElement>(null);
   const onEnter = useCallback(
@@ -54,8 +51,8 @@ const PageInput = ({
   });
   return (
     <Popover
-      portalClassName={"roamjs-page-input"}
-      targetClassName={"roamjs-page-input-target"}
+      portalClassName={"roamjs-block-input"}
+      targetClassName={"roamjs-block-input-target"}
       captureDismiss={true}
       isOpen={isOpen}
       onOpened={open}
@@ -65,12 +62,12 @@ const PageInput = ({
         <Menu style={{ maxWidth: 400 }}>
           {items.map((t, i) => (
             <MenuItem
-              text={t}
+              text={t.uid}
               active={activeIndex === i}
               key={i}
               multiline
               onClick={() => {
-                setValue(items[i]);
+                setValue(items[i].text);
                 close();
                 inputRef.current?.focus();
               }}
@@ -103,4 +100,4 @@ const PageInput = ({
   );
 };
 
-export default PageInput;
+export default BlockInput;

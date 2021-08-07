@@ -13,6 +13,7 @@ export {
   toTitle as idToTitle,
 } from "./hooks";
 
+export { default as BlockInput } from "./BlockInput";
 export { default as BlockErrorBoundary } from "./BlockErrorBoundary";
 export {
   default as ComponentContainer,

@@ -9,7 +9,10 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { getAllBlockUidsAndTexts } from "roam-client";
 import { useArrowKeyDown } from "./hooks";
 
-const searchBlocksByString = (q:string, blocks: {text:string; uid: string}[]) => {
+const searchBlocksByString = (
+  q: string,
+  blocks: { text: string; uid: string }[]
+) => {
   const regex = new RegExp(q, "i");
   return blocks.filter((a) => regex.test(a.text)).slice(0, 9);
 };

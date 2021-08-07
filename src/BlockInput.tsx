@@ -50,7 +50,7 @@ const BlockInput = ({
   );
   const { activeIndex, onKeyDown } = useArrowKeyDown({
     onEnter,
-    results: items.map(t => t.text),
+    results: items.map((t) => t.text),
   });
   return (
     <Popover

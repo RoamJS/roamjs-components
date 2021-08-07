@@ -65,12 +65,12 @@ const BlockInput = ({
         <Menu style={{ maxWidth: 400 }}>
           {items.map((t, i) => (
             <MenuItem
-              text={t.uid}
+              text={t.text}
               active={activeIndex === i}
-              key={i}
+              key={t.uid}
               multiline
               onClick={() => {
-                setValue(items[i].text);
+                setValue(t.text);
                 close();
                 inputRef.current?.focus();
               }}

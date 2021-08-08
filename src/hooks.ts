@@ -53,12 +53,13 @@ export const useArrowKeyDown = <T>({
           setActiveIndex((activeIndex + results.length - 1) % results.length);
           e.preventDefault();
           e.stopPropagation();
-        } else if (e.key === "Enter") {
-          onEnter(results[activeIndex]);
-          setActiveIndex(0);
-          e.preventDefault();
-          e.stopPropagation();
         }
+      }
+      if (e.key === "Enter") {
+        onEnter(results[activeIndex]);
+        setActiveIndex(0);
+        e.preventDefault();
+        e.stopPropagation();
       }
     },
     [activeIndex, setActiveIndex, results, onEnter]

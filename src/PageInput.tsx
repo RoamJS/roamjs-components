@@ -4,6 +4,7 @@ import {
   Menu,
   MenuItem,
   InputGroup,
+  Button,
 } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { getAllPageNames } from "roam-client";
@@ -17,10 +18,12 @@ const PageInput = ({
   setValue,
   onBlur,
   onConfirm,
+  showButton,
   extra = [],
 }: {
   value: string;
   setValue: (q: string) => void;
+  showButton?: boolean;
   onBlur?: (v: string) => void;
   onConfirm?: () => void;
   extra?: string[];
@@ -97,6 +100,11 @@ const PageInput = ({
             }
           }}
           inputRef={inputRef}
+          {...(showButton
+            ? {
+                rightElement: <Button icon={"add"} minimal onClick={onEnter} />,
+              }
+            : {})}
         />
       }
     />

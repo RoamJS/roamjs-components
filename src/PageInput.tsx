@@ -9,9 +9,7 @@ import {
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { getAllPageNames } from "roam-client";
 import { useArrowKeyDown } from "./hooks";
-
-const searchPagesByString = (q: string, pages: string[]) =>
-  pages.filter((a) => a.toLowerCase().includes(q.toLowerCase())).slice(0, 9);
+import fuzzy from "fuzzy";
 
 const PageInput = ({
   value,
@@ -36,7 +34,13 @@ const PageInput = ({
     [extra]
   );
   const items = useMemo(
-    () => (value && isOpen ? searchPagesByString(value, allPages) : []),
+    () =>
+      value && isOpen
+        ? fuzzy
+            .filter(value, allPages)
+            .slice(0, 9)
+            .map((e) => e.string)
+        : [],
     [value, allPages]
   );
   const inputRef = useRef<HTMLInputElement>(null);

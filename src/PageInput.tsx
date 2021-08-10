@@ -29,10 +29,7 @@ const PageInput = ({
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
-  const allPages = useMemo(
-    () => [...getAllPageNames(), ...extra].map((p) => p.toLowerCase()),
-    [extra]
-  );
+  const allPages = useMemo(() => [...getAllPageNames(), ...extra], [extra]);
   const items = useMemo(
     () =>
       value && isOpen

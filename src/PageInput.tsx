@@ -11,13 +11,15 @@ import { getAllPageNames } from "roam-client";
 import { useArrowKeyDown } from "./hooks";
 import fuzzy from "fuzzy";
 
+const DEFAULT_EXTRA: string[] = [];
+
 const PageInput = ({
   value,
   setValue,
   onBlur,
   onConfirm,
   showButton,
-  extra = [],
+  extra = DEFAULT_EXTRA,
 }: {
   value: string;
   setValue: (q: string) => void;

@@ -24,7 +24,7 @@ const BlockInput = ({
   onConfirm,
 }: {
   value: string;
-  setValue: (q: string) => void;
+  setValue: (q: string, uid?: string) => void;
   onBlur?: (v: string) => void;
   onConfirm?: () => void;
 }): React.ReactElement => {
@@ -70,7 +70,7 @@ const BlockInput = ({
               key={t.uid}
               multiline
               onClick={() => {
-                setValue(t.text);
+                setValue(t.text, t.uid);
                 close();
                 inputRef.current?.focus();
               }}

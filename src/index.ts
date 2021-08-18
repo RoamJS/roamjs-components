@@ -11,6 +11,7 @@ export {
   setInputSettings,
   toFlexRegex,
   toTitle as idToTitle,
+  useArrowKeyDown,
 } from "./hooks";
 
 export { default as BlockInput } from "./BlockInput";

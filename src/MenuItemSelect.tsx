@@ -5,7 +5,7 @@ import React, { ReactText } from "react";
 const MenuItemSelect = <T extends ReactText>(
   props: Omit<SelectProps<T>, "itemRenderer"> & {
     ButtonProps?: IButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
-  } & { emptyValueText?: string }
+  } & { emptyValueText?: string; transformItem?: (s: T) => T }
 ): JSX.Element => {
   const TypeSelect = Select.ofType<T>();
   return (
@@ -14,7 +14,7 @@ const MenuItemSelect = <T extends ReactText>(
       itemRenderer={(item, { modifiers, handleClick }) => (
         <MenuItem
           key={item}
-          text={item}
+          text={props.transformItem ? props.transformItem(item) : item}
           active={modifiers.active}
           onClick={handleClick}
         />

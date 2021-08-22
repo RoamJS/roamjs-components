@@ -16,7 +16,7 @@ const ComponentContainer: React.FunctionComponent<{
       className={className}
       onMouseOver={appear}
       onMouseLeave={disappear}
-      style={{ position: "relative" }}
+      style={{ position: "relative", width: 'fit-content', minWidth: 300 }}
     >
       {showIcons && (
         <div style={{ position: "absolute", top: 8, right: 8, zIndex: 1000 }}>

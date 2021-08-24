@@ -102,6 +102,7 @@ const ExternalLogin = ({
             .finally(() => {
               window.removeEventListener("message", messageEventListener);
               window.clearTimeout(intervalListener);
+              setLoading(false);
             });
         };
         const messageEventListener = (e: MessageEvent) => {
@@ -132,8 +133,7 @@ const ExternalLogin = ({
         authInterval();
         window.addEventListener("message", messageEventListener);
       })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      .catch((e) => setError(e.message));
   }, [onSuccess, parentUid, setLoading, setError]);
   return (
     <>

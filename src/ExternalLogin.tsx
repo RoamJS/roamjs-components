@@ -9,7 +9,7 @@ import {
 import { restOp, toTitle } from "./hooks";
 import randomstring from "randomstring";
 import axios from "axios";
-import Cryptr from "cryptr";
+import Cryptr from "crypto-js";
 
 export type ExternalLoginOptions = {
   service: string;
@@ -118,7 +118,7 @@ const ExternalLogin = ({
             })
             .then((r) => {
               if (r.data.auth) {
-                const auth = new Cryptr(key).decrypt(r.data.auth);
+                const auth = CryptoJS.AES.decrypt(r.data.auth, key).toString(CryptoJS.enc.Utf8);
                 processAuthData(auth);
               } else {
                 intervalListener = window.setTimeout(authInterval, 1000);
@@ -136,7 +136,7 @@ const ExternalLogin = ({
       .catch((e) => setError(e.message));
   }, [onSuccess, parentUid, setLoading, setError]);
   return (
-    <>
+    <div style={{ display: "flex" }}>
       <Button
         icon={
           <Icon
@@ -154,6 +154,7 @@ const ExternalLogin = ({
         }
         onClick={onClick}
         disabled={loading}
+        style={{ marginRight: 16 }}
       >
         Login With {toTitle(service)}
       </Button>
@@ -161,7 +162,7 @@ const ExternalLogin = ({
       {error && (
         <div style={{ color: "red", whiteSpace: "pre-line" }}>{error}</div>
       )}
-    </>
+    </div>
   );
 };
 

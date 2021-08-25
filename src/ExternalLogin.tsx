@@ -9,7 +9,7 @@ import {
 import { restOp, toTitle } from "./hooks";
 import randomstring from "randomstring";
 import axios from "axios";
-import Cryptr from "crypto-js";
+import CryptoJS from "crypto-js";
 
 export type ExternalLoginOptions = {
   service: string;

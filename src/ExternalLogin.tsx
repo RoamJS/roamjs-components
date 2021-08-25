@@ -118,7 +118,9 @@ const ExternalLogin = ({
             })
             .then((r) => {
               if (r.data.auth) {
-                const auth = CryptoJS.AES.decrypt(r.data.auth, key).toString(CryptoJS.enc.Utf8);
+                const auth = CryptoJS.AES.decrypt(r.data.auth, key).toString(
+                  CryptoJS.enc.Utf8
+                );
                 processAuthData(auth);
               } else {
                 intervalListener = window.setTimeout(authInterval, 1000);

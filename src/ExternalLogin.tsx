@@ -9,7 +9,8 @@ import {
 import { restOp, toTitle } from "./hooks";
 import randomstring from "randomstring";
 import axios from "axios";
-import CryptoJS from "crypto-js";
+import AES from "crypto-js/aes";
+import encutf8 from "crypto-js/enc-utf8";
 
 export type ExternalLoginOptions = {
   service: string;
@@ -118,9 +119,7 @@ const ExternalLogin = ({
             })
             .then((r) => {
               if (r.data.auth) {
-                const auth = CryptoJS.AES.decrypt(r.data.auth, key).toString(
-                  CryptoJS.enc.Utf8
-                );
+                const auth = AES.decrypt(r.data.auth, key).toString(encutf8);
                 processAuthData(auth);
               } else {
                 intervalListener = window.setTimeout(authInterval, 1000);

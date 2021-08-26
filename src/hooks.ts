@@ -10,7 +10,6 @@ import {
   getTreeByBlockUid,
   InputTextNode,
   localStorageGet,
-  TextNode,
   toConfig,
 } from "roam-client";
 

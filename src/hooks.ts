@@ -8,6 +8,7 @@ import {
   getPageUidByPageTitle,
   getShallowTreeByParentUid,
   getTreeByBlockUid,
+  InputTextNode,
   localStorageGet,
   TextNode,
   toConfig,
@@ -70,10 +71,14 @@ export const useArrowKeyDown = <T>({
   };
 };
 
+export type RoamOverlayProps<T extends Record<string, unknown>> = {
+  onClose: () => void;
+} & T;
+
 export const createOverlayRender =
   <T extends Record<string, unknown>>(
     id: string,
-    Overlay: (props: { onClose: () => void } & T) => React.ReactElement
+    Overlay: (props: RoamOverlayProps<T>) => React.ReactElement
   ) =>
   (props: T): void => {
     const parent = getRenderRoot(id);
@@ -105,12 +110,14 @@ export const getSettingValueFromTree = ({
   key,
   defaultValue = "",
 }: {
-  tree: TextNode[];
+  tree: InputTextNode[];
   key: string;
   defaultValue?: string;
 }): string => {
   const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
-  const value = node ? node.children[0].text.trim() : defaultValue;
+  const value = node?.children?.[0]
+    ? node?.children?.[0].text.trim()
+    : defaultValue;
   return value;
 };
 
@@ -119,7 +126,7 @@ export const getSettingIntFromTree = ({
   key,
   defaultValue = 0,
 }: {
-  tree: TextNode[];
+  tree: InputTextNode[];
   key: string;
   defaultValue?: number;
 }): number => {
@@ -133,12 +140,12 @@ export const getSettingValuesFromTree = ({
   key,
   defaultValue = [],
 }: {
-  tree: TextNode[];
+  tree: InputTextNode[];
   key: string;
   defaultValue?: string[];
 }): string[] => {
   const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
-  const value = node ? node.children.map((t) => t.text.trim()) : defaultValue;
+  const value = node?.children ? node.children.map((t) => t.text.trim()) : defaultValue;
   return value;
 };
 

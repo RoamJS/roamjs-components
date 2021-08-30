@@ -11,6 +11,7 @@ import {
   InputTextNode,
   localStorageGet,
   toConfig,
+  RoamBasicNode,
 } from "roam-client";
 
 // getting a  __rest is not a function error. Not sure why
@@ -144,9 +145,24 @@ export const getSettingValuesFromTree = ({
   defaultValue?: string[];
 }): string[] => {
   const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
-  const value = node?.children ? node.children.map((t) => t.text.trim()) : defaultValue;
+  const value = node?.children
+    ? node.children.map((t) => t.text.trim())
+    : defaultValue;
   return value;
 };
+
+export const getSubTree = ({
+  tree,
+  key,
+}: {
+  tree: RoamBasicNode[];
+  key: string;
+}): RoamBasicNode =>
+  tree.find((s) => toFlexRegex(key).test(s.text.trim())) || {
+    text: "",
+    uid: "",
+    children: [],
+  };
 
 export const getOauthAccounts = (service: string): string[] => {
   const fromStorage = localStorageGet(`oauth-${service}`);

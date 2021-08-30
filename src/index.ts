@@ -7,6 +7,7 @@ export {
   getSettingIntFromTree,
   getSettingValueFromTree,
   getSettingValuesFromTree,
+  getSubTree,
   setInputSetting,
   setInputSettings,
   toFlexRegex,

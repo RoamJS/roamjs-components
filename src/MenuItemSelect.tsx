@@ -29,7 +29,13 @@ const MenuItemSelect = <T extends ReactText>(
       <Button
         {...props.ButtonProps}
         text={
-          props.activeItem || (
+          props.activeItem ? (
+            props.transformItem ? (
+              props.transformItem(props.activeItem as T)
+            ) : (
+              props.activeItem
+            )
+          ) : (
             <i style={{ opacity: 0.5 }}>
               {props.emptyValueText || "Choose..."}
             </i>

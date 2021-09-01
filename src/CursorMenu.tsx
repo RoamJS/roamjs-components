@@ -133,7 +133,7 @@ const CursorMenu = <T extends Record<string, string>>({
   const onSelect = useCallback(
     (item) => {
       if (menuRef.current) {
-        onItemSelect({ item, menu: menuRef.current, textarea });
+        onItemSelect(item);
         onClose();
       }
     },

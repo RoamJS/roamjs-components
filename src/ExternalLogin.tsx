@@ -14,7 +14,7 @@ import encutf8 from "crypto-js/enc-utf8";
 
 export type ExternalLoginOptions = {
   service: string;
-  getPopoutUrl: () => Promise<string>;
+  getPopoutUrl: (state: string) => Promise<string>;
   getAuthData: (d: string) => Promise<Record<string, string>>;
   ServiceIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
 };
@@ -37,17 +37,18 @@ const ExternalLogin = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const onClick = useCallback(() => {
+    const otp = randomstring.generate(8);
+    const key = randomstring.generate(16);
+    const state = `${service}_${otp}_${key}`;
     setLoading(true);
-    getPopoutUrl()
+    getPopoutUrl(state)
       .then((url) => {
         const width = 600;
         const height = 525;
         const left = window.screenX + (window.innerWidth - width) / 2;
         const top = window.screenY + (window.innerHeight - height) / 2;
-        const otp = randomstring.generate(8);
-        const key = randomstring.generate(16);
         const loginWindow = window.open(
-          `${url}&state=${service}_${otp}_${key}`,
+          `${url}&state=${state}`,
           `roamjs:${service}:login`,
           `left=${left},top=${top},width=${width},height=${height},status=1`
         );

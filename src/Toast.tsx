@@ -1,6 +1,11 @@
 import React from "react";
 import { createOverlayRender } from "./hooks";
-import { Intent, Toast as BPToast, Toaster, ToasterPosition } from "@blueprintjs/core";
+import {
+  Intent,
+  Toast as BPToast,
+  Toaster,
+  ToasterPosition,
+} from "@blueprintjs/core";
 import Markdown from "markdown-to-jsx";
 
 type ToastProps = {
@@ -14,7 +19,7 @@ const Toast = ({
   content = "RoamJS Toast",
   timeout,
   intent = Intent.PRIMARY,
-  position = 'top',
+  position = "top",
   onClose,
 }: {
   onClose: () => void;

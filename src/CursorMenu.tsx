@@ -1,6 +1,13 @@
 import { Menu, MenuItem, Popover, Position } from "@blueprintjs/core";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import ReactDOM from "react-dom";
+import fuzzy from "fuzzy";
 
 // inspired by https://github.com/zurb/tribute/blob/master/src/TributeRange.js#L446-L556
 export const getCoordsFromTextarea = (
@@ -82,29 +89,51 @@ export const getCoordsFromTextarea = (
   return coordinates;
 };
 
-type Props = {
+type Props<T> = {
   textarea: HTMLTextAreaElement;
   onItemSelect: (args: {
-    index: number;
+    item: { text: string; id: string } & T;
     menu: HTMLUListElement;
     textarea: HTMLTextAreaElement;
   }) => void;
+  initialItems: ({ text: string; id: string } & T)[];
 };
 
-const CursorMenu = ({
+const VALID_FILTER = /^[\w\d\s_-]$/;
+
+const CursorMenu = <T extends Record<string, string>>({
   textarea,
   onClose,
   onItemSelect,
+  initialItems,
 }: {
   onClose: () => void;
-} & Props): React.ReactElement => {
+} & Props<T>): React.ReactElement => {
+  const itemsById = useMemo(
+    () => Object.fromEntries(initialItems.map((item) => [item.id, item])),
+    [initialItems]
+  );
   const menuRef = useRef<HTMLUListElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [items] = useState<{ text: string; id: string }[]>([]);
+  const [filter, setFilter] = useState("");
+  const items = useMemo(
+    () =>
+      (filter
+        ? fuzzy
+            .filter(filter, initialItems, {
+              extract: (s) => s.name,
+              pre: "<b>",
+              post: "</b>",
+            })
+            .map((r) => ({ ...r.original, displayName: r.string }))
+        : initialItems.map((r) => ({ ...r, displayName: r.name }))
+      ).slice(0, 10),
+    [filter, initialItems]
+  );
   const onSelect = useCallback(
-    (index) => {
+    (item) => {
       if (menuRef.current) {
-        onItemSelect({ index, menu: menuRef.current, textarea });
+        onItemSelect({ item, menu: menuRef.current, textarea });
         onClose();
       }
     },
@@ -128,8 +157,23 @@ const CursorMenu = ({
         setActiveIndex((index - 1 + count) % count);
       } else if (menuRef.current && e.key === "Enter") {
         const index = Number(menuRef.current.getAttribute("data-active-index"));
-        onSelect(index);
-      } else {
+        const id =
+          menuRef.current.children[index]
+            .querySelector(".bp3-menu-item")
+            ?.getAttribute("data-id") || "";
+        onSelect(itemsById[id]);
+      } else if (menuRef.current && VALID_FILTER.test(e.key)) {
+        const value = menuRef.current.getAttribute("data-filter");
+        setFilter(`${value}${e.key}`);
+      } else if (menuRef.current && e.key === "Backspace") {
+        const value = menuRef.current.getAttribute("data-filter");
+        if (value) {
+          setFilter(value.slice(0, -1));
+        } else {
+          onClose();
+          return;
+        }
+      } else if (e.key !== "Shift") {
         onClose();
         return;
       }
@@ -156,6 +200,7 @@ const CursorMenu = ({
         <Menu
           ulRef={menuRef}
           data-active-index={activeIndex}
+          data-filter={filter}
           style={{ width: 300 }}
         >
           {items.length ? (
@@ -163,7 +208,7 @@ const CursorMenu = ({
               return (
                 <MenuItem
                   key={id}
-                  data-uid={id}
+                  data-id={id}
                   text={text}
                   active={i === activeIndex}
                   onMouseEnter={() => setActiveIndex(i)}
@@ -188,7 +233,9 @@ const CursorMenu = ({
   );
 };
 
-export const render = (props: Props): void => {
+export const render = <T extends Record<string, string>>(
+  props: Props<T>
+): void => {
   const parent = document.createElement("span");
   const coords = getCoordsFromTextarea(props.textarea);
   parent.style.position = "absolute";

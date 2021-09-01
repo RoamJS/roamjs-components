@@ -117,12 +117,12 @@ const CursorMenu = <T extends Record<string, string>>({
       (filter
         ? fuzzy
             .filter(filter, initialItems, {
-              extract: (s) => s.name,
+              extract: (s) => s.text,
               pre: "<b>",
               post: "</b>",
             })
             .map((r) => ({ ...r.original, displayName: r.string }))
-        : initialItems.map((r) => ({ ...r, displayName: r.name }))
+        : initialItems.map((r) => ({ ...r, displayName: r.text }))
       ).slice(0, 10),
     [filter, initialItems]
   );

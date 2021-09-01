@@ -91,11 +91,7 @@ export const getCoordsFromTextarea = (
 
 type Props<T> = {
   textarea: HTMLTextAreaElement;
-  onItemSelect: (args: {
-    item: { text: string; id: string } & T;
-    menu: HTMLUListElement;
-    textarea: HTMLTextAreaElement;
-  }) => void;
+  onItemSelect: (item: { text: string; id: string } & T) => void;
   initialItems: ({ text: string; id: string } & T)[];
 };
 

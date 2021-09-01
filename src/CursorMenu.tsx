@@ -205,7 +205,15 @@ const CursorMenu = <T extends Record<string, string>>({
                 <MenuItem
                   key={id}
                   data-id={id}
-                  text={displayName}
+                  text={displayName
+                    .split(/<b>(.*?)<\/b>/)
+                    .map((part, i) =>
+                      i % 2 === 1 ? (
+                        <b key={i}>{part}</b>
+                      ) : (
+                        <span key={i}>{part}</span>
+                      )
+                    )}
                   active={i === activeIndex}
                   onMouseEnter={() => setActiveIndex(i)}
                   onClick={() => onSelect(i)}

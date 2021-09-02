@@ -27,7 +27,6 @@ const MenuItemSelect = <T extends ReactText>(
       }}
     >
       <Button
-        {...props.ButtonProps}
         text={
           props.activeItem ? (
             props.transformItem ? (
@@ -42,6 +41,7 @@ const MenuItemSelect = <T extends ReactText>(
           )
         }
         rightIcon="double-caret-vertical"
+        {...props.ButtonProps}
       />
     </TypeSelect>
   );

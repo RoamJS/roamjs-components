@@ -29,6 +29,7 @@ export {
 } from "./CursorMenu";
 export { default as Description } from "./Description";
 export { default as MenuItemSelect } from "./MenuItemSelect";
+export { useOauthAccounts } from './OauthSelect';
 export { default as PageInput } from "./PageInput";
 export {
   TOKEN_STAGE as SERVICE_TOKEN_STAGE,

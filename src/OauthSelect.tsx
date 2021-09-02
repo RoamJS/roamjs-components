@@ -4,7 +4,9 @@ import { getTreeByPageName } from "roam-client";
 import { toFlexRegex } from "../entry-helpers";
 import { MenuItemSelect } from "roamjs-components";
 
-export const useOauthAccounts = (id:string): {
+export const useOauthAccounts = (
+  id: string
+): {
   accountDropdown: React.ReactElement;
   accountLabel: string;
 } => {

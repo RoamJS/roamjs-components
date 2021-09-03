@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useCallback, useState } from "react";
 import ReactDOM from "react-dom";
 import {
@@ -154,15 +154,33 @@ export const getSettingValuesFromTree = ({
 export const getSubTree = ({
   tree,
   key,
+  parentUid,
+  order = 0,
 }: {
   tree: RoamBasicNode[];
   key: string;
+  parentUid?: string;
+  order?: number;
 }): RoamBasicNode =>
   tree.find((s) => toFlexRegex(key).test(s.text.trim())) || {
     text: "",
-    uid: "",
+    uid: parentUid
+      ? createBlock({ node: { text: key }, parentUid, order })
+      : "",
     children: [],
   };
+
+export const useSubTree = (
+  props: Parameters<typeof getSubTree>[0]
+): ReturnType<typeof getSubTree> =>
+  useMemo(
+    () => getSubTree(props),
+    [
+      ...Object.entries(props)
+        .filter(([key]) => key === "tree" || key === "parentUid")
+        .map(([, v]) => v),
+    ]
+  );
 
 export const getOauthAccounts = (service: string): string[] => {
   const fromStorage = localStorageGet(`oauth-${service}`);

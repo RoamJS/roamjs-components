@@ -13,6 +13,7 @@ export {
   toFlexRegex,
   toTitle as idToTitle,
   useArrowKeyDown,
+  useSubTree,
 } from "./hooks";
 
 export { default as BlockInput } from "./BlockInput";

@@ -23,7 +23,6 @@ import {
   getPageUidByPageTitle,
   getShallowTreeByParentUid,
   getTextByBlockUid,
-  getTreeByBlockUid,
   InputTextNode,
   localStorageGet,
   localStorageRemove,
@@ -451,7 +450,7 @@ const OauthPanel: FieldPanel<OauthField> = ({
     useLocal
       ? JSON.parse(localStorageGet(key) as string)
       : uid
-      ? getTreeByBlockUid(uid).children.map((v) => ({
+      ? getBasicTreeByParentUid(uid).map((v) => ({
           text: v.children[0]?.text ? v.text : "Default Account",
           uid: v.uid,
           data: v.children[0]?.text || v.text,
@@ -601,15 +600,11 @@ const FieldTabs = ({
   order: number;
 } & ConfigTab) => {
   const [uid, setUid] = useState(initialUid);
-  const subTree = useMemo(
-    () => (uid ? getTreeByBlockUid(uid) : undefined),
-    [uid]
-  );
   const parentUid = useMemo(
     () =>
       /home/i.test(id)
         ? pageUid
-        : subTree?.uid ||
+        : uid ||
           (toggleable
             ? ""
             : createBlock({
@@ -617,7 +612,7 @@ const FieldTabs = ({
                 order,
                 node: { text: id },
               })),
-    [pageUid, subTree, id, toggleable]
+    [pageUid, uid, id, toggleable]
   );
   const childUids = Object.fromEntries(
     getShallowTreeByParentUid(parentUid).map(({ text, uid }) => [

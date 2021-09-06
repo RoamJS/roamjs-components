@@ -12,6 +12,7 @@ import {
   localStorageGet,
   toConfig,
   RoamBasicNode,
+  getBasicTreeByParentUid,
 } from "roam-client";
 
 // getting a  __rest is not a function error. Not sure why
@@ -152,14 +153,14 @@ export const getSettingValuesFromTree = ({
 };
 
 export const getSubTree = ({
-  tree,
   key,
   parentUid,
   order = 0,
+  tree = parentUid ? getBasicTreeByParentUid(parentUid) : [],
 }: {
-  tree: RoamBasicNode[];
   key: string;
   parentUid?: string;
+  tree?: RoamBasicNode[];
   order?: number;
 }): RoamBasicNode =>
   tree.find((s) => toFlexRegex(key).test(s.text.trim())) || {

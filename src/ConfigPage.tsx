@@ -18,12 +18,12 @@ import {
   createHTMLObserver,
   createPage,
   deleteBlock,
+  getBasicTreeByParentUid,
   getFirstChildUidByBlockUid,
   getPageUidByPageTitle,
   getShallowTreeByParentUid,
   getTextByBlockUid,
   getTreeByBlockUid,
-  getTreeByPageName,
   InputTextNode,
   localStorageGet,
   localStorageRemove,
@@ -703,9 +703,11 @@ const FieldTabs = ({
 const ConfigPage = ({
   id,
   config,
+  pageUid,
 }: {
   id: string;
   config: Config;
+  pageUid: string;
 }): React.ReactElement => {
   const userTabs = config.tabs.filter((t) => t.fields.length || t.toggleable);
   const [selectedTabId, setSelectedTabId] = useState(userTabs[0]?.id);
@@ -713,8 +715,7 @@ const ConfigPage = ({
     (tabId: string) => setSelectedTabId(tabId),
     [setSelectedTabId]
   );
-  const pageUid = getPageUidByPageTitle(`roam/js/${id}`);
-  const tree = getTreeByPageName(`roam/js/${id}`);
+  const tree = getBasicTreeByParentUid(pageUid);
   const [currentVersion, setCurrentVersion] = useState("");
   useEffect(() => {
     if (config.versioning) {
@@ -858,7 +859,11 @@ export const createConfigObserver = ({
               d.parentElement?.nextElementSibling || null
             );
             ReactDOM.render(
-              <ConfigPage id={title.replace("roam/js/", "")} config={config} />,
+              <ConfigPage
+                id={title.replace("roam/js/", "")}
+                config={config}
+                pageUid={pageUid}
+              />,
               parent
             );
           }

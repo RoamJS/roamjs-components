@@ -624,6 +624,12 @@ const FieldTabs = ({
               })),
     [pageUid, subTree, id, toggleable]
   );
+  const childUids = Object.fromEntries(
+    getShallowTreeByParentUid(parentUid).map(({ text, uid }) => [
+      text.toLowerCase().trim(),
+      uid,
+    ])
+  );
   const [enabled, setEnabled] = useState(!toggleable || !!parentUid);
   const [selectedTabId, setSelectedTabId] = useState(
     enabled && fields.length ? fields[0].title : "enabled"
@@ -684,11 +690,7 @@ const FieldTabs = ({
                 defaultValue={defaultValue}
                 order={i}
                 parentUid={parentUid}
-                uid={
-                  getShallowTreeByParentUid(parentUid).find((t) =>
-                    new RegExp(title, "i").test(t.text)
-                  )?.uid || ""
-                }
+                uid={childUids[title.toLowerCase()]}
               />
             }
           />

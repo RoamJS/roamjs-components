@@ -191,10 +191,7 @@ const MultiChildPanel: FieldPanel<
   const [uid, setUid] = useState(initialUid);
   const [texts, setTexts] = useState(() =>
     uid
-      ? getTreeByBlockUid(uid).children.map((v) => ({
-          text: v.text,
-          uid: v.uid,
-        }))
+      ? getShallowTreeByParentUid(uid)
       : []
   );
   const [value, setValue] = useState("");

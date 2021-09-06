@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { render } from "@testing-library/react";
 import { createConfigObserver } from "../src";
 
@@ -7,7 +7,7 @@ test("Renders Package", () => {
   // @ts-ignore Not setting this whole object get out. Might one day build roam-jest
   window.roamAlphaAPI = {};
   window.roamAlphaAPI.q = () => [["exists"]];
-  window.roamAlphaAPI.util.generateUID = () => 'abcdefghi';
+  window.roamAlphaAPI.util = { generateUID: () => "abcdefghi" };
   render(<div className="roam-body" />);
   createConfigObserver({ title: "roam/js/test", config: { tabs: [] } });
 });

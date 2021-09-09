@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import ReactDOM from "react-dom";
 import fuzzy from "fuzzy";
+import { getUids, updateBlock } from "roam-client";
 
 // inspired by https://github.com/zurb/tribute/blob/master/src/TributeRange.js#L446-L556
 export const getCoordsFromTextarea = (
@@ -112,6 +113,23 @@ const CursorMenu = <T extends Record<string, string>>({
   const menuRef = useRef<HTMLUListElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [filter, setFilter] = useState("");
+  const onPopoverClose = useCallback(() => {
+    if (menuRef.current) {
+      const value = menuRef.current.getAttribute("data-filter");
+      const text = `${textarea.value.substring(
+        0,
+        textarea.selectionStart
+      )}${value}${textarea.value.substring(textarea.selectionStart)}`;
+      updateBlock({ uid: getUids(textarea).blockUid, text });
+      setTimeout(() => {
+        textarea.setSelectionRange(
+          textarea.selectionStart + text.length,
+          textarea.selectionEnd + text.length
+        );
+        onClose();
+      }, 1);
+    }
+  }, [onClose, textarea, menuRef]);
   const items = useMemo(
     () =>
       (filter
@@ -170,13 +188,13 @@ const CursorMenu = <T extends Record<string, string>>({
           return;
         }
       } else if (e.key !== "Shift") {
-        onClose();
+        onPopoverClose();
         return;
       }
       e.stopPropagation();
       e.preventDefault();
     },
-    [menuRef, setActiveIndex, onClose]
+    [menuRef, setActiveIndex, onClose, onPopoverClose]
   );
   useEffect(() => {
     textarea.addEventListener("keydown", keydownListener);
@@ -186,7 +204,7 @@ const CursorMenu = <T extends Record<string, string>>({
   }, [keydownListener]);
   return (
     <Popover
-      onClose={onClose}
+      onClose={onPopoverClose}
       isOpen={true}
       canEscapeKeyClose
       minimal

@@ -37,20 +37,16 @@ const BlockInput = ({
     [value, allBlocks]
   );
   const inputRef = useRef<HTMLInputElement>(null);
-  const onEnter = useCallback(
-    (value) => {
+  const { activeIndex, onKeyDown } = useArrowKeyDown({
+    onEnter: (value) => {
       if (isOpen) {
-        setValue(value);
+        setValue(value.text, value.uid);
         close();
       } else if (onConfirm) {
         onConfirm();
       }
     },
-    [setValue, close, onConfirm, isOpen]
-  );
-  const { activeIndex, onKeyDown } = useArrowKeyDown({
-    onEnter,
-    results: items.map((t) => t.text),
+    results: items,
   });
   return (
     <Popover

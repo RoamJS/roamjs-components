@@ -8,9 +8,10 @@ const MenuItemSelect = <T extends ReactText>(
   } & { emptyValueText?: string; transformItem?: (s: T) => T }
 ): JSX.Element => {
   const TypeSelect = Select.ofType<T>();
+  const { activeItem, ...selectProps } = props;
   return (
     <TypeSelect
-      {...props}
+      {...selectProps}
       itemRenderer={(item, { modifiers, handleClick }) => (
         <MenuItem
           key={item}
@@ -28,11 +29,11 @@ const MenuItemSelect = <T extends ReactText>(
     >
       <Button
         text={
-          props.activeItem ? (
+          activeItem ? (
             props.transformItem ? (
-              props.transformItem(props.activeItem as T)
+              props.transformItem(activeItem as T)
             ) : (
-              props.activeItem
+              activeItem
             )
           ) : (
             <i style={{ opacity: 0.5 }}>

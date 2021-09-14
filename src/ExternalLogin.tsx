@@ -135,7 +135,10 @@ const ExternalLogin = ({
         authInterval();
         window.addEventListener("message", messageEventListener);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => {
+        setError(e.message); 
+        setLoading(false);
+      });
   }, [onSuccess, parentUid, setLoading, setError]);
   return (
     <div style={{ display: "flex" }}>

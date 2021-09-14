@@ -81,7 +81,7 @@ const BlockInput = ({
             setValue(e.target.value);
             setIsOpen(!!e.target.value);
           }}
-          placeholder={"Search for a page"}
+          placeholder={"Search for a block"}
           autoFocus={true}
           onKeyDown={onKeyDown}
           onBlur={(e) => {

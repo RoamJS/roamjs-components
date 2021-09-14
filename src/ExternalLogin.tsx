@@ -136,7 +136,7 @@ const ExternalLogin = ({
         window.addEventListener("message", messageEventListener);
       })
       .catch((e) => {
-        setError(e.message); 
+        setError(e.message);
         setLoading(false);
       });
   }, [onSuccess, parentUid, setLoading, setError]);

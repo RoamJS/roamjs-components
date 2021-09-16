@@ -711,6 +711,7 @@ const ConfigPage = ({
     if (config.versioning) {
       addOldRoamJSDependency("versioning");
       const scriptVersionMatch =
+        window.roamjs?.version?.[id] ||
         document.currentScript &&
         (document.currentScript as HTMLScriptElement).src.match(
           new RegExp(

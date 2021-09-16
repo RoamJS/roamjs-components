@@ -35,7 +35,6 @@ import { toTitle } from "./hooks";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
-import axios from "axios";
 
 type TextField = {
   type: "text";
@@ -710,25 +709,11 @@ const ConfigPage = ({
   useEffect(() => {
     if (config.versioning) {
       addOldRoamJSDependency("versioning");
-      const scriptVersionMatch =
-        window.roamjs?.version?.[id] ||
-        (document.currentScript &&
-          (document.currentScript as HTMLScriptElement).src.match(
-            new RegExp(
-              `${id}\\/(\\d\\d\\d\\d-\\d\\d-\\d\\d-\\d\\d-\\d\\d)\\/main.js/`
-            )
-          ));
+      const scriptVersionMatch = window.roamjs?.version?.[id];
       if (scriptVersionMatch) {
-        setCurrentVersion(scriptVersionMatch[1]);
+        setCurrentVersion(scriptVersionMatch);
       } else {
-        axios
-          .get(`https://api.roamjs.com/versions?limit=1&id=${id}`)
-          .then(({ data: { versions } }) => {
-            setCurrentVersion(versions[0] || "Version Not Found");
-          })
-          .catch(() => {
-            setCurrentVersion("Version Not Found");
-          });
+        setCurrentVersion("Version Not Found");
       }
     }
   }, [config.versioning, id, setCurrentVersion]);

@@ -712,12 +712,12 @@ const ConfigPage = ({
       addOldRoamJSDependency("versioning");
       const scriptVersionMatch =
         window.roamjs?.version?.[id] ||
-        document.currentScript &&
-        (document.currentScript as HTMLScriptElement).src.match(
-          new RegExp(
-            `${id}\\/(\\d\\d\\d\\d-\\d\\d-\\d\\d-\\d\\d-\\d\\d)\\/main.js/`
-          )
-        );
+        (document.currentScript &&
+          (document.currentScript as HTMLScriptElement).src.match(
+            new RegExp(
+              `${id}\\/(\\d\\d\\d\\d-\\d\\d-\\d\\d-\\d\\d-\\d\\d)\\/main.js/`
+            )
+          ));
       if (scriptVersionMatch) {
         setCurrentVersion(scriptVersionMatch[1]);
       } else {

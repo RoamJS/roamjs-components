@@ -83,8 +83,9 @@ export const getCoordsFromTextarea = (
       span.offsetTop +
       parseInt(computed.borderTopWidth) +
       parseInt(computed.fontSize) -
-      t.scrollTop,
-    left: windowLeft + span.offsetLeft + parseInt(computed.borderLeftWidth),
+      t.scrollTop -
+      9,
+    left: windowLeft + span.offsetLeft + parseInt(computed.borderLeftWidth) - 1,
   };
   document.body.removeChild(div);
   return coordinates;
@@ -209,7 +210,11 @@ const CursorMenu = <T extends Record<string, string>>({
       canEscapeKeyClose
       minimal
       target={<span />}
-      position={Position.BOTTOM_RIGHT}
+      position={Position.BOTTOM_LEFT}
+      modifiers={{
+        flip: { enabled: false },
+        preventOverflow: { enabled: false },
+      }}
       content={
         <Menu
           ulRef={menuRef}

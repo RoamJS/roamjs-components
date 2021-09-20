@@ -65,8 +65,12 @@ const PageInput = ({
       captureDismiss={true}
       isOpen={isOpen}
       onOpened={open}
-      minimal={true}
+      minimal
       position={PopoverPosition.BOTTOM_LEFT}
+      modifiers={{
+        flip: { enabled: false },
+        preventOverflow: { enabled: false },
+      }}
       content={
         <Menu style={{ maxWidth: 400 }}>
           {items.map((t, i) => (
@@ -93,7 +97,14 @@ const PageInput = ({
           }}
           placeholder={"Search for a page"}
           autoFocus={true}
-          onKeyDown={onKeyDown}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.stopPropagation();
+              close();
+            } else {
+              onKeyDown(e);
+            }
+          }}
           onBlur={(e) => {
             if (e.relatedTarget) {
               close();

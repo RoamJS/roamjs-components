@@ -22,16 +22,18 @@ const BlockInput = ({
   setValue,
   onBlur,
   onConfirm,
+  getAllBlocks = getAllBlockUidsAndTexts,
 }: {
   value: string;
   setValue: (q: string, uid?: string) => void;
   onBlur?: (v: string) => void;
   onConfirm?: () => void;
+  getAllBlocks?: () => { text: string; uid: string }[];
 }): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
-  const allBlocks = useMemo(getAllBlockUidsAndTexts, []);
+  const allBlocks = useMemo(getAllBlocks, []);
   const items = useMemo(
     () => (value && isOpen ? searchBlocksByString(value, allBlocks) : []),
     [value, allBlocks]
@@ -57,6 +59,10 @@ const BlockInput = ({
       onOpened={open}
       minimal={true}
       position={PopoverPosition.BOTTOM_LEFT}
+      modifiers={{
+        flip: { enabled: false },
+        preventOverflow: { enabled: false },
+      }}
       content={
         <Menu style={{ maxWidth: 400 }}>
           {items.map((t, i) => (

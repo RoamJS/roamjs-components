@@ -672,15 +672,17 @@ const FieldTabs = ({
             title={title}
             disabled={!enabled}
             panel={
-              <Panel
-                {...field}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore 4.3.0
-                defaultValue={defaultValue}
-                order={i}
-                parentUid={parentUid}
-                uid={childUids[title.toLowerCase()]}
-              />
+              selectedTabId === title ? (
+                <Panel
+                  {...field}
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore 4.3.0
+                  defaultValue={defaultValue}
+                  order={i}
+                  parentUid={parentUid}
+                  uid={childUids[title.toLowerCase()]}
+                />
+              ) : undefined
             }
           />
         );
@@ -757,17 +759,19 @@ const ConfigPage = ({
             key={tabId}
             title={tabId}
             panel={
-              <FieldTabs
-                id={tabId}
-                fields={fields}
-                uid={
-                  tree.find((t) => new RegExp(tabId, "i").test(t.text))?.uid ||
-                  ""
-                }
-                pageUid={pageUid}
-                order={i}
-                toggleable={!!toggleable}
-              />
+              tabId === selectedTabId ? (
+                <FieldTabs
+                  id={tabId}
+                  fields={fields}
+                  uid={
+                    tree.find((t) => new RegExp(tabId, "i").test(t.text))
+                      ?.uid || ""
+                  }
+                  pageUid={pageUid}
+                  order={i}
+                  toggleable={!!toggleable}
+                />
+              ) : undefined
             }
           />
         ))}

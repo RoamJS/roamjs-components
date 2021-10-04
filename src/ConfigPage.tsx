@@ -165,7 +165,7 @@ const useSingleChildValue = <T extends string | number | Date>({
         setValueUid(newValueUid);
       }
     },
-    [setValue, setValueUid, title, parentUid, order, uid, setUid]
+    [setValue, setValueUid, title, parentUid, order, uid, valueUid, setUid]
   );
   return { value, onChange };
 };
@@ -802,24 +802,26 @@ export const createConfigObserver = ({
   title: string;
   config: Config;
 }): { pageUid: string } => {
-  const pageUid =
-    getPageUidByPageTitle(title) ||
-    createPage({
-      title,
-      tree: [
-        ...(config.tabs.some((t) => /home/i.test(t.id))
-          ? fieldsToChildren(
-              config.tabs.find((t) => /home/i.test(t.id)) as ConfigTab
-            )
-          : []),
-        ...config.tabs
-          .filter((t) => !/home/i.test(t.id) && !t.toggleable)
-          .map((t) => ({
-            text: t.id,
-            children: fieldsToChildren(t),
-          })),
-      ],
-    });
+  const existingPageUid = getPageUidByPageTitle(title);
+  if (existingPageUid) {
+    return {
+      pageUid: existingPageUid,
+    };
+  }
+  const homeTab = config.tabs.find((t) => /home/i.test(t.id)) as ConfigTab;
+  const rawTree = [
+    ...(homeTab ? fieldsToChildren(homeTab) : []),
+    ...config.tabs
+      .filter((t) => !/home/i.test(t.id) && !t.toggleable)
+      .map((t) => ({
+        text: t.id,
+        children: fieldsToChildren(t),
+      })),
+  ];
+  const pageUid = createPage({
+    title,
+    tree: rawTree.length ? rawTree : [{ text: " " }],
+  });
   if (config.tabs.length) {
     createHTMLObserver({
       className: "rm-title-display",

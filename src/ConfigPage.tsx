@@ -1,8 +1,10 @@
 import {
+  Alert,
   Button,
   Card,
   Checkbox,
   InputGroup,
+  Intent,
   Label,
   NumericInput,
   Switch,
@@ -35,6 +37,10 @@ import { toTitle } from "./hooks";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
+import axios from "axios";
+// import randomstring from "randomstring";
+// import AES from "crypto-js/aes";
+// import encutf8 from "crypto-js/enc-utf8";
 
 type TextField = {
   type: "text";
@@ -563,6 +569,121 @@ const CustomPanel: FieldPanel<CustomField> = ({
   </>
 );
 
+const ToggleablePanel = ({
+  enabled,
+  setEnabled,
+  pageUid,
+  order,
+  id,
+  extensionId,
+  setUid,
+  uid,
+  toggleable,
+}: {
+  uid: string;
+  id: string;
+  extensionId: string;
+  pageUid: string;
+  order: number;
+  enabled: boolean;
+  toggleable: ConfigTab["toggleable"];
+  setEnabled: (b: boolean) => void;
+  setUid: (s: string) => void;
+}) => {
+  const isPremium = useMemo(() => toggleable !== true, [toggleable]);
+  const [price, setPrice] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const enableCallback = (checked: boolean) => {
+    setEnabled(checked);
+    if (checked) {
+      const newUid = window.roamAlphaAPI.util.generateUID();
+      window.roamAlphaAPI.createBlock({
+        location: { "parent-uid": pageUid, order },
+        block: { string: id, uid: newUid },
+      });
+      setTimeout(() => setUid(newUid));
+    } else {
+      window.roamAlphaAPI.deleteBlock({ block: { uid } });
+      setUid("");
+    }
+  };
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    if (isPremium)
+      axios
+        .get(`https://lambda.roamjs.com/price?id=${toggleable}`)
+        .then((r) => setPrice(r.data.price));
+  }, [isPremium, toggleable]);
+  return (
+    <>
+      <Switch
+        labelElement={"Enabled"}
+        checked={enabled}
+        onChange={(e) =>
+          isPremium
+            ? setIsOpen(true)
+            : enableCallback((e.target as HTMLInputElement).checked)
+        }
+      />
+      {isPremium &&
+        `This is a premium extension. Enabling will require a paid subscription.`}
+      <Alert
+        isOpen={isOpen}
+        onConfirm={() => {
+          setLoading(true);
+          // const otp = randomstring.generate(8);
+          // const key = randomstring.generate(16);
+          // const state = `roamjs_${otp}_${key}`;
+          const width = 600;
+          const height = 525;
+          const left = window.screenX + (window.innerWidth - width) / 2;
+          const top = window.screenY + (window.innerHeight - height) / 2;
+          window.open(
+            `https://roamjs.com/login?service=${extensionId}`,
+            `roamjs:roamjs:login`,
+            `left=${left},top=${top},width=${width},height=${height},status=1`
+          );
+          /*let intervalListener = 0;
+          const authInterval = () => {
+            axios
+              .post(`https://lambda.roamjs.com/auth`, {
+                service: "roamjs",
+                otp,
+              })
+              .then((r) => {
+                if (r.data.auth) {
+                  const auth = AES.decrypt(r.data.auth, key).toString(encutf8);
+                  enableCallback(!enabled);
+                } else {
+                  intervalListener = window.setTimeout(authInterval, 1000);
+                }
+              })
+              .catch((e) => {
+                if (e.response?.status !== 400) {
+                  intervalListener = window.setTimeout(authInterval, 1000);
+                }
+              });
+          };
+          authInterval();*/
+        }}
+        confirmButtonText={"Submit"}
+        cancelButtonText={"Cancel"}
+        intent={Intent.PRIMARY}
+        loading={loading}
+        onCancel={() => setIsOpen(false)}
+      >
+        {enabled
+          ? `By clicking submit below, you will unsubscribe from the premium features of the RoamJS Extension: ${toTitle(
+              extensionId
+            )}`
+          : `By clicking submit below, you will subscribe to the premium features of the RoamJS Extension: ${toTitle(
+              extensionId
+            )} for $${price}/month. A window will first appear to log in to your RoamJS account.`}
+      </Alert>
+    </>
+  );
+};
+
 const Panels = {
   text: TextPanel,
   time: TimePanel,
@@ -577,7 +698,7 @@ const Panels = {
 
 type ConfigTab = {
   id: string;
-  toggleable?: boolean;
+  toggleable?: boolean | `price_${string}`;
   fields: Field<UnionField>[];
 };
 
@@ -593,10 +714,12 @@ const FieldTabs = ({
   pageUid,
   order,
   toggleable,
+  extensionId,
 }: {
   uid: string;
   pageUid: string;
   order: number;
+  extensionId: string;
 } & ConfigTab) => {
   const [uid, setUid] = useState(initialUid);
   const parentUid = useMemo(
@@ -640,25 +763,19 @@ const FieldTabs = ({
           id={"enabled"}
           title={"enabled"}
           panel={
-            <Switch
-              labelElement={"Enabled"}
-              checked={enabled}
-              onChange={(e) => {
-                const checked = (e.target as HTMLInputElement).checked;
-                setEnabled(checked);
-                if (checked) {
-                  const newUid = window.roamAlphaAPI.util.generateUID();
-                  window.roamAlphaAPI.createBlock({
-                    location: { "parent-uid": pageUid, order },
-                    block: { string: id, uid: newUid },
-                  });
-                  setTimeout(() => setUid(newUid));
-                } else {
-                  window.roamAlphaAPI.deleteBlock({ block: { uid } });
-                  setUid("");
-                }
-              }}
-            />
+            selectedTabId === "enabled" ? (
+              <ToggleablePanel
+                id={id}
+                uid={uid}
+                pageUid={pageUid}
+                extensionId={extensionId}
+                enabled={enabled}
+                order={order}
+                toggleable={toggleable}
+                setUid={setUid}
+                setEnabled={setEnabled}
+              />
+            ) : undefined
           }
         />
       )}
@@ -762,6 +879,7 @@ const ConfigPage = ({
               tabId === selectedTabId ? (
                 <FieldTabs
                   id={tabId}
+                  extensionId={id}
                   fields={fields}
                   uid={
                     tree.find((t) => new RegExp(tabId, "i").test(t.text))

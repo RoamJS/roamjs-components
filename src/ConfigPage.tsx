@@ -913,19 +913,13 @@ const fieldsToChildren = (t: ConfigTab) =>
           : [{ text: `${f.defaultValue}` }],
     }));
 
-export const createConfigObserver = ({
+const createConfigPage = ({
   title,
   config,
 }: {
   title: string;
   config: Config;
-}): { pageUid: string } => {
-  const existingPageUid = getPageUidByPageTitle(title);
-  if (existingPageUid) {
-    return {
-      pageUid: existingPageUid,
-    };
-  }
+}) => {
   const homeTab = config.tabs.find((t) => /home/i.test(t.id)) as ConfigTab;
   const rawTree = [
     ...(homeTab ? fieldsToChildren(homeTab) : []),
@@ -936,9 +930,22 @@ export const createConfigObserver = ({
         children: fieldsToChildren(t),
       })),
   ];
-  const pageUid = createPage({
+  return createPage({
     title,
     tree: rawTree.length ? rawTree : [{ text: " " }],
+  });
+}
+
+export const createConfigObserver = ({
+  title,
+  config,
+}: {
+  title: string;
+  config: Config;
+}): { pageUid: string } => {
+  const pageUid = getPageUidByPageTitle(title) || createConfigPage({
+    title,
+    config,
   });
   if (config.tabs.length) {
     createHTMLObserver({

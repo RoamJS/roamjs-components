@@ -934,7 +934,7 @@ const createConfigPage = ({
     title,
     tree: rawTree.length ? rawTree : [{ text: " " }],
   });
-}
+};
 
 export const createConfigObserver = ({
   title,
@@ -943,10 +943,12 @@ export const createConfigObserver = ({
   title: string;
   config: Config;
 }): { pageUid: string } => {
-  const pageUid = getPageUidByPageTitle(title) || createConfigPage({
-    title,
-    config,
-  });
+  const pageUid =
+    getPageUidByPageTitle(title) ||
+    createConfigPage({
+      title,
+      config,
+    });
   if (config.tabs.length) {
     createHTMLObserver({
       className: "rm-title-display",

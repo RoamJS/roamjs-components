@@ -619,8 +619,8 @@ const ToggleablePanel = ({
       axios
         .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
         .then((r) => setPrice(r.data.price))
-        .catch((r) =>
-          setError(r.response?.data?.message || r.response?.data || e.message)
+        .catch((e) =>
+          setError(e.response?.data?.message || e.response?.data || e.message)
         );
     }
   }, [isPremium, toggleable, setError]);

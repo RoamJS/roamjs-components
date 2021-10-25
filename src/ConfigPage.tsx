@@ -586,7 +586,7 @@ const ToggleablePanel = ({
   pageUid: string;
   order: number;
   enabled: boolean;
-  toggleable: ConfigTab["toggleable"];
+  toggleable: Exclude<Required<ConfigTab["toggleable"]>, false | undefined>;
   setEnabled: (b: boolean) => void;
   setUid: (s: string) => void;
 }) => {
@@ -609,10 +609,16 @@ const ToggleablePanel = ({
   };
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
-    if (isPremium)
+    if (isPremium) {
+      const priceId = (toggleable as Exclude<typeof toggleable, true>).replace(
+        /^dev_/,
+        ""
+      );
+      const dev = priceId === toggleable ? "" : "&dev=true";
       axios
-        .get(`https://lambda.roamjs.com/price?id=${toggleable}`)
+        .get(`https://lambda.roamjs.com/price?id=${toggleable}${dev}`)
         .then((r) => setPrice(r.data.price));
+    }
   }, [isPremium, toggleable]);
   return (
     <>
@@ -698,7 +704,7 @@ const Panels = {
 
 type ConfigTab = {
   id: string;
-  toggleable?: boolean | `price_${string}`;
+  toggleable?: boolean | `price_${string}` | `dev_price_${string}`;
   fields: Field<UnionField>[];
 };
 
@@ -887,7 +893,7 @@ const ConfigPage = ({
                   }
                   pageUid={pageUid}
                   order={i}
-                  toggleable={!!toggleable}
+                  toggleable={toggleable}
                 />
               ) : undefined
             }

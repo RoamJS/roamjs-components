@@ -592,6 +592,7 @@ const ToggleablePanel = ({
 }) => {
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
   const [price, setPrice] = useState(0);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const enableCallback = (checked: boolean) => {
     setEnabled(checked);
@@ -616,23 +617,30 @@ const ToggleablePanel = ({
       );
       const dev = priceId === toggleable ? "" : "&dev=true";
       axios
-        .get(`https://lambda.roamjs.com/price?id=${toggleable}${dev}`)
-        .then((r) => setPrice(r.data.price));
+        .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
+        .then((r) => setPrice(r.data.price))
+        .catch((r) =>
+          setError(r.response?.data?.message || r.response?.data || e.message)
+        );
     }
-  }, [isPremium, toggleable]);
+  }, [isPremium, toggleable, setError]);
   return (
     <>
       <Switch
         labelElement={"Enabled"}
         checked={enabled}
+        disabled={price === 0}
         onChange={(e) =>
           isPremium
             ? setIsOpen(true)
             : enableCallback((e.target as HTMLInputElement).checked)
         }
       />
-      {isPremium &&
-        `This is a premium extension. Enabling will require a paid subscription.`}
+      <p>
+        {isPremium &&
+          `This is a premium extension. Enabling certain features will require a paid subscription.`}
+      </p>
+      <p style={{ color: "red" }}>{error}</p>
       <Alert
         isOpen={isOpen}
         onConfirm={() => {

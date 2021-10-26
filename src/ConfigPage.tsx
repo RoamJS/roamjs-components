@@ -618,7 +618,7 @@ const ToggleablePanel = ({
       const dev = priceId === toggleable ? "" : "&dev=true";
       axios
         .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
-        .then((r) => setPrice(r.data.price))
+        .then((r) => setPrice(r.data.price/100))
         .catch((e) =>
           setError(e.response?.data?.message || e.response?.data || e.message)
         );
@@ -653,7 +653,7 @@ const ToggleablePanel = ({
           const left = window.screenX + (window.innerWidth - width) / 2;
           const top = window.screenY + (window.innerHeight - height) / 2;
           window.open(
-            `https://roamjs.com/login?service=${extensionId}`,
+            `https://roamjs.com/login?extension=${extensionId}`,
             `roamjs:roamjs:login`,
             `left=${left},top=${top},width=${width},height=${height},status=1`
           );

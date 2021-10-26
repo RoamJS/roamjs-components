@@ -618,7 +618,7 @@ const ToggleablePanel = ({
       const dev = priceId === toggleable ? "" : "&dev=true";
       axios
         .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
-        .then((r) => setPrice(r.data.price/100))
+        .then((r) => setPrice(r.data.price / 100))
         .catch((e) =>
           setError(e.response?.data?.message || e.response?.data || e.message)
         );

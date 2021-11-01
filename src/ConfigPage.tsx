@@ -38,7 +38,7 @@ import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
 import axios from "axios";
-import Color from 'color';
+import Color from "color";
 // import randomstring from "randomstring";
 // import AES from "crypto-js/aes";
 // import encutf8 from "crypto-js/enc-utf8";
@@ -729,7 +729,7 @@ const tryColor = (s?: string) => {
   } catch (e) {
     return undefined;
   }
-}
+};
 
 const FieldTabs = ({
   id,
@@ -865,7 +865,9 @@ const ConfigPage = ({
         {`.roamjs-config-panel .bp3-tab-panel {
   width: 100%;
 }
-${brandColor && `div.bp3-tab[aria-selected="true"] {
+${
+  brandColor &&
+  `div.bp3-tab[aria-selected="true"] {
   color: ${brandColor.hex()};
 }
 
@@ -874,8 +876,12 @@ ${brandColor && `div.bp3-tab[aria-selected="true"] {
 }
 
 .bp3-tabs.bp3-vertical>.bp3-tab-list .bp3-tab-indicator-wrapper div.bp3-tab-indicator {
-  background-color: ${brandColor.alpha(0.2).lightness(brandColor.lightness() + 0.05).hex()};
-}`}`}
+  background-color: ${brandColor
+    .alpha(0.2)
+    .lightness(brandColor.lightness() + 0.05)
+    .hex()};
+}`
+}`}
       </style>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>
@@ -904,7 +910,7 @@ ${brandColor && `div.bp3-tab[aria-selected="true"] {
         onChange={onTabsChange}
         selectedTabId={selectedTabId}
         renderActiveTabPanelOnly
-        className={'roamjs-config-tabs'}
+        className={"roamjs-config-tabs"}
       >
         {userTabs.map(({ id: tabId, fields, toggleable }, i) => (
           <Tab

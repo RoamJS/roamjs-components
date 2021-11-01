@@ -38,6 +38,7 @@ import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
 import axios from "axios";
+import Color from 'color';
 // import randomstring from "randomstring";
 // import AES from "crypto-js/aes";
 // import encutf8 from "crypto-js/enc-utf8";
@@ -719,7 +720,16 @@ type ConfigTab = {
 type Config = {
   tabs: ConfigTab[];
   versioning?: boolean;
+  brand?: string;
 };
+
+const tryColor = (s?: string) => {
+  try {
+    return Color(s);
+  } catch (e) {
+    return undefined;
+  }
+}
 
 const FieldTabs = ({
   id,
@@ -848,12 +858,24 @@ const ConfigPage = ({
       }
     }
   }, [config.versioning, id, setCurrentVersion]);
+  const brandColor = tryColor(config.brand);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
       <style>
         {`.roamjs-config-panel .bp3-tab-panel {
   width: 100%;
-}`}
+}
+${brandColor && `div.bp3-tab[aria-selected="true"] {
+  color: ${brandColor.hex()};
+}
+
+.bp3-tab-indicator-wrapper div.bp3-tab-indicator {
+  background-color: ${brandColor.hex()};
+}
+
+.bp3-tabs.bp3-vertical>.bp3-tab-list .bp3-tab-indicator-wrapper div.bp3-tab-indicator {
+  background-color: ${brandColor.alpha(0.2).lightness(brandColor.lightness() + 0.05).hex()};
+}`}`}
       </style>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>
@@ -876,11 +898,13 @@ const ConfigPage = ({
           </span>
         )}
       </div>
+      <style>{`.roamjs-config-tabs {\npadding: 4px;\n}`}</style>
       <Tabs
         id={`${id}-config-tabs`}
         onChange={onTabsChange}
         selectedTabId={selectedTabId}
         renderActiveTabPanelOnly
+        className={'roamjs-config-tabs'}
       >
         {userTabs.map(({ id: tabId, fields, toggleable }, i) => (
           <Tab

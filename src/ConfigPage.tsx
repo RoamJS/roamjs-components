@@ -867,7 +867,7 @@ const ConfigPage = ({
 }
 ${
   brandColor &&
-  `div.bp3-tab[aria-selected="true"] {
+  `div.bp3-tab[aria-selected="true"], div.bp3-tab:not([aria-disabled="true"]):hover {
   color: ${brandColor.toString()};
 }
 

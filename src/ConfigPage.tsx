@@ -868,18 +868,18 @@ const ConfigPage = ({
 ${
   brandColor &&
   `div.bp3-tab[aria-selected="true"] {
-  color: ${brandColor.hex()};
+  color: ${brandColor.toString()};
 }
 
 .bp3-tab-indicator-wrapper div.bp3-tab-indicator {
-  background-color: ${brandColor.hex()};
+  background-color: ${brandColor.toString()};
 }
 
 .bp3-tabs.bp3-vertical>.bp3-tab-list .bp3-tab-indicator-wrapper div.bp3-tab-indicator {
   background-color: ${brandColor
     .alpha(0.2)
-    .lightness(brandColor.lightness() + 0.05)
-    .hex()};
+    .lightness(brandColor.lightness() + 5)
+    .toString()};
 }`
 }`}
       </style>

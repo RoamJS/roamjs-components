@@ -800,20 +800,18 @@ const FieldTabs = ({
           <Tab
             id={title}
             key={title}
-            title={title}
+            title={toTitle(title)}
             disabled={!enabled}
             panel={
-              selectedTabId === title ? (
-                <Panel
-                  {...field}
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore 4.3.0
-                  defaultValue={defaultValue}
-                  order={i}
-                  parentUid={parentUid}
-                  uid={childUids[title.toLowerCase()]}
-                />
-              ) : undefined
+              <Panel
+                {...field}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore 4.3.0
+                defaultValue={defaultValue}
+                order={i}
+                parentUid={parentUid}
+                uid={childUids[title.toLowerCase()]}
+              />
             }
           />
         );
@@ -879,31 +877,29 @@ const ConfigPage = ({
         )}
       </div>
       <Tabs
-        vertical
         id={`${id}-config-tabs`}
         onChange={onTabsChange}
         selectedTabId={selectedTabId}
+        renderActiveTabPanelOnly
       >
         {userTabs.map(({ id: tabId, fields, toggleable }, i) => (
           <Tab
             id={tabId}
             key={tabId}
-            title={tabId}
+            title={toTitle(tabId)}
             panel={
-              tabId === selectedTabId ? (
-                <FieldTabs
-                  id={tabId}
-                  extensionId={id}
-                  fields={fields}
-                  uid={
-                    tree.find((t) => new RegExp(tabId, "i").test(t.text))
-                      ?.uid || ""
-                  }
-                  pageUid={pageUid}
-                  order={i}
-                  toggleable={toggleable}
-                />
-              ) : undefined
+              <FieldTabs
+                id={tabId}
+                extensionId={id}
+                fields={fields}
+                uid={
+                  tree.find((t) => new RegExp(tabId, "i").test(t.text))?.uid ||
+                  ""
+                }
+                pageUid={pageUid}
+                order={i}
+                toggleable={toggleable}
+              />
             }
           />
         ))}

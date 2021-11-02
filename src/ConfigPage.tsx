@@ -91,7 +91,12 @@ type CustomField = {
   type: "custom";
   defaultValue?: InputTextNode[];
   options: {
-    component: React.FC<{ parentUid: string; uid?: string }>;
+    component: React.FC<{
+      parentUid: string;
+      uid?: string;
+      defaultValue?: InputTextNode[];
+      title: string;
+    }>;
   };
 };
 
@@ -551,13 +556,19 @@ const CustomPanel: FieldPanel<CustomField> = ({
   uid,
   options: { component: Component },
   parentUid,
+  defaultValue,
 }) => (
   <>
     <Label>
       {toTitle(title)}
       <Description description={description} />
     </Label>
-    <Component uid={uid} parentUid={parentUid} />
+    <Component
+      uid={uid}
+      parentUid={parentUid}
+      title={title}
+      defaultValue={defaultValue}
+    />
   </>
 );
 

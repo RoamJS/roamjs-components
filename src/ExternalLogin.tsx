@@ -159,7 +159,7 @@ const ExternalLogin = ({
         }
         onClick={onClick}
         disabled={loading}
-        style={{ marginRight: 16 }}
+        className={"roamjs-external-login"}
       >
         Login With {toTitle(service)}
       </Button>

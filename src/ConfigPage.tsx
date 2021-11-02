@@ -508,10 +508,6 @@ const OauthPanel: FieldPanel<OauthField> = ({
         checked={useLocal}
         onChange={onCheck}
       />
-      <Label>
-        Log In
-        <Description description={description} />
-      </Label>
       <ExternalLogin
         useLocal={useLocal}
         onSuccess={(acc) => setAccounts([...accounts, acc])}
@@ -865,6 +861,9 @@ const ConfigPage = ({
         {`.roamjs-config-panel .bp3-tab-panel {
   width: 100%;
 }
+.roamjs-external-login {
+  margin-bottom: 16px;
+}
 ${
   brandColor &&
   `div.bp3-tab[aria-selected="true"], div.bp3-tab:not([aria-disabled="true"]):hover {
@@ -880,6 +879,12 @@ ${
     .alpha(0.2)
     .lightness(brandColor.lightness() + 5)
     .toString()};
+}
+
+.bp3-control input:checked ~ span.bp3-control-indicator {
+  background-color: ${brandColor
+    .lightness(brandColor.lightness() + 5)
+    .toString()}
 }`
 }`}
       </style>

@@ -445,7 +445,6 @@ const PagesPanel: FieldPanel<PagesField> = (props) => {
 const OauthPanel: FieldPanel<OauthField> = ({
   uid,
   parentUid,
-  description,
   options,
 }) => {
   const key = `oauth-${options.service}`;

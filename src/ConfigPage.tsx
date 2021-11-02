@@ -201,7 +201,7 @@ const MultiChildPanel: FieldPanel<
   return (
     <>
       <Label>
-        {title}
+        {toTitle(title)}
         <Description description={description} />
         <div style={{ display: "flex" }}>
           <InputComponent value={value} setValue={setValue} />
@@ -285,7 +285,7 @@ const TextPanel: FieldPanel<TextField> = ({
   });
   return (
     <Label>
-      {title}
+      {toTitle(title)}
       <Description description={description} />
       <InputGroup
         value={value}
@@ -322,7 +322,7 @@ const TimePanel: FieldPanel<TimeField> = ({
   });
   return (
     <Label>
-      {title}
+      {toTitle(title)}
       <Description description={description} />
       <TimePicker value={value} onChange={onChange} showArrowButtons />
     </Label>
@@ -348,7 +348,7 @@ const NumberPanel: FieldPanel<NumberField> = ({
   });
   return (
     <Label>
-      {title}
+      {toTitle(title)}
       <Description description={description} />
       <NumericInput value={value} onValueChange={onChange} />
     </Label>
@@ -375,7 +375,7 @@ const SelectPanel: FieldPanel<SelectField> = ({
   });
   return (
     <Label>
-      {title}
+      {toTitle(title)}
       <Description description={description} />
       <MenuItemSelect
         activeItem={value}
@@ -412,7 +412,7 @@ const FlagPanel: FieldPanel<FlagField> = ({
       }}
       labelElement={
         <>
-          {title}
+          {toTitle(title)}
           <Description description={description} />
         </>
       }
@@ -554,7 +554,7 @@ const CustomPanel: FieldPanel<CustomField> = ({
 }) => (
   <>
     <Label>
-      {title}
+      {toTitle(title)}
       <Description description={description} />
     </Label>
     <Component uid={uid} parentUid={parentUid} />
@@ -865,7 +865,7 @@ ${
   color: ${brandColor.toString()};
 }
 
-.bp3-tab-indicator-wrapper div.bp3-tab-indicator {
+.bp3-tab-indicator-wrapper div.bp3-tab-indicator, .bp3-control:hover input:checked ~ span.bp3-control-indicator {
   background-color: ${brandColor.toString()};
 }
 

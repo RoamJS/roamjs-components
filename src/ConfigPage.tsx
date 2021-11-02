@@ -442,11 +442,7 @@ const PagesPanel: FieldPanel<PagesField> = (props) => {
   );
 };
 
-const OauthPanel: FieldPanel<OauthField> = ({
-  uid,
-  parentUid,
-  options,
-}) => {
+const OauthPanel: FieldPanel<OauthField> = ({ uid, parentUid, options }) => {
   const key = `oauth-${options.service}`;
   const [useLocal, setUseLocal] = useState(!!localStorageGet(key));
   const [accounts, setAccounts] = useState<

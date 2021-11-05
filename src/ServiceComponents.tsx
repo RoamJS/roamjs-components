@@ -24,7 +24,6 @@ import {
   createPage,
   createPageTitleObserver,
   getPageUidByPageTitle,
-  getRoamUrl,
   getTreeByPageName,
   localStorageGet,
   localStorageRemove,
@@ -178,7 +177,9 @@ export const runService = ({
       `[:node/title "${title}"]`,
       (before: PullBlock, after: PullBlock) => {
         if (before === null) {
-          window.location.assign(getRoamUrl(after[":block/uid"]));
+          window.roamAlphaAPI.mainWindow.openPage({
+            page: { uid: after[":block/uid"] || "" },
+          });
           return true;
         }
         return false;

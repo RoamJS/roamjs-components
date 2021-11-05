@@ -726,6 +726,7 @@ type Config = {
 };
 
 const tryColor = (s?: string) => {
+  if (!s) return undefined;
   try {
     return Color(s);
   } catch (e) {

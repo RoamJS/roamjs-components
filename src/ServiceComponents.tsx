@@ -177,7 +177,7 @@ export const runService = ({
       `[:node/title "${title}"]`,
       (before: PullBlock, after: PullBlock) => {
         if (before === null) {
-          window.roamAlphaAPI.mainWindow.openPage({
+          window.roamAlphaAPI.ui.mainWindow.openPage({
             page: { uid: after[":block/uid"] || "" },
           });
           return true;

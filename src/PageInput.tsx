@@ -106,7 +106,10 @@ const PageInput = ({
             }
           }}
           onBlur={(e) => {
-            if (e.relatedTarget) {
+            if (
+              e.relatedTarget &&
+              !(e.relatedTarget as HTMLElement).closest?.(".roamjs-page-input")
+            ) {
               close();
             }
             if (onBlur) {

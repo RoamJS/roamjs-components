@@ -66,6 +66,8 @@ const PageInput = ({
       isOpen={isOpen}
       onOpened={open}
       minimal
+      autoFocus={false}
+      enforceFocus={false}
       position={PopoverPosition.BOTTOM_LEFT}
       modifiers={{
         flip: { enabled: false },

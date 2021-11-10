@@ -137,7 +137,7 @@ export const useAuthenticatedAxiosDelete = (): ((
   );
 };
 
-const getToken = (service: string) =>
+export const getToken = (service: string): string =>
   localStorageGet(`token-${service}`) ||
   getTokenFromTree(getTreeByPageName(`roam/js/${service}`));
 

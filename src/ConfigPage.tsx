@@ -12,7 +12,13 @@ import {
   Tabs,
 } from "@blueprintjs/core";
 import { TimePicker } from "@blueprintjs/datetime";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import ReactDOM from "react-dom";
 import {
   addOldRoamJSDependency,
@@ -39,9 +45,9 @@ import PageInput from "./PageInput";
 import format from "date-fns/format";
 import axios from "axios";
 import Color from "color";
-// import randomstring from "randomstring";
-// import AES from "crypto-js/aes";
-// import encutf8 from "crypto-js/enc-utf8";
+import randomstring from "randomstring";
+import AES from "crypto-js/aes";
+import encutf8 from "crypto-js/enc-utf8";
 
 type TextField = {
   type: "text";
@@ -594,6 +600,17 @@ const ToggleablePanel = ({
   setUid: (s: string) => void;
 }) => {
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
+  const priceId = useMemo(
+    () =>
+      isPremium
+        ? (toggleable as Exclude<typeof toggleable, true>).replace(/^dev_/, "")
+        : "",
+    [toggleable]
+  );
+  const dev = useMemo(
+    () => (priceId === toggleable ? "" : "&dev=true"),
+    [priceId, toggleable]
+  );
   const [price, setPrice] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -612,13 +629,9 @@ const ToggleablePanel = ({
     }
   };
   const [isOpen, setIsOpen] = useState(false);
+  const intervalListener = useRef(0);
   useEffect(() => {
     if (isPremium) {
-      const priceId = (toggleable as Exclude<typeof toggleable, true>).replace(
-        /^dev_/,
-        ""
-      );
-      const dev = priceId === toggleable ? "" : "&dev=true";
       axios
         .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
         .then((r) => setPrice(r.data.price / 100))
@@ -626,7 +639,8 @@ const ToggleablePanel = ({
           setError(e.response?.data?.message || e.response?.data || e.message)
         );
     }
-  }, [isPremium, toggleable, setError]);
+    return () => clearTimeout(intervalListener.current);
+  }, [isPremium, toggleable, setError, priceId, dev]);
   return (
     <>
       <Switch
@@ -647,19 +661,20 @@ const ToggleablePanel = ({
         isOpen={isOpen}
         onConfirm={() => {
           setLoading(true);
-          // const otp = randomstring.generate(8);
-          // const key = randomstring.generate(16);
-          // const state = `roamjs_${otp}_${key}`;
+          const otp = randomstring.generate(8);
+          const key = randomstring.generate(16);
+          const state = `roamjs_${otp}_${key}`;
           const width = 600;
           const height = 525;
           const left = window.screenX + (window.innerWidth - width) / 2;
           const top = window.screenY + (window.innerHeight - height) / 2;
           window.open(
-            `https://roamjs.com/login?extension=${extensionId}`,
+            `${
+              dev ? "http://localhost:3000" : "https://roamjs.com"
+            }/login?extension=${extensionId}&state=${state}`,
             `roamjs:roamjs:login`,
             `left=${left},top=${top},width=${width},height=${height},status=1`
           );
-          /*let intervalListener = 0;
           const authInterval = () => {
             axios
               .post(`https://lambda.roamjs.com/auth`, {
@@ -669,18 +684,25 @@ const ToggleablePanel = ({
               .then((r) => {
                 if (r.data.auth) {
                   const auth = AES.decrypt(r.data.auth, key).toString(encutf8);
+                  console.log(auth);
                   enableCallback(!enabled);
                 } else {
-                  intervalListener = window.setTimeout(authInterval, 1000);
+                  intervalListener.current = window.setTimeout(
+                    authInterval,
+                    2000
+                  );
                 }
               })
               .catch((e) => {
                 if (e.response?.status !== 400) {
-                  intervalListener = window.setTimeout(authInterval, 1000);
+                  intervalListener.current = window.setTimeout(
+                    authInterval,
+                    2000
+                  );
                 }
               });
           };
-          authInterval();*/
+          authInterval();
         }}
         confirmButtonText={"Submit"}
         cancelButtonText={"Cancel"}

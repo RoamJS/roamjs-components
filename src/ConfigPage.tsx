@@ -600,6 +600,7 @@ const ToggleablePanel = ({
   setUid: (s: string) => void;
 }) => {
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
+  const [tokenValue, setTokenValue] = useState("");
   const priceId = useMemo(
     () =>
       isPremium
@@ -625,6 +626,8 @@ const ToggleablePanel = ({
       setTimeout(() => setUid(newUid));
     } else {
       window.roamAlphaAPI.deleteBlock({ block: { uid } });
+      localStorageRemove(`token-${extensionId}`);
+      setTokenValue("");
       setUid("");
     }
   };
@@ -641,6 +644,9 @@ const ToggleablePanel = ({
     }
     return () => clearTimeout(intervalListener.current);
   }, [isPremium, toggleable, setError, priceId, dev]);
+  useEffect(() => {
+    localStorageSet(`token-${extensionId}`, tokenValue);
+  }, [tokenValue, extensionId]);
   return (
     <>
       <Switch
@@ -652,6 +658,16 @@ const ToggleablePanel = ({
             : enableCallback((e.target as HTMLInputElement).checked)
         }
       />
+      {enabled && isPremium && (
+        <Label>
+          Token
+          <InputGroup
+            type={"password"}
+            value={tokenValue}
+            onChange={(e) => setTokenValue(e.target.value)}
+          />
+        </Label>
+      )}
       <p>
         {isPremium &&
           `This is a premium extension. Enabling certain features will require a paid subscription.`}
@@ -684,8 +700,10 @@ const ToggleablePanel = ({
               .then((r) => {
                 if (r.data.auth) {
                   const auth = AES.decrypt(r.data.auth, key).toString(encutf8);
-                  console.log(auth);
+                  setTokenValue(JSON.parse(auth).token);
                   enableCallback(!enabled);
+                  setLoading(false);
+                  setIsOpen(false);
                 } else {
                   intervalListener.current = window.setTimeout(
                     authInterval,

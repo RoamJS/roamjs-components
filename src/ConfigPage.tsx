@@ -686,6 +686,7 @@ const ToggleablePanel = ({
                 `https://lambda.roamjs.com/unsubscribe`,
                 {
                   extensionId,
+                  dev: !!dev,
                 },
                 { headers: { Authorization: tokenValue } }
               )

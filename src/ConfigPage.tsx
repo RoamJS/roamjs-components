@@ -600,7 +600,9 @@ const ToggleablePanel = ({
   setUid: (s: string) => void;
 }) => {
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
-  const [tokenValue, setTokenValue] = useState("");
+  const [tokenValue, setTokenValue] = useState(
+    localStorageGet(`token-${extensionId}`) || ""
+  );
   const priceId = useMemo(
     () =>
       isPremium
@@ -677,50 +679,70 @@ const ToggleablePanel = ({
         isOpen={isOpen}
         onConfirm={() => {
           setLoading(true);
-          const otp = randomstring.generate(8);
-          const key = randomstring.generate(16);
-          const state = `roamjs_${otp}_${key}`;
-          const width = 600;
-          const height = 525;
-          const left = window.screenX + (window.innerWidth - width) / 2;
-          const top = window.screenY + (window.innerHeight - height) / 2;
-          window.open(
-            `${
-              dev ? "http://localhost:3000" : "https://roamjs.com"
-            }/login?extension=${extensionId}&state=${state}`,
-            `roamjs:roamjs:login`,
-            `left=${left},top=${top},width=${width},height=${height},status=1`
-          );
-          const authInterval = () => {
+          if (enabled) {
+            // unsub
             axios
-              .post(`https://lambda.roamjs.com/auth`, {
-                service: "roamjs",
-                otp,
-              })
-              .then((r) => {
-                if (r.data.auth) {
-                  const auth = AES.decrypt(r.data.auth, key).toString(encutf8);
-                  setTokenValue(JSON.parse(auth).token);
-                  enableCallback(!enabled);
-                  setLoading(false);
-                  setIsOpen(false);
-                } else {
-                  intervalListener.current = window.setTimeout(
-                    authInterval,
-                    2000
-                  );
-                }
-              })
-              .catch((e) => {
-                if (e.response?.status !== 400) {
-                  intervalListener.current = window.setTimeout(
-                    authInterval,
-                    2000
-                  );
-                }
+              .post(
+                `https://lambda.roamjs.com/unsubscribe`,
+                {
+                  extensionId,
+                },
+                { headers: { Authorization: tokenValue } }
+              )
+              .then(() => {
+                enableCallback(true);
+                setLoading(false);
+                setIsOpen(false);
               });
-          };
-          authInterval();
+          } else {
+            // sub
+            const otp = randomstring.generate(8);
+            const key = randomstring.generate(16);
+            const state = `roamjs_${otp}_${key}`;
+            const width = 600;
+            const height = 525;
+            const left = window.screenX + (window.innerWidth - width) / 2;
+            const top = window.screenY + (window.innerHeight - height) / 2;
+            window.open(
+              `${
+                dev ? "http://localhost:3000" : "https://roamjs.com"
+              }/login?extension=${extensionId}&state=${state}`,
+              `roamjs:roamjs:login`,
+              `left=${left},top=${top},width=${width},height=${height},status=1`
+            );
+            const authInterval = () => {
+              axios
+                .post(`https://lambda.roamjs.com/auth`, {
+                  service: "roamjs",
+                  otp,
+                })
+                .then((r) => {
+                  if (r.data.auth) {
+                    const auth = AES.decrypt(r.data.auth, key).toString(
+                      encutf8
+                    );
+                    setTokenValue(JSON.parse(auth).token);
+                    enableCallback(true);
+                    setLoading(false);
+                    setIsOpen(false);
+                  } else {
+                    intervalListener.current = window.setTimeout(
+                      authInterval,
+                      2000
+                    );
+                  }
+                })
+                .catch((e) => {
+                  if (e.response?.status !== 400) {
+                    intervalListener.current = window.setTimeout(
+                      authInterval,
+                      2000
+                    );
+                  }
+                });
+            };
+            authInterval();
+          }
         }}
         confirmButtonText={"Submit"}
         cancelButtonText={"Cancel"}

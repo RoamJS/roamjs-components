@@ -691,7 +691,7 @@ const ToggleablePanel = ({
                 { headers: { Authorization: tokenValue } }
               )
               .then(() => {
-                enableCallback(true);
+                enableCallback(false);
                 setLoading(false);
                 setIsOpen(false);
               });

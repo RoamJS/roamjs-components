@@ -163,7 +163,9 @@ const ExternalLogin = ({
         disabled={loading}
         className={"roamjs-external-login"}
       >
-        {loggedIn ? `Add Another ${toTitle(service)} Account` : `Login With ${toTitle(service)}`}
+        {loggedIn
+          ? `Add Another ${toTitle(service)} Account`
+          : `Login With ${toTitle(service)}`}
       </Button>
       {loading && <Spinner size={Spinner.SIZE_SMALL} />}
       {error && (

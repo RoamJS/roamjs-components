@@ -29,10 +29,12 @@ const ExternalLogin = ({
   getPopoutUrl,
   getAuthData,
   ServiceIcon,
+  loggedIn = false,
 }: {
   onSuccess: (block: { text: string; uid: string; data: string }) => void;
   parentUid: string;
   useLocal?: boolean;
+  loggedIn?: boolean;
 } & ExternalLoginOptions): React.ReactElement => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -161,7 +163,7 @@ const ExternalLogin = ({
         disabled={loading}
         className={"roamjs-external-login"}
       >
-        Login With {toTitle(service)}
+        {loggedIn ? `Add Another ${toTitle(service)} Account` : `Login With ${toTitle(service)}`}
       </Button>
       {loading && <Spinner size={Spinner.SIZE_SMALL} />}
       {error && (

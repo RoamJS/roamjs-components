@@ -518,40 +518,49 @@ const OauthPanel: FieldPanel<OauthField> = ({ uid, parentUid, options }) => {
         useLocal={useLocal}
         onSuccess={(acc) => setAccounts([...accounts, acc])}
         parentUid={parentUid}
+        loggedIn={!!accounts.length}
         {...options}
       />
-      <ul style={{ marginTop: 8, padding: 0 }}>
-        {accounts.map((act) => (
-          <li
-            key={act.uid}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: 8,
-            }}
-          >
-            <span style={{ minWidth: 192 }}>{act.text}</span>
-            <Button
-              text={"Log Out"}
-              onClick={() => {
-                if (useLocal) {
-                  const accts = JSON.parse(localStorageGet(key) as string) as {
-                    uid: string;
-                  }[];
-                  localStorageSet(
-                    key,
-                    JSON.stringify(accts.filter((a) => act.uid !== a.uid))
-                  );
-                } else {
-                  deleteBlock(act.uid);
-                }
-                setAccounts(accounts.filter((a) => act.uid !== a.uid));
-              }}
-            />
-          </li>
-        ))}
-      </ul>
+      {!!accounts.length && (
+        <>
+          <h5 style={{ marginTop: 8 }}>Accounts</h5>
+          <hr />
+          <ul style={{ marginTop: 8, padding: 0 }}>
+            {accounts.map((act) => (
+              <li
+                key={act.uid}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: 8,
+                }}
+              >
+                <span style={{ minWidth: 192 }}>{act.text}</span>
+                <Button
+                  text={"Log Out"}
+                  onClick={() => {
+                    if (useLocal) {
+                      const accts = JSON.parse(
+                        localStorageGet(key) as string
+                      ) as {
+                        uid: string;
+                      }[];
+                      localStorageSet(
+                        key,
+                        JSON.stringify(accts.filter((a) => act.uid !== a.uid))
+                      );
+                    } else {
+                      deleteBlock(act.uid);
+                    }
+                    setAccounts(accounts.filter((a) => act.uid !== a.uid));
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </>
   );
 };

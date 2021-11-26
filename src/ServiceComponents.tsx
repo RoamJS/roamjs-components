@@ -28,19 +28,15 @@ import {
   localStorageGet,
   localStorageRemove,
   localStorageSet,
-  PullBlock,
   TreeNode,
-  watchOnce,
 } from "roam-client";
 import { getRenderRoot, toTitle, toFlexRegex, setInputSetting } from "./hooks";
 
-/* coming soon -.- 
 declare global {
   interface Window {
     [key: `roamjs${string}Token`]: string;
   }
 }
-*/
 
 export const SERVICE_GUIDE_HIGHLIGHT = "3px dashed yellowgreen";
 
@@ -148,7 +144,7 @@ export const runService = ({
   id: string;
   Dashboard: React.FC;
 }): void => {
-  const title = `roam/js/${id}` as `roam/js/${string}`;
+  const title = `roam/js/${id}` as const;
 
   createPageTitleObserver({
     title,
@@ -172,47 +168,33 @@ export const runService = ({
   });
 
   if (!getPageUidByPageTitle(title)) {
-    watchOnce(
-      "[*]",
-      `[:node/title "${title}"]`,
-      (before: PullBlock, after: PullBlock) => {
-        if (before === null) {
-          window.roamAlphaAPI.ui.mainWindow.openPage({
-            page: { uid: after[":block/uid"] || "" },
-          });
-          return true;
-        }
-        return false;
-      }
-    );
     const root = getRenderRoot(id);
     ReactDOM.render(
       <Alert
         isOpen={true}
         onConfirm={() => {
-          const tokenField = `roamjs${toCamel(id)}Token`;
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          const tokenValue = window[tokenField] as string;
-          if (tokenValue) {
-            createPage({
-              title,
-              tree: [
-                {
-                  text: "token",
-                  children: [
-                    {
-                      text: tokenValue,
-                      children: [],
-                    },
-                  ],
-                },
-              ],
-            });
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            delete window[tokenField];
-          }
+          const tokenField = `roamjs${toCamel(id)}Token` as const;
+          const tokenValue = window[tokenField];
+          delete window[tokenField];
+          const uid = createPage({
+            title,
+            tree: [
+              tokenValue
+                ? {
+                    text: "token",
+                    children: [
+                      {
+                        text: tokenValue,
+                        children: [],
+                      },
+                    ],
+                  }
+                : { text: " " },
+            ],
+          });
+          window.roamAlphaAPI.ui.mainWindow.openPage({
+            page: { uid },
+          });
           ReactDOM.unmountComponentAtNode(root);
           root.remove();
         }}

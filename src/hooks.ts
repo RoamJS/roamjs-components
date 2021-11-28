@@ -87,6 +87,7 @@ export const createOverlayRender =
       React.createElement(Overlay, {
         ...props,
         onClose: () => {
+          if (typeof props.onClose === "function") props.onClose();
           ReactDOM.unmountComponentAtNode(parent);
           parent.remove();
         },

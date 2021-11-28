@@ -23,6 +23,7 @@ import ReactDOM from "react-dom";
 import {
   createPage,
   createPageTitleObserver,
+  getCurrentUserEmail,
   getPageUidByPageTitle,
   getTreeByPageName,
   localStorageGet,
@@ -31,6 +32,7 @@ import {
   TreeNode,
 } from "roam-client";
 import { getRenderRoot, toTitle, toFlexRegex, setInputSetting } from "./hooks";
+import { getToken } from "./util/getToken";
 
 declare global {
   interface Window {
@@ -47,9 +49,6 @@ const toCamel = (service: string) =>
       i === 0 ? s : `${s.substring(0, 1).toUpperCase()}${s.substring(1)}`
     )
     .join("");
-
-export const getTokenFromTree = (tree: TreeNode[]): string =>
-  tree.find((t) => /token/i.test(t.text))?.children?.[0]?.text || "";
 
 export const isFieldInTree =
   (field = "$^") =>
@@ -79,6 +78,13 @@ export const useFieldVals = (field: string): string[] => {
   ).map((t) => t.text);
 };
 
+const getAuthorization = (service: string) => {
+  const token = getToken();
+  return token
+    ? `Bearer ${window.btoa(`${getCurrentUserEmail()}:${getToken()}`)}`
+    : getToken(service);
+};
+
 export const useAuthenticatedAxiosGet = (): ((
   path: string
 ) => Promise<AxiosResponse>) => {
@@ -86,7 +92,7 @@ export const useAuthenticatedAxiosGet = (): ((
   return useCallback(
     (path: string) =>
       axios.get(`${process.env.API_URL}/${path}`, {
-        headers: { Authorization: getToken(service) },
+        headers: { Authorization: getAuthorization(service) },
       }),
     [service]
   );
@@ -100,7 +106,7 @@ export const useAuthenticatedAxiosPost = (): ((
   return useCallback(
     (path: string, data?: Record<string, unknown>) =>
       axios.post(`${process.env.API_URL}/${path}`, data || {}, {
-        headers: { Authorization: getToken(service) },
+        headers: { Authorization: getAuthorization(service) },
       }),
     []
   );
@@ -114,7 +120,7 @@ export const useAuthenticatedAxiosPut = (): ((
   return useCallback(
     (path: string, data?: Record<string, unknown>) =>
       axios.put(`${process.env.API_URL}/${path}`, data || {}, {
-        headers: { Authorization: getToken(service) },
+        headers: { Authorization: getAuthorization(service) },
       }),
     []
   );
@@ -127,15 +133,11 @@ export const useAuthenticatedAxiosDelete = (): ((
   return useCallback(
     (path: string) =>
       axios.delete(`${process.env.API_URL}/${path}`, {
-        headers: { Authorization: getToken(service) },
+        headers: { Authorization: getAuthorization(service) },
       }),
     []
   );
 };
-
-export const getToken = (service: string): string =>
-  localStorageGet(`token-${service}`) ||
-  getTokenFromTree(getTreeByPageName(`roam/js/${service}`));
 
 export const runService = ({
   id,

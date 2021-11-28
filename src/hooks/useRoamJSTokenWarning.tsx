@@ -8,7 +8,7 @@ import {
   Label,
 } from "@blueprintjs/core";
 import axios from "axios";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createPage,
   getCurrentUserEmail,
@@ -109,35 +109,37 @@ const TokenDialog = ({ onClose }: { onClose: () => void }) => {
 const renderTokenDialog = createOverlayRender("token-dialog", TokenDialog);
 
 const useRoamJSTokenWarning = (): void => {
-  const token = getToken();
-  if (!token) {
-    axios
-      .get(
-        `https://lambda.roamjs.com/users?email=${encodeURIComponent(
-          getCurrentUserEmail()
-        )}`
-      )
-      .then((r) => {
-        renderSimpleAlert({
-          content: `You need to ${
-            r.data.exists ? "sign up at https://roamjs.com/signup and " : ""
-          }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from https://roamjs.com/user.`,
-          onConfirm: () => renderTokenDialog({}),
-          onClose: () =>
-            !getToken() &&
-            renderToast({
-              id: "token-warning",
-              content:
-                'Search for "Enter RoamJS Token" from the command palette in order to add your RoamJS token and use this extension.',
-            }),
-          canCancel: true,
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      axios
+        .get(
+          `https://lambda.roamjs.com/users?email=${encodeURIComponent(
+            getCurrentUserEmail()
+          )}`
+        )
+        .then((r) => {
+          renderSimpleAlert({
+            content: `You need to ${
+              r.data.exists ? "sign up at https://roamjs.com/signup and " : ""
+            }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from https://roamjs.com/user.`,
+            onConfirm: () => renderTokenDialog({}),
+            onClose: () =>
+              !getToken() &&
+              renderToast({
+                id: "token-warning",
+                content:
+                  'Search for "Enter RoamJS Token" from the command palette in order to add your RoamJS token and use this extension.',
+              }),
+            canCancel: true,
+          });
         });
-      });
-  }
-  window.roamAlphaAPI.ui.commandPalette.addCommand({
-    label: "Set RoamJS Token",
-    callback: () => renderTokenDialog({}),
-  });
+    }
+    window.roamAlphaAPI.ui.commandPalette.addCommand({
+      label: "Set RoamJS Token",
+      callback: () => renderTokenDialog({}),
+    });
+  }, []);
 };
 
 export default useRoamJSTokenWarning;

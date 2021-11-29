@@ -113,11 +113,9 @@ const useRoamJSTokenWarning = (): void => {
     const token = getToken();
     if (!token) {
       axios
-        .get(
-          `https://lambda.roamjs.com/users?email=${encodeURIComponent(
-            getCurrentUserEmail()
-          )}`
-        )
+        .post(`https://lambda.roamjs.com/users`, {
+          email: getCurrentUserEmail(),
+        })
         .then((r) => {
           renderSimpleAlert({
             content: `You need to ${

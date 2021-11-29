@@ -28,7 +28,7 @@ const TokenDialog = ({ onClose }: { onClose: () => void }) => {
     []
   );
   const [token, setToken] = useState("");
-  const [useLocal, setUseLocal] = useState(false);
+  const [useLocal, setUseLocal] = useState(true);
   const onSubmit = useCallback(() => {
     if (useLocal) {
       localStorageSet(`token`, token);
@@ -115,7 +115,7 @@ const useRoamJSTokenWarning = (): void => {
         .then((r) => {
           renderSimpleAlert({
             content: `You need to ${
-              r.data.exists ? "sign up at https://roamjs.com/signup and " : ""
+              r.data.exists ? "" : "sign up at https://roamjs.com/signup and "
             }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from https://roamjs.com/user.`,
             onConfirm: () => renderTokenDialog({}),
             canCancel: true,

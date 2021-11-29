@@ -1,6 +1,7 @@
 import React from "react";
 import { Alert, Classes } from "@blueprintjs/core";
 import { createOverlayRender } from "./hooks";
+import Markdown from "markdown-to-jsx";
 
 type Props = {
   content: string;
@@ -32,7 +33,7 @@ const SimpleAlert = ({
         className={Classes.ALERT_CONTENTS}
         style={{ whiteSpace: "pre-wrap" }}
       >
-        {content}
+        <Markdown>{content}</Markdown>
       </div>
     </Alert>
   );

@@ -13,7 +13,7 @@ const SimpleAlert = ({
   content,
   onConfirm,
   canCancel,
-}: Props & {onClose: () => void}): React.ReactElement => {
+}: Props & { onClose: () => void }): React.ReactElement => {
   const cancelProps = canCancel
     ? {
         cancelButtonText: "Cancel",

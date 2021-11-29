@@ -16,12 +16,8 @@ import {
   localStorageRemove,
   localStorageSet,
 } from "roam-client";
-import {
-  createOverlayRender,
-  renderSimpleAlert,
-  renderToast,
-  setInputSetting,
-} from "..";
+import { createOverlayRender, setInputSetting } from "../hooks";
+import { render as renderSimpleAlert } from "../SimpleAlert";
 import { getToken } from "../util/getToken";
 
 const TokenDialog = ({ onClose }: { onClose: () => void }) => {
@@ -122,13 +118,6 @@ const useRoamJSTokenWarning = (): void => {
               r.data.exists ? "sign up at https://roamjs.com/signup and " : ""
             }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from https://roamjs.com/user.`,
             onConfirm: () => renderTokenDialog({}),
-            onClose: () =>
-              !getToken() &&
-              renderToast({
-                id: "token-warning",
-                content:
-                  'Search for "Enter RoamJS Token" from the command palette in order to add your RoamJS token and use this extension.',
-              }),
             canCancel: true,
           });
         });

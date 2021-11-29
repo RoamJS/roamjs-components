@@ -6,7 +6,6 @@ type Props = {
   content: string;
   onConfirm: () => void;
   canCancel?: boolean;
-  onClose: () => void;
 };
 
 const SimpleAlert = ({
@@ -14,7 +13,7 @@ const SimpleAlert = ({
   content,
   onConfirm,
   canCancel,
-}: Props): React.ReactElement => {
+}: Props & {onClose: () => void}): React.ReactElement => {
   const cancelProps = canCancel
     ? {
         cancelButtonText: "Cancel",

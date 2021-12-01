@@ -576,11 +576,7 @@ const BlockPanel: FieldPanel<BlockField> = ({
   parentUid,
   title,
   defaultValue,
-}: {
-  uid?: string;
-  parentUid: string;
-  title: string;
-  defaultValue?: InputTextNode;
+  description,
 }) => {
   const formatUid = useMemo(
     () =>
@@ -604,14 +600,20 @@ const BlockPanel: FieldPanel<BlockField> = ({
     }
   }, [formatUid, containerRef, defaultValue]);
   return (
-    <div
-      ref={containerRef}
-      style={{
-        border: "1px solid #33333333",
-        padding: "8px 0",
-        borderRadius: 4,
-      }}
-    ></div>
+    <>
+      <Label>
+        {toTitle(title)}
+        <Description description={description} />
+      </Label>
+      <div
+        ref={containerRef}
+        style={{
+          border: "1px solid #33333333",
+          padding: "8px 0",
+          borderRadius: 4,
+        }}
+      ></div>
+    </>
   );
 };
 

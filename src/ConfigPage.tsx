@@ -593,7 +593,7 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
       const uid =
         getFirstChildUidByBlockUid(formatUid) ||
         createBlock({
-          node: defaultValue?.[0] || { text: "Default Value" },
+          node: defaultValue?.[0] || { text: " " },
           parentUid: formatUid,
         });
       window.roamAlphaAPI.ui.components.renderBlock({

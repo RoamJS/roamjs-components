@@ -93,6 +93,11 @@ type SelectField = {
   };
 };
 
+type BlocksField = {
+  type: "blocks";
+  defaultValue?: InputTextNode[];
+};
+
 type CustomField = {
   type: "custom";
   defaultValue?: InputTextNode[];
@@ -106,7 +111,7 @@ type CustomField = {
   };
 };
 
-type ArrayField = PagesField | MultiTextField | CustomField;
+type ArrayField = PagesField | MultiTextField | BlocksField | CustomField;
 type UnionField =
   | ArrayField
   | TextField
@@ -565,6 +570,50 @@ const OauthPanel: FieldPanel<OauthField> = ({ uid, parentUid, options }) => {
   );
 };
 
+const BlocksPanel: FieldPanel<BlocksField> = ({
+  uid: initialUid,
+  parentUid,
+  title,
+  defaultValue,
+}: {
+  uid?: string;
+  parentUid: string;
+  title: string;
+  defaultValue?: InputTextNode[];
+}) => {
+  const formatUid = useMemo(
+    () =>
+      initialUid ||
+      createBlock({ node: { text: title, children: [] }, parentUid }),
+    [initialUid, parentUid, title]
+  );
+  const containerRef = useRef(null);
+  useEffect(() => {
+    if (containerRef.current) {
+      const uid =
+        getFirstChildUidByBlockUid(formatUid) ||
+        createBlock({
+          node: defaultValue?.[0] || { text: "Default Value" },
+          parentUid: formatUid,
+        });
+      window.roamAlphaAPI.ui.components.renderBlock({
+        uid,
+        el: containerRef.current,
+      });
+    }
+  }, [formatUid, containerRef, defaultValue]);
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        border: "1px solid #33333333",
+        padding: "8px 0",
+        borderRadius: 4,
+      }}
+    ></div>
+  );
+};
+
 const CustomPanel: FieldPanel<CustomField> = ({
   description,
   title,
@@ -781,6 +830,7 @@ const Panels = {
   oauth: OauthPanel,
   multitext: MultiTextPanel,
   select: SelectPanel,
+  blocks: BlocksPanel,
   custom: CustomPanel,
 } as { [UField in UnionField as UField["type"]]: FieldPanel<UField> };
 

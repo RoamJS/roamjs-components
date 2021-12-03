@@ -1086,6 +1086,10 @@ const fieldsToChildren = (t: ConfigTab) =>
           ? f.defaultValue || []
           : f.type === "pages" || f.type === "multitext"
           ? f.defaultValue?.map((v) => ({ text: v }))
+          : f.type === "block"
+          ? f.defaultValue
+            ? [f.defaultValue]
+            : []
           : [{ text: `${f.defaultValue}` }],
     }));
 

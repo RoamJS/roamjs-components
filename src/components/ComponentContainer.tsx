@@ -30,10 +30,7 @@ const ComponentContainer: React.FunctionComponent<{
   );
 };
 
-const renderWithUnmount = (
-  el: React.ReactElement,
-  p: HTMLElement
-): void => {
+const renderWithUnmount = (el: React.ReactElement, p: HTMLElement): void => {
   ReactDOM.render(el, p);
   const unmountObserver = new MutationObserver((ms) => {
     const parentRemoved = ms

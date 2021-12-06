@@ -419,7 +419,7 @@ const FlagPanel: FieldPanel<FlagField> = ({
     <Checkbox
       checked={!!uid}
       onChange={(e) => {
-        const {checked} = (e.target as HTMLInputElement);
+        const { checked } = e.target as HTMLInputElement;
         if (checked) {
           const newUid = window.roamAlphaAPI.util.generateUID();
           window.roamAlphaAPI.createBlock({

@@ -6,7 +6,7 @@ import {
   localStorageGet,
   localStorageSet,
 } from "roam-client";
-import { restOp, toTitle } from "./hooks";
+import idToTitle from "../util/idToTitle";
 import randomstring from "randomstring";
 import axios from "axios";
 import AES from "crypto-js/aes";
@@ -60,8 +60,8 @@ const ExternalLogin = ({
           getAuthData(data)
             .then((rr) => {
               const labelUid = window.roamAlphaAPI.util.generateUID();
-              const label = rr.label || "Default Account";
-              const oauthData = JSON.stringify(restOp(rr, ["label"]));
+              const { label = "Default Account", ...rawData } = rr;
+              const oauthData = JSON.stringify(rawData);
               const account = {
                 text: label,
                 uid: labelUid,
@@ -164,8 +164,8 @@ const ExternalLogin = ({
         className={"roamjs-external-login"}
       >
         {loggedIn
-          ? `Add Another ${toTitle(service)} Account`
-          : `Login With ${toTitle(service)}`}
+          ? `Add Another ${idToTitle(service)} Account`
+          : `Login With ${idToTitle(service)}`}
       </Button>
       {loading && <Spinner size={Spinner.SIZE_SMALL} />}
       {error && (

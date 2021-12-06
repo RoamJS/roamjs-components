@@ -7,7 +7,7 @@ import {
 } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { getAllBlockUidsAndTexts } from "roam-client";
-import { useArrowKeyDown } from "./hooks";
+import useArrowKeyDown from "../hooks/useArrowKeyDown";
 
 const searchBlocksByString = (
   q: string,

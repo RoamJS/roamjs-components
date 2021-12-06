@@ -1,7 +1,7 @@
 import { Label } from "@blueprintjs/core";
 import React, { useState } from "react";
 import { getTreeByPageName } from "roam-client";
-import { toFlexRegex } from "./hooks";
+import toFlexRegex from "../util/toFlexRegex";
 import MenuItemSelect from "./MenuItemSelect";
 
 export const useOauthAccounts = (

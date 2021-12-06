@@ -8,7 +8,7 @@ import {
 } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { getAllPageNames } from "roam-client";
-import { useArrowKeyDown } from "./hooks";
+import useArrowKeyDown from "../hooks/useArrowKeyDown";
 import fuzzy from "fuzzy";
 
 const DEFAULT_EXTRA: string[] = [];

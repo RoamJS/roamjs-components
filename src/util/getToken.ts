@@ -5,8 +5,10 @@ import {
 } from "roam-client";
 import { getTokenFromTree } from "./getTokenFromTree";
 
-export const getToken = (service = "roamjs"): string =>
+const getToken = (service = "roamjs"): string =>
   localStorageGet(`token${service === "roamjs" ? "" : `-${service}`}`) ||
   getTokenFromTree(
     getBasicTreeByParentUid(getPageUidByPageTitle(`roam/js/${service}`))
   );
+
+export default getToken;

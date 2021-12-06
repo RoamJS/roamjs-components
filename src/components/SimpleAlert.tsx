@@ -1,6 +1,6 @@
 import React from "react";
 import { Alert, Classes } from "@blueprintjs/core";
-import { createOverlayRender } from "./hooks";
+import createOverlayRender from "../util/createOverlayRender";
 import Markdown from "markdown-to-jsx";
 
 type Props = {

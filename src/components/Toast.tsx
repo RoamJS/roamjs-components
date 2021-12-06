@@ -1,5 +1,5 @@
 import React from "react";
-import { createOverlayRender } from "./hooks";
+import createOverlayRender from "../util/createOverlayRender";
 import {
   Intent,
   Toast as BPToast,

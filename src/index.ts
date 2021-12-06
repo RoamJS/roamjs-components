@@ -59,7 +59,3 @@ export {
   render as renderSimpleAlert,
 } from "./components/SimpleAlert";
 export { default as Toast, render as renderToast } from "./components/Toast";
-export {
-  default as WarningToast,
-  render as renderWarningToast,
-} from "./components/WarningToast";

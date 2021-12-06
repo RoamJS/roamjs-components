@@ -16,9 +16,10 @@ import {
   localStorageRemove,
   localStorageSet,
 } from "roam-client";
-import { createOverlayRender, setInputSetting } from "../hooks";
-import { render as renderSimpleAlert } from "../SimpleAlert";
-import { getToken } from "../util/getToken";
+import createOverlayRender from "../util/createOverlayRender";
+import setInputSetting from "../util/setInputSetting";
+import { render as renderSimpleAlert } from "../components/SimpleAlert";
+import getToken from "../util/getToken";
 
 const TokenDialog = ({ onClose }: { onClose: () => void }) => {
   const pageUid = useMemo(

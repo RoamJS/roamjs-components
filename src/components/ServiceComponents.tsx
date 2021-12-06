@@ -31,8 +31,11 @@ import {
   localStorageSet,
   TreeNode,
 } from "roam-client";
-import { getRenderRoot, toTitle, toFlexRegex, setInputSetting } from "./hooks";
-import { getToken } from "./util/getToken";
+import getRenderRoot from "../util/getRenderRoot";
+import idToTitle from "../util/idToTitle";
+import toFlexRegex from "../util/toFlexRegex";
+import setInputSetting from "../util/setInputSetting";
+import getToken from "../util/getToken";
 
 declare global {
   interface Window {
@@ -201,7 +204,7 @@ export const runService = ({
           root.remove();
         }}
       >
-        <h4>Welcome to RoamJS {toTitle(id)}!</h4>
+        <h4>Welcome to RoamJS {idToTitle(id)}!</h4>
         <p>
           Click OK to create a <code>{title}</code> page and start using the
           service.
@@ -323,7 +326,7 @@ const RequestTokenContent: StageContent = ({ openPanel }) => {
   return (
     <>
       <Label>
-        RoamJS {toTitle(service)} Token
+        RoamJS {idToTitle(service)} Token
         <InputGroup value={value} onChange={onChange} onKeyDown={onKeyDown} />
       </Label>
       <Checkbox
@@ -437,7 +440,7 @@ export const ServiceDashboard: React.FC<{
   return (
     <>
       <Card>
-        <h4 style={{ padding: 4 }}>{toTitle(service)} Dashboard</h4>
+        <h4 style={{ padding: 4 }}>{idToTitle(service)} Dashboard</h4>
         <ServiceContext.Provider
           value={{ getStage, pageUid, service, settings, metadata: {} }}
         >

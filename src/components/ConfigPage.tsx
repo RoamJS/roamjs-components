@@ -39,7 +39,7 @@ import {
 import startOfDay from "date-fns/startOfDay";
 import Description from "./Description";
 import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";
-import { toTitle } from "./hooks";
+import idToTitle from "../util/idToTitle";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
@@ -67,6 +67,9 @@ type NumberField = {
 type FlagField = {
   type: "flag";
   defaultValue?: boolean;
+  options?: {
+    onChange?: (f: boolean) => void;
+  };
 };
 
 type MultiTextField = {
@@ -218,7 +221,7 @@ const MultiChildPanel: FieldPanel<
   return (
     <>
       <Label>
-        {toTitle(title)}
+        {idToTitle(title)}
         <Description description={description} />
         <div style={{ display: "flex" }}>
           <InputComponent value={value} setValue={setValue} />
@@ -302,7 +305,7 @@ const TextPanel: FieldPanel<TextField> = ({
   });
   return (
     <Label>
-      {toTitle(title)}
+      {idToTitle(title)}
       <Description description={description} />
       <InputGroup
         value={value}
@@ -339,7 +342,7 @@ const TimePanel: FieldPanel<TimeField> = ({
   });
   return (
     <Label>
-      {toTitle(title)}
+      {idToTitle(title)}
       <Description description={description} />
       <TimePicker value={value} onChange={onChange} showArrowButtons />
     </Label>
@@ -365,7 +368,7 @@ const NumberPanel: FieldPanel<NumberField> = ({
   });
   return (
     <Label>
-      {toTitle(title)}
+      {idToTitle(title)}
       <Description description={description} />
       <NumericInput value={value} onValueChange={onChange} />
     </Label>
@@ -392,7 +395,7 @@ const SelectPanel: FieldPanel<SelectField> = ({
   });
   return (
     <Label>
-      {toTitle(title)}
+      {idToTitle(title)}
       <Description description={description} />
       <MenuItemSelect
         activeItem={value}
@@ -409,13 +412,15 @@ const FlagPanel: FieldPanel<FlagField> = ({
   parentUid,
   order,
   description,
+  options = {},
 }) => {
   const [uid, setUid] = useState(initialUid);
   return (
     <Checkbox
       checked={!!uid}
       onChange={(e) => {
-        if ((e.target as HTMLInputElement).checked) {
+        const {checked} = (e.target as HTMLInputElement);
+        if (checked) {
           const newUid = window.roamAlphaAPI.util.generateUID();
           window.roamAlphaAPI.createBlock({
             block: { string: title, uid: newUid },
@@ -426,10 +431,11 @@ const FlagPanel: FieldPanel<FlagField> = ({
           window.roamAlphaAPI.deleteBlock({ block: { uid } });
           setUid("");
         }
+        options.onChange?.(checked);
       }}
       labelElement={
         <>
-          {toTitle(title)}
+          {idToTitle(title)}
           <Description description={description} />
         </>
       }
@@ -602,7 +608,7 @@ const BlockPanel: FieldPanel<BlockField> = ({
   return (
     <>
       <Label>
-        {toTitle(title)}
+        {idToTitle(title)}
         <Description description={description} />
       </Label>
       <div
@@ -627,7 +633,7 @@ const CustomPanel: FieldPanel<CustomField> = ({
 }) => (
   <>
     <Label>
-      {toTitle(title)}
+      {idToTitle(title)}
       <Description description={description} />
     </Label>
     <Component
@@ -813,10 +819,10 @@ const ToggleablePanel = ({
         onCancel={() => setIsOpen(false)}
       >
         {enabled
-          ? `By clicking submit below, you will unsubscribe from the premium features of the RoamJS Extension: ${toTitle(
+          ? `By clicking submit below, you will unsubscribe from the premium features of the RoamJS Extension: ${idToTitle(
               extensionId
             )}`
-          : `By clicking submit below, you will subscribe to the premium features of the RoamJS Extension: ${toTitle(
+          : `By clicking submit below, you will subscribe to the premium features of the RoamJS Extension: ${idToTitle(
               extensionId
             )} for $${price}/month. A window will first appear to log in to your RoamJS account.`}
       </Alert>
@@ -937,7 +943,7 @@ const FieldTabs = ({
           <Tab
             id={title}
             key={title}
-            title={toTitle(title)}
+            title={idToTitle(title)}
             disabled={!enabled}
             panel={
               <Panel
@@ -1020,7 +1026,7 @@ ${
 }`}
       </style>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h4 style={{ padding: 4 }}>{toTitle(id)} Configuration</h4>
+        <h4 style={{ padding: 4 }}>{idToTitle(id)} Configuration</h4>
         {currentVersion && (
           <span>
             <span style={{ color: "#cccccc", fontSize: 8 }}>
@@ -1052,7 +1058,7 @@ ${
           <Tab
             id={tabId}
             key={tabId}
-            title={toTitle(tabId)}
+            title={idToTitle(tabId)}
             panel={
               <FieldTabs
                 id={tabId}

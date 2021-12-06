@@ -1,37 +1,38 @@
-export {
-  addInputSetting,
-  createOverlayRender,
-  getOauth,
-  getOauthAccounts,
-  getRenderRoot,
-  getSettingIntFromTree,
-  getSettingValueFromTree,
-  getSettingValuesFromTree,
-  getSubTree,
-  setInputSetting,
-  setInputSettings,
-  toFlexRegex,
-  toTitle as idToTitle,
-  useArrowKeyDown,
-  useSubTree,
-} from "./hooks";
+export { default as addInputSetting } from "./util/addInputSetting";
+export { default as createOverlayRender } from "./util/createOverlayRender";
+export { default as idToTitle } from "./util/idToTitle";
+export { default as getOauth } from "./util/getOauth";
+export { default as getOauthAccounts } from "./util/getOauthAccounts";
+export { default as getRenderRoot } from "./util/getRenderRoot";
+export { default as getSettingIntFromTree } from "./util/getSettingIntFromTree";
+export { default as getSettingValueFromTree } from "./util/getSettingValueFromTree";
+export { default as getSettingValuesFromTree } from "./util/getSettingValuesFromTree";
+export { default as getSubTree } from "./util/getSubTree";
+export { default as setInputSetting } from "./util/setInputSetting";
+export { default as setInputSettings } from "./util/setInputSettings";
+export { default as toFlexRegex } from "./util/toFlexRegex";
+export { default as useArrowKeyDown } from "./hooks/useArrowKeyDown";
+export { default as useSubTree } from "./hooks/useSubTree";
 
-export { default as BlockInput } from "./BlockInput";
-export { default as BlockErrorBoundary } from "./BlockErrorBoundary";
+export { default as BlockInput } from "./components/BlockInput";
+export { default as BlockErrorBoundary } from "./components/BlockErrorBoundary";
 export {
   default as ComponentContainer,
   createComponentRender,
-} from "./ComponentContainer";
-export { default as ConfigPage, createConfigObserver } from "./ConfigPage";
+} from "./components/ComponentContainer";
+export {
+  default as ConfigPage,
+  createConfigObserver,
+} from "./components/ConfigPage";
 export {
   default as CursorMenu,
   render as renderCursorMenu,
   getCoordsFromTextarea,
-} from "./CursorMenu";
-export { default as Description } from "./Description";
-export { default as MenuItemSelect } from "./MenuItemSelect";
-export { useOauthAccounts } from './OauthSelect';
-export { default as PageInput } from "./PageInput";
+} from "./components/CursorMenu";
+export { default as Description } from "./components/Description";
+export { default as MenuItemSelect } from "./components/MenuItemSelect";
+export { useOauthAccounts } from "./components/OauthSelect";
+export { default as PageInput } from "./components/PageInput";
 export {
   TOKEN_STAGE as SERVICE_TOKEN_STAGE,
   SERVICE_GUIDE_HIGHLIGHT,
@@ -52,13 +53,13 @@ export {
   NextButton as ServiceNextButton,
   useSetMetadata as useServiceSetMetadata,
   useGetMetadata as useServiceGetMetadata,
-} from "./ServiceComponents";
+} from "./components/ServiceComponents";
 export {
   default as SimpleAlert,
   render as renderSimpleAlert,
-} from "./SimpleAlert";
-export { default as Toast, render as renderToast } from "./Toast";
+} from "./components/SimpleAlert";
+export { default as Toast, render as renderToast } from "./components/Toast";
 export {
   default as WarningToast,
   render as renderWarningToast,
-} from "./WarningToast";
+} from "./components/WarningToast";

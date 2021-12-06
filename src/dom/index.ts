@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { parseInline, RoamContext } from "roam-marked";
+import { parseInline, RoamContext } from "../marked";
 import { toRoamDateUid } from "./date";
 import {
   getBlockUidsByPageTitle,

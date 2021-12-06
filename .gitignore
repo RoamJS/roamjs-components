@@ -3,8 +3,10 @@ dist
 
 # new package dist
 /components
+/date
 /hooks
 /util
 /index.d.ts
 /index.js
 /index.js.map
+/mig.js

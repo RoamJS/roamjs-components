@@ -1,4 +1,4 @@
-import {
+import type {
   RoamBasicNode,
   RoamBlock,
   RoamUnorderedBasicNode,
@@ -6,47 +6,12 @@ import {
   TreeNode,
   UserSettings,
   ViewType,
-} from "./types";
+} from "../types";
 
-export const normalizePageTitle = (title: string) =>
+export const normalizePageTitle = (title: string): string =>
   title.replace(/\\/, "\\\\").replace(/"/g, '\\"');
 
-export const allBlockMapper = (t: TreeNode): TreeNode[] => [
-  t,
-  ...t.children.flatMap(allBlockMapper),
-];
-
-// DEPRECATED - Remove for 2.0.0
-export const getChildRefUidsByBlockUid = (b: string): string[] =>
-  window.roamAlphaAPI
-    .q(
-      `[:find ?u :where [?r :block/uid ?u] [?e :block/refs ?r] [?e :block/uid "${b}"]]`
-    )
-    .map((r) => r[0] as string);
-
-// DEPRECATED - Remove for 2.0.0
-export const getLinkedPageReferences = (t: string): RoamBlock[] => {
-  const findParentBlock: (b: RoamBlock) => RoamBlock = (b: RoamBlock) =>
-    b.title
-      ? b
-      : findParentBlock(
-          window.roamAlphaAPI.q(
-            `[:find (pull ?e [*]) :where [?e :block/children ${b.id}]]`
-          )[0][0] as RoamBlock
-        );
-  const parentBlocks = window.roamAlphaAPI
-    .q(
-      `[:find (pull ?parentPage [*]) :where [?parentPage :block/children ?referencingBlock] [?referencingBlock :block/refs ?referencedPage] [?referencedPage :node/title "${normalizePageTitle(
-        t
-      )}"]]`
-    )
-    .filter((block) => block.length);
-  return parentBlocks.map((b) =>
-    findParentBlock(b[0] as RoamBlock)
-  ) as RoamBlock[];
-};
-
-export const getPageTitleReferencesByPageTitle = (title: string) =>
+export const getPageTitleReferencesByPageTitle = (title: string): string[] =>
   window.roamAlphaAPI
     .q(
       `[:find ?t :where [?b :node/title ?t] [?b :block/children ?c] [?c :block/refs ?r] [?r :node/title "${normalizePageTitle(
@@ -55,7 +20,7 @@ export const getPageTitleReferencesByPageTitle = (title: string) =>
     )
     .map((p) => p[0] as string);
 
-export const getOrderByBlockUid = (blockUid: string) =>
+export const getOrderByBlockUid = (blockUid: string): number =>
   window.roamAlphaAPI.q(
     `[:find ?o :where [?r :block/order ?o] [?r :block/uid "${blockUid}"]]`
   )?.[0]?.[0] as number;
@@ -69,6 +34,8 @@ const getTreeByBlockId = (blockId: number): TreeNode => {
   const block = window.roamAlphaAPI.pull("[*]", blockId);
   const children = block[":block/children"] || [];
   const props = block[":block/props"] || {};
+  const imageResize = props[":image-size"] || {};
+  const iframe = props[":iframe"] || {};
   return {
     text: block[":block/string"] || "",
     order: block[":block/order"] || 0,
@@ -83,20 +50,20 @@ const getTreeByBlockId = (blockId: number): TreeNode => {
     textAlign: block[":block/text-align"] || "left",
     props: {
       imageResize: Object.fromEntries(
-        Object.keys(props[":image-size"] || {}).map((p) => [
+        Object.keys(imageResize).map((p) => [
           p,
           {
-            height: props[":image-size"][p][":height"],
-            width: props[":image-size"][p][":width"],
+            height: imageResize[p][":height"],
+            width: imageResize[p][":width"],
           },
         ])
       ),
       iframe: Object.fromEntries(
-        Object.keys(props[":iframe"] || {}).map((p) => [
+        Object.keys(iframe).map((p) => [
           p,
           {
-            height: props[":iframe"][p][":size"][":height"],
-            width: props[":iframe"][p][":size"][":width"],
+            height: iframe[p][":size"][":height"],
+            width: iframe[p][":size"][":width"],
           },
         ])
       ),
@@ -161,30 +128,36 @@ export const fixViewType = ({
   return c;
 };
 
-export const getEditedUserEmailByBlockUid = (blockUid: string) =>
-  window.roamAlphaAPI.q(
+export const getEditedUserEmailByBlockUid = (blockUid: string): string =>
+  (window.roamAlphaAPI.q(
     `[:find ?e :where [?u :user/email ?e] [?b :edit/user ?u] [?b :block/uid "${blockUid}"]]`
-  )?.[0]?.[0] || "";
+  )?.[0]?.[0] as string) || "";
 
 export const getTextByBlockUid = (uid: string): string =>
-  window.roamAlphaAPI.q(
-    `[:find (pull ?e [:block/string]) :where [?e :block/uid "${uid}"]]`
-  )?.[0]?.[0]?.string || "";
+  (
+    window.roamAlphaAPI.q(
+      `[:find (pull ?e [:block/string]) :where [?e :block/uid "${uid}"]]`
+    )?.[0]?.[0] as { string?: string }
+  )?.string || "";
 
 export const getPageTitleByBlockUid = (blockUid: string): string =>
-  window.roamAlphaAPI.q(
-    `[:find (pull ?p [:node/title]) :where [?e :block/uid "${blockUid}"] [?e :block/page ?p]]`
-  )?.[0]?.[0]?.title || "";
+  (
+    window.roamAlphaAPI.q(
+      `[:find (pull ?p [:node/title]) :where [?e :block/uid "${blockUid}"] [?e :block/page ?p]]`
+    )?.[0]?.[0] as { title?: string }
+  )?.title || "";
 
 export const getPageTitleByPageUid = (blockUid: string): string =>
-  window.roamAlphaAPI.q(
-    `[:find (pull ?p [:node/title]) :where [?p :block/uid "${blockUid}"]]`
-  )?.[0]?.[0]?.title || "";
+  (
+    window.roamAlphaAPI.q(
+      `[:find (pull ?p [:node/title]) :where [?p :block/uid "${blockUid}"]]`
+    )?.[0]?.[0] as { title?: string }
+  )?.title || "";
 
 export const getParentTextByBlockUid = (blockUid: string): string =>
-  window.roamAlphaAPI.q(
+  (window.roamAlphaAPI.q(
     `[:find ?s :where [?p :block/string ?s] [?p :block/children ?e] [?e :block/uid "${blockUid}"]]`
-  )?.[0]?.[0] || "";
+  )?.[0]?.[0] as string) || "";
 
 export const getParentTextByBlockUidAndTag = ({
   blockUid,
@@ -192,25 +165,25 @@ export const getParentTextByBlockUidAndTag = ({
 }: {
   blockUid: string;
   tag: string;
-}) =>
-  window.roamAlphaAPI.q(
+}): string =>
+  (window.roamAlphaAPI.q(
     `[:find ?s :where [?p :block/string ?s] [?p :block/refs ?t] [?t :node/title "${tag}"] [?b :block/parents ?p] [?b :block/uid "${blockUid}"]]`
-  )?.[0]?.[0] || "";
+  )?.[0]?.[0] as string) || "";
 
-export const getSettingsByEmail = (email: string) =>
+export const getSettingsByEmail = (email: string): UserSettings =>
   (window.roamAlphaAPI.q(
     `[:find ?settings :where[?e :user/settings ?settings] [?e :user/email "${email}"]]`
   )?.[0]?.[0] as UserSettings) || {};
 
-export const getDisplayNameByEmail = (email: string) =>
+export const getDisplayNameByEmail = (email: string): string =>
   (window.roamAlphaAPI.q(
     `[:find ?name :where[?e :user/display-name ?name] [?e :user/email "${email}"]]`
   )?.[0]?.[0] as string) || "";
 
 export const getDisplayNameByUid = (uid: string): string =>
-  window.roamAlphaAPI.q(
+  (window.roamAlphaAPI.q(
     `[:find ?s :where [?p :node/title ?s] [?e :user/display-page ?p] [?e :user/uid "${uid}"]]`
-  )?.[0]?.[0] || "";
+  )?.[0]?.[0] as string) || "";
 
 export const getCreateTimeByBlockUid = (uid: string): number =>
   window.roamAlphaAPI.q(
@@ -230,7 +203,7 @@ export const getAllPageNames = (): string[] =>
 export const getAllBlockUids = (): string[] =>
   window.roamAlphaAPI
     .q(`[:find ?u :where [?e :block/uid ?u] [?e :block/string]]`)
-    .map((f) => f[0]);
+    .map((f) => f[0] as string);
 
 export const getAllBlockUidsAndTexts = (): { uid: string; text: string }[] =>
   window.roamAlphaAPI
@@ -245,11 +218,13 @@ export const getPageViewType = (title: string): ViewType =>
   )?.[0]?.[0] as ViewType) || "bullet";
 
 export const getPageUidByPageTitle = (title: string): string =>
-  (window.roamAlphaAPI.q(
-    `[:find (pull ?e [:block/uid]) :where [?e :node/title "${normalizePageTitle(
-      title
-    )}"]]`
-  )?.[0]?.[0]?.uid as string) || "";
+  (
+    window.roamAlphaAPI.q(
+      `[:find (pull ?e [:block/uid]) :where [?e :node/title "${normalizePageTitle(
+        title
+      )}"]]`
+    )?.[0]?.[0] as { uid?: string }
+  )?.uid || "";
 
 export const getBlockUidAndTextIncludingText = (
   t: string
@@ -339,7 +314,7 @@ export const getPageTitlesAndUidsDirectlyReferencingPage = (
     )
     .map(([title, uid]: string[]) => ({ title, uid }));
 
-export const getBlockUidsByPageTitle = (title: string) =>
+export const getBlockUidsByPageTitle = (title: string): string[] =>
   window.roamAlphaAPI
     .q(
       `[:find ?u :where  [?b :block/uid ?u] [?b :block/page ?e] [?e :node/title "${normalizePageTitle(
@@ -404,7 +379,7 @@ export const getParentUidsOfBlockUid = (uid: string): string[] =>
 const sortBasicNodes = (c: RoamUnorderedBasicNode[]): RoamBasicNode[] =>
   c
     .sort(({ order: a }, { order: b }) => a - b)
-    .map(({ order, children = [], ...node }) => ({
+    .map(({ order: _, children = [], ...node }) => ({
       children: sortBasicNodes(children),
       ...node,
     }));
@@ -427,7 +402,7 @@ type RoamRawBlock = {
   viewType?: ViewType;
   textAlign?: TextAlignment;
   editTime: number;
-  props?: {};
+  props?: unknown;
   children?: RoamRawBlock[];
 };
 

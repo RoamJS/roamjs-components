@@ -40,7 +40,22 @@ export type PullBlock = {
   ":block/text-align"?: TextAlignment;
   ":children/view-type"?: `:${ViewType}`;
   ":edit/time"?: number;
-  ":block/props"?: any;
+  ":block/props"?: {
+    ":image-size"?: {
+      [p: string]: {
+        ":height": number;
+        ":width": number;
+      };
+    };
+    ":iframe"?: {
+      [p: string]: {
+        ":size": {
+          ":height": number;
+          ":width": number;
+        };
+      };
+    };
+  };
 };
 
 export type RoamPullResult = RoamPull | null;
@@ -207,3 +222,129 @@ export type SidebarWindow = {
   "pinned?": boolean;
   "window-id": string;
 } & SidebarWindowType;
+
+declare global {
+  interface Window {
+    roamAlphaAPI: {
+      q: (
+        query: string,
+        ...params: unknown[]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ) => any[][];
+      pull: (selector: string, id: number | string) => PullBlock;
+      createBlock: WriteAction;
+      updateBlock: WriteAction;
+      createPage: WriteAction;
+      moveBlock: WriteAction;
+      deleteBlock: WriteAction;
+      updatePage: WriteAction;
+      deletePage: WriteAction;
+      util: {
+        generateUID: () => string;
+      };
+      data: {
+        addPullWatch: (
+          pullPattern: string,
+          entityId: string,
+          callback: (before: PullBlock, after: PullBlock) => void
+        ) => boolean;
+        block: {
+          create: WriteAction;
+          update: WriteAction;
+          move: WriteAction;
+          delete: WriteAction;
+        };
+        page: {
+          create: WriteAction;
+          update: WriteAction;
+          delete: WriteAction;
+        };
+        pull: (selector: string, id: number) => PullBlock;
+        q: (query: string, ...params: unknown[]) => unknown[][];
+        removePullWatch: (
+          pullPattern: string,
+          entityId: string,
+          callback: (before: PullBlock, after: PullBlock) => void
+        ) => boolean;
+        redo: () => void;
+        undo: () => void;
+        user: {
+          upsert: () => void;
+        };
+      };
+      ui: {
+        rightSidebar: {
+          open: () => void;
+          close: () => void;
+          getWindows: () => SidebarWindow[];
+          addWindow: SidebarAction;
+          setWindowOrder: (action: {
+            window: SidebarWindowInput & { order: number };
+          }) => boolean;
+          collapseWindow: SidebarAction;
+          pinWindow: SidebarAction;
+          expandWindow: SidebarAction;
+          removeWindow: SidebarAction;
+          unpinWindow: SidebarAction;
+        };
+        commandPalette: {
+          addCommand: (action: { label: string; callback: () => void }) => void;
+          removeCommand: (action: { label: string }) => void;
+        };
+        blockContextMenu: {
+          addCommand: (action: {
+            label: string;
+            callback: (props: {
+              "block-string": string;
+              "block-uid": string;
+              heading: 0 | 1 | 2 | 3 | null;
+              "page-uid": string;
+              "read-only?": boolean;
+              "window-id": string;
+            }) => void;
+          }) => void;
+          removeCommand: (action: { label: string }) => void;
+        };
+        getFocusedBlock: () => null | {
+          "window-id": string;
+          "block-uid": string;
+        };
+        components: {
+          renderBlock: (args: { uid: string; el: HTMLElement }) => null;
+        };
+        mainWindow: {
+          openBlock: (p: { block: { uid: string } }) => true;
+          openPage: (p: { page: { uid: string } | { title: string } }) => true;
+        };
+      };
+    };
+    roamDatomicAlphaAPI?: (
+      params: ClientParams
+    ) => Promise<RoamBlock & { success?: boolean }>;
+    // roamjs namespace should only be used for methods that must be accessed across extension scripts
+    roamjs?: {
+      loaded: Set<string>;
+      extension: {
+        [id: string]: {
+          [method: string]: (args?: unknown) => void;
+        };
+      };
+      version: { [id: string]: string };
+      // DEPRECATED remove in 2.0
+      dynamicElements: Set<HTMLElement>;
+    };
+    roam42?: {
+      smartBlocks?: {
+        customCommands: {
+          key: string; // `<% ${string} %> (SmartBlock function)`, sad - https://github.com/microsoft/TypeScript/issues/13969
+          icon: "gear";
+          value: string;
+          processor: (match: string) => Promise<string | void>;
+        }[];
+        activeWorkflow: {
+          outputAdditionalBlock: (text: string) => void;
+        };
+      };
+    };
+  }
+}

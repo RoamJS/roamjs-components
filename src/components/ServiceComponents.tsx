@@ -26,7 +26,11 @@ import toFlexRegex from "../util/toFlexRegex";
 import setInputSetting from "../util/setInputSetting";
 import getToken from "../util/getToken";
 import { createPageTitleObserver } from "../dom";
-import { getTreeByPageName, getPageUidByPageTitle, getCurrentUserEmail } from "../queries";
+import {
+  getTreeByPageName,
+  getPageUidByPageTitle,
+  getCurrentUserEmail,
+} from "../queries";
 import localStorageGet from "../util/localStorageGet";
 import localStorageRemove from "../util/localStorageRemove";
 import localStorageSet from "../util/localStorageSet";

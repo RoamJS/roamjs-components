@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { parseInline, RoamContext } from "../marked";
-import { toRoamDateUid } from "./date";
+import toRoamDateUid from "../date/toRoamDateUid";
 import {
   getBlockUidsByPageTitle,
   getBlockUidsReferencingBlock,
@@ -10,9 +10,9 @@ import {
   getPageUidByPageTitle,
   getParentUidByBlockUid,
   getTextByBlockUid,
-} from "./queries";
-import { RoamError, TreeNode, ViewType } from "./types";
-import { createBlock, updateActiveBlock, updateBlock } from "./writes";
+} from "../queries";
+import type { RoamError, TreeNode, ViewType } from "../types";
+import { createBlock, updateActiveBlock, updateBlock } from "../writes";
 
 export const BLOCK_REF_REGEX = /\(\(([\w\d-]{9,10})\)\)/;
 const aliasRefRegex = new RegExp(
@@ -105,7 +105,7 @@ const clickEventListener = (
   }
 };
 
-export const addOldRoamJSDependency = (extension: string) => {
+export const addOldRoamJSDependency = (extension: string): void => {
   const id = `roamjs-${extension.replace(/\/main$/, "")}`;
   const existing = document.getElementById(id);
   if (!existing) {
@@ -118,14 +118,14 @@ export const addOldRoamJSDependency = (extension: string) => {
   }
 };
 
-export const addRoamJSDependency = (extension: string) => {
+export const addRoamJSDependency = (extension: string): void => {
   addOldRoamJSDependency(`${extension}/main`);
 };
 
 export const addButtonListener = (
   targetCommand: string,
   callback: (buttonConfig: { [key: string]: string }, blockUid: string) => void
-) =>
+): void =>
   document.addEventListener(
     "click",
     clickEventListener(targetCommand, callback)
@@ -134,7 +134,7 @@ export const addButtonListener = (
 /**
  * @param icon A blueprint icon which could be found in https://blueprintjs.com/docs/#icons
  */
-export const createIconButton = (icon: string) => {
+export const createIconButton = (icon: string): HTMLSpanElement => {
   const popoverButton = document.createElement("span");
   popoverButton.className = "bp3-button bp3-minimal bp3-small";
   popoverButton.tabIndex = 0;
@@ -146,7 +146,7 @@ export const createIconButton = (icon: string) => {
   return popoverButton;
 };
 
-export const getUidsFromId = (id: string) => {
+export const getUidsFromId = (id: string): {blockUid: string, parentUid: string} => {
   const blockUid = id.substring(id.length - 9, id.length);
   const restOfHTMLId = id.substring(0, id.length - 9);
   const potentialDateUid = restOfHTMLId.substring(
@@ -162,19 +162,19 @@ export const getUidsFromId = (id: string) => {
   };
 };
 
-export const getUids = (block: HTMLDivElement | HTMLTextAreaElement) => {
+export const getUids = (block: HTMLDivElement | HTMLTextAreaElement): ReturnType<typeof getUidsFromId> => {
   return block ? getUidsFromId(block.id) : { blockUid: "", parentUid: "" };
 };
 
-export const getActiveUids = () =>
+export const getActiveUids = (): ReturnType<typeof getUids> =>
   getUids(document.activeElement as HTMLTextAreaElement);
 
-export const getUidsFromButton = (button: HTMLButtonElement) => {
+export const getUidsFromButton = (button: HTMLButtonElement): ReturnType<typeof getUids> => {
   const block = button.closest(".roam-block") as HTMLDivElement;
   return block ? getUids(block) : { blockUid: "", parentUid: "" };
 };
 
-export const genericError = (e: Partial<AxiosError & RoamError>) => {
+export const genericError = (e: Partial<AxiosError & RoamError>): string => {
   const message =
     (e.response
       ? typeof e.response.data === "string"
@@ -621,7 +621,7 @@ export const addBlockCommand = ({
 }: {
   label: string;
   callback: (uid: string) => void;
-}) => {
+}): void => {
   const textareaRef: { current: HTMLTextAreaElement | null } = {
     current: null,
   };
@@ -708,7 +708,7 @@ export const getPageTitleByHtmlElement = (
   );
 };
 
-export const getPageTitleValueByHtmlElement = (e: Element) =>
+export const getPageTitleValueByHtmlElement = (e: Element): string =>
   elToTitle(getPageTitleByHtmlElement(e));
 
 export const getDropUidOffset = (

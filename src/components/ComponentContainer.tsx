@@ -1,7 +1,7 @@
 import { Button } from "@blueprintjs/core";
 import React, { useCallback, useState } from "react";
 import ReactDOM from "react-dom";
-import { getBlockUidFromTarget, openBlock } from "roam-client";
+import { getBlockUidFromTarget, openBlock } from "../dom";
 
 const ComponentContainer: React.FunctionComponent<{
   blockId?: string;

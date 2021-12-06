@@ -1,12 +1,10 @@
-import {
-  DAILY_NOTE_PAGE_TITLE_REGEX,
-  parseRoamDate,
-  toRoamDateUid,
-} from "./date";
-import { getActiveUids, getUidsFromId } from "./dom";
-import { InputTextNode } from "./types";
+import { DAILY_NOTE_PAGE_TITLE_REGEX } from "../date";
+import toRoamDateUid from "../date/toRoamDateUid";
+import parseRoamDate from "../date/parseRoamDate";
+import { getActiveUids, getUidsFromId } from "../dom";
+import { InputTextNode } from "../types";
 
-export const updateActiveBlock = (text: string) =>
+export const updateActiveBlock = (text: string): boolean =>
   window.roamAlphaAPI.updateBlock({
     block: {
       uid: getActiveUids().blockUid,
@@ -14,7 +12,7 @@ export const updateActiveBlock = (text: string) =>
     },
   });
 
-export const clearBlockById = (id: string) =>
+export const clearBlockById = (id: string): boolean =>
   window.roamAlphaAPI.updateBlock({
     block: {
       uid: getUidsFromId(id).blockUid,
@@ -22,7 +20,7 @@ export const clearBlockById = (id: string) =>
     },
   });
 
-export const clearBlockByUid = (uid: string) =>
+export const clearBlockByUid = (uid: string): boolean =>
   window.roamAlphaAPI.updateBlock({
     block: {
       uid,
@@ -46,7 +44,7 @@ export const createBlock = ({
   node: InputTextNode;
   parentUid: string;
   order?: number;
-}) => {
+}): string => {
   window.roamAlphaAPI.createBlock({
     location: { "parent-uid": parentUid, order },
     block: {
@@ -87,7 +85,7 @@ export const updateBlock = ({
   textAlign,
   viewType,
   open,
-}: { uid: string } & Omit<InputTextNode, "children">) => {
+}: { uid: string } & Omit<InputTextNode, "children">): string => {
   window.roamAlphaAPI.updateBlock({
     block: {
       string: text,
@@ -101,7 +99,7 @@ export const updateBlock = ({
   return uid;
 };
 
-export const deleteBlock = (uid: string) => {
+export const deleteBlock = (uid: string): string => {
   window.roamAlphaAPI.deleteBlock({ block: { uid } });
   return uid;
 };

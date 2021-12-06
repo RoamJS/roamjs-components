@@ -20,22 +20,19 @@ import React, {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
+import { addOldRoamJSDependency, createHTMLObserver } from "../dom";
+import { createBlock, createPage, deleteBlock } from "../writes";
 import {
-  addOldRoamJSDependency,
-  createBlock,
-  createHTMLObserver,
-  createPage,
-  deleteBlock,
   getBasicTreeByParentUid,
   getFirstChildUidByBlockUid,
   getPageUidByPageTitle,
   getShallowTreeByParentUid,
   getTextByBlockUid,
-  InputTextNode,
-  localStorageGet,
-  localStorageRemove,
-  localStorageSet,
-} from "roam-client";
+} from "../queries";
+import type { InputTextNode } from "../types";
+import localStorageGet from "../util/localStorageGet";
+import localStorageRemove from "../util/localStorageRemove";
+import localStorageSet from "../util/localStorageSet";
 import startOfDay from "date-fns/startOfDay";
 import Description from "./Description";
 import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";

@@ -1,10 +1,6 @@
-import {
-  localStorageGet,
-  getShallowTreeByParentUid,
-  getPageUidByPageTitle,
-  toConfig,
-  getEditTimeByBlockUid,
-} from "roam-client";
+import { getShallowTreeByParentUid, getPageUidByPageTitle, getEditTimeByBlockUid } from "../queries";
+import localStorageGet from "./localStorageGet";
+import toConfigPageName from "./toConfigPageName";
 import toFlexRegex from "./toFlexRegex";
 
 const getOauth = (service: string, label?: string): string => {
@@ -21,7 +17,7 @@ const getOauth = (service: string, label?: string): string => {
     return data ? JSON.stringify({ ...JSON.parse(data), node }) : "{}";
   }
   const tree = getShallowTreeByParentUid(
-    getPageUidByPageTitle(toConfig(service))
+    getPageUidByPageTitle(toConfigPageName(service))
   );
   const node = tree.find((s) => toFlexRegex("oauth").test(s.text.trim()));
   if (!node) {

@@ -9,17 +9,14 @@ import {
 } from "@blueprintjs/core";
 import axios from "axios";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  createPage,
-  getCurrentUserEmail,
-  getPageUidByPageTitle,
-  localStorageRemove,
-  localStorageSet,
-} from "roam-client";
 import createOverlayRender from "../util/createOverlayRender";
 import setInputSetting from "../util/setInputSetting";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
 import getToken from "../util/getToken";
+import { getPageUidByPageTitle, getCurrentUserEmail } from "../queries";
+import localStorageRemove from "../util/localStorageRemove";
+import localStorageSet from "../util/localStorageSet";
+import { createPage } from "../writes";
 
 const TokenDialog = ({ onClose }: { onClose: () => void }) => {
   const pageUid = useMemo(

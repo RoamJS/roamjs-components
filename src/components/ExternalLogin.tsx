@@ -2,15 +2,17 @@ import { Button, Icon, Spinner } from "@blueprintjs/core";
 import React, { useState, useCallback } from "react";
 import {
   createBlock,
+} from "../writes";
+import {
   getTreeByBlockUid,
-  localStorageGet,
-  localStorageSet,
-} from "roam-client";
+} from "../queries";
 import idToTitle from "../util/idToTitle";
 import randomstring from "randomstring";
 import axios from "axios";
 import AES from "crypto-js/aes";
 import encutf8 from "crypto-js/enc-utf8";
+import localStorageGet from "../util/localStorageGet";
+import localStorageSet from "../util/localStorageSet";
 
 export type ExternalLoginOptions = {
   service: string;

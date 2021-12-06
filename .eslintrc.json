@@ -12,6 +12,7 @@
     "@typescript-eslint/no-unused-vars": [
       "error",
       { "argsIgnorePattern": "_+" }
-    ]
+    ],
+    "no-control-regex": 0
   }
 }

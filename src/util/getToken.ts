@@ -1,9 +1,6 @@
-import {
-  getBasicTreeByParentUid,
-  getPageUidByPageTitle,
-  localStorageGet,
-} from "roam-client";
+import { getBasicTreeByParentUid, getPageUidByPageTitle } from "../queries";
 import { getTokenFromTree } from "./getTokenFromTree";
+import localStorageGet from "./localStorageGet";
 
 const getToken = (service = "roamjs"): string =>
   localStorageGet(`token${service === "roamjs" ? "" : `-${service}`}`) ||

@@ -1,5 +1,5 @@
 import React from "react";
-import { createBlock } from "roam-client";
+import { createBlock } from "../writes";
 
 type BlockErrorBoundaryProps = { blockUid: string; message: string };
 type BlockErrorBoundaryState = { hasError: boolean };

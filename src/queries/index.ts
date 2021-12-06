@@ -464,3 +464,41 @@ export const isTagOnPage = ({
       title
     )}"]]`
   )?.[0]?.[0];
+
+const getCurrentUser = (): string[] => {
+  const globalAppState = JSON.parse(
+    localStorage.getItem("globalAppState") || '["","",[]]'
+  ) as (string | string[])[];
+  const userIndex = globalAppState.findIndex((s) => s === "~:user");
+  if (userIndex > 0) {
+    return globalAppState[userIndex + 1] as string[];
+  }
+  return [];
+};
+
+export const getCurrentUserEmail = (): string => {
+  const userArray = getCurrentUser();
+  const emailIndex = userArray.findIndex((s) => s === "~:email");
+  if (emailIndex > 0) {
+    return userArray[emailIndex + 1];
+  }
+  return "";
+};
+
+export const getCurrentUserUid = (): string => {
+  const userArray = getCurrentUser();
+  const uidIndex = userArray.findIndex((s) => s === "~:uid");
+  if (uidIndex > 0) {
+    return userArray[uidIndex + 1];
+  }
+  return "";
+};
+
+export const getCurrentUserDisplayName = (): string => {
+  const userArray = getCurrentUser();
+  const uidIndex = userArray.findIndex((s) => s === "~:display-name");
+  if (uidIndex > 0) {
+    return userArray[uidIndex + 1] || "";
+  }
+  return "";
+};

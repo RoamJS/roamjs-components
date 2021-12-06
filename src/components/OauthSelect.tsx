@@ -1,6 +1,6 @@
 import { Label } from "@blueprintjs/core";
 import React, { useState } from "react";
-import { getTreeByPageName } from "roam-client";
+import { getTreeByPageName } from "../queries";
 import toFlexRegex from "../util/toFlexRegex";
 import MenuItemSelect from "./MenuItemSelect";
 

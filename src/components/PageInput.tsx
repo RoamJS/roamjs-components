@@ -7,7 +7,7 @@ import {
   Button,
 } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { getAllPageNames } from "roam-client";
+import { getAllPageNames } from "../queries";
 import useArrowKeyDown from "../hooks/useArrowKeyDown";
 import fuzzy from "fuzzy";
 

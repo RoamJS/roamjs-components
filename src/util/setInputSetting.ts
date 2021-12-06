@@ -1,4 +1,4 @@
-import { getTreeByBlockUid } from "roam-client";
+import { getTreeByBlockUid } from "../queries";
 import toFlexRegex from "./toFlexRegex";
 
 const setInputSetting = ({

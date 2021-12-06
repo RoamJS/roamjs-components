@@ -20,22 +20,18 @@ import React, {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
-import {
-  createPage,
-  createPageTitleObserver,
-  getCurrentUserEmail,
-  getPageUidByPageTitle,
-  getTreeByPageName,
-  localStorageGet,
-  localStorageRemove,
-  localStorageSet,
-  TreeNode,
-} from "roam-client";
 import getRenderRoot from "../util/getRenderRoot";
 import idToTitle from "../util/idToTitle";
 import toFlexRegex from "../util/toFlexRegex";
 import setInputSetting from "../util/setInputSetting";
 import getToken from "../util/getToken";
+import { createPageTitleObserver } from "../dom";
+import { getTreeByPageName, getPageUidByPageTitle, getCurrentUserEmail } from "../queries";
+import localStorageGet from "../util/localStorageGet";
+import localStorageRemove from "../util/localStorageRemove";
+import localStorageSet from "../util/localStorageSet";
+import { createPage } from "../writes";
+import type { TreeNode } from "../types";
 
 declare global {
   interface Window {

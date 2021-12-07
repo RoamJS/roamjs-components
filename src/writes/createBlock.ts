@@ -1,6 +1,9 @@
+import { differenceInMilliseconds } from "date-fns";
 import type { InputTextNode } from "../types";
 
-const createBlock = ({
+type ActionParams = Parameters<typeof window.roamAlphaAPI.createBlock>[0];
+
+const gatherActions = ({
   node: {
     text,
     children = [],
@@ -16,23 +19,79 @@ const createBlock = ({
   node: InputTextNode;
   parentUid: string;
   order?: number;
-}): string => {
-  window.roamAlphaAPI.createBlock({
-    location: { "parent-uid": parentUid, order },
-    block: {
-      uid,
-      string: text,
-      heading,
-      "text-align": textAlign,
-      "children-view-type": viewType,
-      open,
+}): ActionParams[] => {
+  return [
+    {
+      location: { "parent-uid": parentUid, order },
+      block: {
+        uid,
+        string: text,
+        heading,
+        "text-align": textAlign,
+        "children-view-type": viewType,
+        open,
+      },
+      ...children.map((node, order) =>
+        gatherActions({ node, parentUid: uid, order })
+      ),
     },
-  });
-  children.forEach((n, o) =>
-    createBlock({ node: n, parentUid: uid, order: o })
-  );
-  if (!open) window.roamAlphaAPI.updateBlock({ block: { uid, open: false } }); // Roam doesn't do this for us yet
-  return uid;
+  ];
+};
+
+const actionQueue: {
+  params: ActionParams;
+  type:
+    | "createBlock"
+    | "updateBlock"
+    | "deleteBlock"
+    | "createPage"
+    | "updatePage"
+    | "deletePage";
+}[] = [];
+const submittedActions: { date: Date; action: typeof actionQueue[number] }[] =
+  [];
+const ROAM_LIMIT = 300;
+const ROAM_TIMEOUT = 61000; // One minute, plus an extra second to be safe.
+const submitActions = (actions: typeof actionQueue) => {
+  actionQueue.push(...actions);
+  const processActions = () => {
+    if (ROAM_LIMIT > submittedActions.length) {
+      const submitNow = actionQueue.splice(
+        0,
+        ROAM_LIMIT - submittedActions.length
+      );
+      const submittedNow = submitNow.map((action) => {
+        const { params, type } = action;
+        window.roamAlphaAPI[type](params);
+        return { action, date: new Date() };
+      });
+      submittedActions.push(...submittedNow);
+    }
+    if (actionQueue.length) {
+      const timeout =
+        ROAM_TIMEOUT -
+        differenceInMilliseconds(new Date(), submittedActions[0].date);
+      console.log(
+        `Writing to Roam. Actions left: ${actionQueue.length}. Trying again in: ${timeout}`
+      );
+      setTimeout(() => {
+        const now = new Date();
+        const index = submittedActions.findIndex(
+          ({ date }) => differenceInMilliseconds(now, date) < ROAM_TIMEOUT
+        );
+        submittedActions.splice(0, index);
+        console.log("Dequeued", index, "items");
+        processActions();
+      }, timeout);
+    }
+  };
+  processActions();
+};
+
+const createBlock = (params: Parameters<typeof gatherActions>[0]): string => {
+  const actions = gatherActions(params);
+  submitActions(actions.map((params) => ({ params, type: "createBlock" })));
+  return actions[0].block?.uid || "";
 };
 
 export default createBlock;

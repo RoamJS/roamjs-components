@@ -30,6 +30,7 @@ export { default as getPageTitlesAndUidsDirectlyReferencingPage } from "./getPag
 export { default as getPageTitleReferencesByPageTitle } from "./getPageTitleReferencesByPageTitle";
 export { default as getPageTitlesReferencingBlockUid } from "./getPageTitlesReferencingBlockUid";
 export { default as getPageTitlesStartingWithPrefix } from "./getPageTitlesStartingWithPrefix";
+export { default as getPageTitleByPageUid } from "./getPageTitleByPageUid";
 export { default as getPageUidByPageTitle } from "./getPageUidByPageTitle";
 export { default as getPageViewType } from "./getPageViewType";
 export { default as getParentTextByBlockUid } from "./getParentTextByBlockUid";

@@ -62,30 +62,38 @@ const submitActions = (actions: typeof actionQueue) => {
       );
       const submittedNow = submitNow.map((action) => {
         const { params, type } = action;
-        window.roamAlphaAPI[type](params);
+        try {
+          window.roamAlphaAPI[type](params);
+        } catch (e) {
+          console.error(`Failed action of type ${type} with params:`);
+          console.error(params);
+          console.error(`Here's the error:`);
+          console.error(e);
+        }
         return { action, date: new Date() };
       });
       submittedActions.push(...submittedNow);
     }
-    if (actionQueue.length) {
-      const timeout =
-        ROAM_TIMEOUT -
-        differenceInMilliseconds(new Date(), submittedActions[0].date);
+    const timeout =
+      ROAM_TIMEOUT -
+      differenceInMilliseconds(new Date(), submittedActions.slice(-1)[0].date);
+    if (actionQueue.length)
       console.log(
         `Writing to Roam. Actions left: ${actionQueue.length}. Trying again in: ${timeout}`
       );
-      setTimeout(() => {
-        const now = new Date();
-        const index = submittedActions.findIndex(
-          ({ date }) => differenceInMilliseconds(now, date) < ROAM_TIMEOUT
-        );
-        submittedActions.splice(0, index < 0 ? ROAM_LIMIT : index);
-        console.log("Dequeued", index, "items");
-        processActions();
-      }, timeout);
-    }
+    setTimeout(() => {
+      const now = new Date();
+      const index = submittedActions.findIndex(
+        ({ date }) => differenceInMilliseconds(now, date) < ROAM_TIMEOUT
+      );
+      submittedActions.splice(
+        0,
+        index < 0 ? ROAM_LIMIT : index
+      );
+      processActions();
+    }, timeout);
   };
-  processActions();
+  if (!submittedActions.length) processActions();
 };
 
 const createBlock = (params: Parameters<typeof gatherActions>[0]): string => {

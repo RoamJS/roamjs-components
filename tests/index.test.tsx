@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { createConfigObserver } from "../src";
+import { createConfigObserver } from "../src/components/ConfigPage";
 
 test("Renders Package", () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

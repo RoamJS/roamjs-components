@@ -1,3 +1,5 @@
+import createHTMLObserver from "./createHTMLObserver";
+
 const createBlockObserver = (
   blockCallback: (b: HTMLDivElement) => void,
   blockRefCallback?: (b: HTMLSpanElement) => void

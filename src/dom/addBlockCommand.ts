@@ -4,6 +4,7 @@ import getParentUidByBlockUid from "../queries/getParentUidByBlockUid";
 import getTextByBlockUid from "../queries/getTextByBlockUid";
 import createBlock from "../writes/createBlock";
 import updateBlock from "../writes/updateBlock";
+import createHTMLObserver from "./createHTMLObserver";
 import getCurrentPageUid from "./getCurrentPageUid";
 import getUids from "./getUids";
 

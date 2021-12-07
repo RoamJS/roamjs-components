@@ -1,7 +1,7 @@
 import { Button, Icon, Spinner } from "@blueprintjs/core";
 import React, { useState, useCallback } from "react";
-import { createBlock } from "../writes";
-import { getTreeByBlockUid } from "../queries";
+import createBlock from "../writes/createBlock";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import idToTitle from "../util/idToTitle";
 import randomstring from "randomstring";
 import axios from "axios";
@@ -67,7 +67,7 @@ const ExternalLogin = ({
                 time: new Date().valueOf(),
               };
 
-              const existingTree = getTreeByBlockUid(parentUid).children.find(
+              const existingTree = getBasicTreeByParentUid(parentUid).find(
                 (t) => /oauth/i.test(t.text)
               );
               const blockUid =

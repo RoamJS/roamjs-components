@@ -1,4 +1,4 @@
-import { getTreeByBlockUid } from "../queries";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import toFlexRegex from "./toFlexRegex";
 
 const setInputSetting = ({
@@ -12,8 +12,8 @@ const setInputSetting = ({
   key: string;
   index?: number;
 }): void => {
-  const tree = getTreeByBlockUid(blockUid);
-  const keyNode = tree.children.find((t) => toFlexRegex(key).test(t.text));
+  const tree = getBasicTreeByParentUid(blockUid);
+  const keyNode = tree.find((t) => toFlexRegex(key).test(t.text));
   if (keyNode && keyNode.children.length) {
     window.roamAlphaAPI.updateBlock({
       block: { uid: keyNode.children[0].uid, string: value },

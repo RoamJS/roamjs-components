@@ -1,6 +1,7 @@
 import { Label } from "@blueprintjs/core";
 import React, { useState } from "react";
-import { getTreeByPageName } from "../queries";
+import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import toFlexRegex from "../util/toFlexRegex";
 import MenuItemSelect from "./MenuItemSelect";
 
@@ -11,7 +12,7 @@ export const useOauthAccounts = (
   accountLabel: string;
 } => {
   const accountLabels = (
-    getTreeByPageName(`roam/js/${id}`).find((t) =>
+    getBasicTreeByParentUid(getPageUidByPageTitle(`roam/js/${id}`)).find((t) =>
       toFlexRegex("oauth").test(t.text)
     )?.children || []
   )

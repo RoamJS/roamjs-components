@@ -1,4 +1,4 @@
-import { getTreeByBlockUid } from "../queries";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import { createBlock } from "../writes";
 import toFlexRegex from "./toFlexRegex";
 
@@ -13,8 +13,8 @@ const addInputSetting = ({
   key: string;
   index?: number;
 }): string => {
-  const tree = getTreeByBlockUid(blockUid);
-  const keyNode = tree.children.find((t) => toFlexRegex(key).test(t.text));
+  const tree = getBasicTreeByParentUid(blockUid);
+  const keyNode = tree.find((t) => toFlexRegex(key).test(t.text));
   if (keyNode) {
     return createBlock({
       node: { text: value },

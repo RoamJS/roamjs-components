@@ -1,6 +1,6 @@
+import getUids from "./getUids";
 
-
-const getDomRefs = (blockUid: string) => {
+const getDomRefs = (blockUid: string): string[] => {
   const currentlyEditingBlock = document.querySelector(
     "textarea.rm-block-input"
   ) as HTMLTextAreaElement;
@@ -10,6 +10,6 @@ const getDomRefs = (blockUid: string) => {
     ).map((s) => s.slice(2, -2));
   }
   return [];
-}
+};
 
 export default getDomRefs;

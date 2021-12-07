@@ -26,16 +26,14 @@ import toFlexRegex from "../util/toFlexRegex";
 import setInputSetting from "../util/setInputSetting";
 import getToken from "../util/getToken";
 import { createPageTitleObserver } from "../dom";
-import {
-  getTreeByPageName,
-  getPageUidByPageTitle,
-  getCurrentUserEmail,
-} from "../queries";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
+import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
+import getCurrentUserEmail from "../queries/getCurrentUserEmail";
 import localStorageGet from "../util/localStorageGet";
 import localStorageRemove from "../util/localStorageRemove";
 import localStorageSet from "../util/localStorageSet";
 import { createPage } from "../writes";
-import type { TreeNode } from "../types";
+import type { RoamBasicNode, TreeNode } from "../types";
 
 declare global {
   interface Window {
@@ -55,27 +53,27 @@ const toCamel = (service: string) =>
 
 export const isFieldInTree =
   (field = "$^") =>
-  (tree: TreeNode[]): boolean =>
+  (tree: RoamBasicNode[]): boolean =>
     tree.some((t) => new RegExp(field, "i").test(t.text));
 
 export const useIsFieldSet = (field: string): boolean => {
-  const service = useService();
-  return isFieldInTree(field)(getTreeByPageName(`roam/js/${service}`));
+  const uid = usePageUid();
+  return isFieldInTree(field)(getBasicTreeByParentUid(uid));
 };
 
 export const useField = (field: string): string => {
-  const service = useService();
+  const pageUid = usePageUid();
   return (
-    getTreeByPageName(`roam/js/${service}`).find((t) =>
+    getBasicTreeByParentUid(pageUid).find((t) =>
       toFlexRegex(field).test(t.text)
     )?.children?.[0]?.text || ""
   );
 };
 
 export const useFieldVals = (field: string): string[] => {
-  const service = useService();
+  const pageUid = usePageUid();
   return (
-    getTreeByPageName(`roam/js/${service}`).find((t) =>
+    getBasicTreeByParentUid(pageUid).find((t) =>
       toFlexRegex(field).test(t.text)
     )?.children || []
   ).map((t) => t.text);
@@ -221,7 +219,7 @@ export type StageContent = (props: StageProps) => React.ReactElement;
 type GetStage = (setting?: string) => StageContent;
 type StageConfig = {
   component: StageContent;
-  check?: (tree: TreeNode[], service: string) => boolean;
+  check?: (tree: RoamBasicNode[], service: string) => boolean;
   setting?: string;
   isMain?: boolean;
 };
@@ -407,7 +405,7 @@ export const ServiceDashboard: React.FC<{
           return stage.component;
         }
       }
-      const tree = getTreeByPageName(title);
+      const tree = getBasicTreeByParentUid(pageUid);
       const index = stages.findIndex((s) =>
         s.check
           ? !s.check(tree, service)
@@ -419,7 +417,7 @@ export const ServiceDashboard: React.FC<{
       }
       return stages.slice(index)[0].component;
     },
-    [title, stages, setProgress, setShowProgress, service]
+    [pageUid, stages, setProgress, setShowProgress, service]
   );
   const settings = useMemo(
     () =>

@@ -1,16 +1,14 @@
 import { AxiosError } from "axios";
 import { parseInline, RoamContext } from "../marked";
 import toRoamDateUid from "../date/toRoamDateUid";
-import {
-  getBlockUidsByPageTitle,
-  getBlockUidsReferencingBlock,
-  getChildrenLengthByPageUid,
-  getNthChildUidByBlockUid,
-  getOrderByBlockUid,
-  getPageUidByPageTitle,
-  getParentUidByBlockUid,
-  getTextByBlockUid,
-} from "../queries";
+import getBlockUidsByPageTitle from "../queries/getBlockUidsByPageTitle";
+import getBlockUidsReferencingBlock from "../queries/getBlockUidsReferencingBlock";
+import getChildrenLengthByPageUid from "../queries/getChildrenLengthByPageUid";
+import getNthChildUidByBlockUid from "../queries/getNthChildUidByBlockUid";
+import getOrderByBlockUid from "../queries/getOrderByBlockUid";
+import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
+import getParentUidByBlockUid from "../queries/getParentUidByBlockUid";
+import getTextByBlockUid from "../queries/getTextByBlockUid";
 import type { RoamError, TreeNode, ViewType } from "../types";
 import { createBlock, updateActiveBlock, updateBlock } from "../writes";
 

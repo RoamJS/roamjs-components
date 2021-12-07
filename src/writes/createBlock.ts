@@ -79,7 +79,7 @@ const submitActions = (actions: typeof actionQueue) => {
         const index = submittedActions.findIndex(
           ({ date }) => differenceInMilliseconds(now, date) < ROAM_TIMEOUT
         );
-        submittedActions.splice(0, index);
+        submittedActions.splice(0, index < 0 ? ROAM_LIMIT : index);
         console.log("Dequeued", index, "items");
         processActions();
       }, timeout);

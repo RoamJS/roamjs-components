@@ -31,10 +31,10 @@ const gatherActions = ({
         "children-view-type": viewType,
         open,
       },
-      ...children.map((node, order) =>
-        gatherActions({ node, parentUid: uid, order })
-      ),
     },
+    ...children.flatMap((node, order) =>
+      gatherActions({ node, parentUid: uid, order })
+    ),
   ];
 };
 

@@ -2,23 +2,37 @@
     
 This is a collection of common UI components used by RoamJS extensions and services made available to make development easier for other Roam developers.
 
-## Pre-Requisites
+## Organization
 
-This library is built on [blueprint](https://blueprintjs.com/docs/#core), a component library developed by Palantir and the primary front end framework used by Roam. It was chosen to build most of the components in this library for consistency with Roam's frontend. 
+This package takes a modular approach - each function exposed in its own file in an effort to limit the bundle sizes of consumers. It has the following directories:
+- `components` - React components used in Roam
+- `date` - Utilities made to make interacting with Roam dates easier
+- `dom` - Utilities that interact with Roam's DOM structure
+- `events` - Utilities that interact with Roam's event system
+- `hooks` - React hooks commonly used in Roam extensions
+- `marked` - RoamJS' official Roam-flavored markdown to HTML processor
+- `queries` - Helpers that abstract datalog into common, easy-to-invoke, typed queries
+- `types` - Common typescript types used when interacting with these methods 
+- `util` - All other utilities not found in the other directories
+- `writes` - Helpers that abstract Roam's write API into common, easy-to-invoke, typed actions
 
-You will therefore need to install the following peer dependencies when using this library:
+We recommend using modular imports for using any methods found in these libraries. For example,
 
-```bash
-npm install react react-dom @blueprintjs/core @blueprintjs/select roamjs-components
+```typescript
+import getTextByBlockUid from "roam-client/queries/getTextByBlockUid";
 ```
 
-If you're using TypeScript, you will additionally need to install:
+instead of
 
-```bash
-npm install @types/react @types/react-dom
+```typescript
+import { getTextByBlockUid } from "roam-client/queries";
 ```
 
-## Utilities
+though, the latter is still available for convenience.
+
+The rest of this README is not exhaustive, and will soon live in https://roamjs.com/extensions/developer.
+
+## Util
 
 The following are a list of methods used to help interface with the RoamJS Components found in this library.
 

@@ -19,8 +19,15 @@
   "license": "MIT",
   "files": [
     "/components",
+    "/date",
+    "/dom",
+    "/events",
     "/hooks",
-    "/util"
+    "/marked",
+    "/queries",
+    "/types",
+    "/util",
+    "/writes"
   ],
   "peerDependencies": {
     "react": "^16.8.0 || ^17",

@@ -4,10 +4,14 @@ dist
 # new package dist
 /components
 /date
+/dom
+/events
 /hooks
+/queries
 /util
+/types
+/writes
 /index.d.ts
 /index.js
 /index.js.map
-/mig.js
 /debug.json

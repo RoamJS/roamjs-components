@@ -1,7 +1,7 @@
 import axios from "axios";
 import { addStyle } from "../dom";
 
-export const runExtension = async (
+const runExtension = async (
   extensionId: string,
   run: () => void,
   options: { skipAnalytics?: boolean } = {}
@@ -33,3 +33,5 @@ export const runExtension = async (
 
   run();
 };
+
+export default runExtension;

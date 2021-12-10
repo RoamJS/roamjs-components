@@ -34,7 +34,7 @@
     "react-dom": "^16.8.0 || ^17"
   },
   "dependencies": {
-    "@blueprintjs/core": "^3.42.0",
+    "@blueprintjs/core": "^3.52.0",
     "@blueprintjs/datetime": "^3.23.5",
     "@blueprintjs/select": "^3.16.0",
     "axios": "^0.21.4",

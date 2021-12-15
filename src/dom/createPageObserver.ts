@@ -6,7 +6,7 @@ import getUids from "./getUids";
 const createPageObserver = (
   name: string,
   callback: (blockUid: string, added: boolean) => void
-): void =>
+): MutationObserver =>
   createObserver((ms) => {
     const addedNodes = getMutatedNodes({
       ms,

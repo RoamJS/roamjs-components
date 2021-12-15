@@ -6,7 +6,7 @@ const createHashtagObserver = ({
 }: {
   callback: (s: HTMLSpanElement) => void;
   attribute: string;
-}): void =>
+}): MutationObserver =>
   createHTMLObserver({
     useBody: true,
     tag: "SPAN",

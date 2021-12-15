@@ -8,7 +8,7 @@ const createButtonObserver = ({
   shortcut?: string;
   attribute: string;
   render: (b: HTMLButtonElement) => void;
-}): void =>
+}): MutationObserver =>
   createHTMLObserver({
     callback: (b) => {
       if (

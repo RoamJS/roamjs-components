@@ -14,12 +14,12 @@ const createHTMLObserver = ({
   className: string;
   removeCallback?: (b: HTMLElement) => void;
   useBody?: boolean;
-}): void => {
+}): MutationObserver => {
   const blocks = document.getElementsByClassName(
     className
   ) as HTMLCollectionOf<HTMLElement>;
   Array.from(blocks).forEach(callback);
-  (useBody ? createOverlayObserver : createObserver)((ms) => {
+  return (useBody ? createOverlayObserver : createObserver)((ms) => {
     const addedNodes = getMutatedNodes({
       ms,
       nodeList: "addedNodes",

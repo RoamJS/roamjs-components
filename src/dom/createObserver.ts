@@ -5,7 +5,7 @@ const createObserver = (
     mutationList: MutationRecord[],
     observer: MutationObserver
   ) => void
-): void =>
+): MutationObserver =>
   createDivObserver(
     mutationCallback,
     document.getElementsByClassName("roam-body")[0]

@@ -74,26 +74,28 @@ const submitActions = (actions: typeof actionQueue) => {
       });
       submittedActions.push(...submittedNow);
     }
-    const timeout =
-      ROAM_TIMEOUT -
-      differenceInMilliseconds(new Date(), submittedActions.slice(-1)[0].date);
-    if (actionQueue.length)
-      console.log(
-        `Writing to Roam. Actions left: ${actionQueue.length}. Trying again in: ${timeout}`
-      );
-    setTimeout(() => {
-      const now = new Date();
-      const index = submittedActions.findIndex(
-        ({ date }) => differenceInMilliseconds(now, date) < ROAM_TIMEOUT
-      );
-      submittedActions.splice(
-        0,
-        index < 0 ? ROAM_LIMIT : index
-      );
-      processActions();
-    }, timeout);
+    if (submittedActions.length) {
+      const timeout =
+        ROAM_TIMEOUT -
+        differenceInMilliseconds(
+          new Date(),
+          submittedActions.slice(-1)[0].date
+        );
+      if (actionQueue.length)
+        console.log(
+          `Writing to Roam. Actions left: ${actionQueue.length}. Trying again in: ${timeout}`
+        );
+      setTimeout(() => {
+        const now = new Date();
+        const index = submittedActions.findIndex(
+          ({ date }) => differenceInMilliseconds(now, date) < ROAM_TIMEOUT
+        );
+        submittedActions.splice(0, index < 0 ? ROAM_LIMIT : index);
+        processActions();
+      }, timeout);
+    }
   };
-  if (!submittedActions.length) processActions();
+  processActions();
 };
 
 const createBlock = (params: Parameters<typeof gatherActions>[0]): string => {

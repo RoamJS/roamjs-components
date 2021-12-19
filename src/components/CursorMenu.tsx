@@ -216,6 +216,7 @@ const CursorMenu = <T extends Record<string, string>>({
         flip: { enabled: false },
         preventOverflow: { enabled: false },
       }}
+      autoFocus={false}
       content={
         <Menu
           ulRef={menuRef}

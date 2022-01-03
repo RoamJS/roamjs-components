@@ -52,27 +52,35 @@ const submittedActions: { date: Date; action: typeof actionQueue[number] }[] =
   [];
 const ROAM_LIMIT = 300;
 const ROAM_TIMEOUT = 61000; // One minute, plus an extra second to be safe.
-const submitActions = (actions: typeof actionQueue) => {
+const submitActions = (actions: typeof actionQueue): Promise<void> => {
   actionQueue.push(...actions);
-  const processActions = () => {
+  const processActions = async () => {
     if (ROAM_LIMIT > submittedActions.length) {
       const submitNow = actionQueue.splice(
         0,
         ROAM_LIMIT - submittedActions.length
       );
-      const submittedNow = submitNow.map((action) => {
-        const { params, type } = action;
-        try {
-          window.roamAlphaAPI[type](params);
-        } catch (e) {
-          console.error(`Failed action of type ${type} with params:`);
-          console.error(params);
-          console.error(`Here's the error:`);
-          console.error(e);
-        }
-        return { action, date: new Date() };
-      });
-      submittedActions.push(...submittedNow);
+      await submitNow
+        .map((action) => () => {
+          const { params, type } = action;
+          return window.roamAlphaAPI[type](params)
+            .catch((e) => {
+              console.error(`Failed action of type ${type} with params:`);
+              console.error(params);
+              console.error(`Here's the error:`);
+              console.error(e);
+            })
+            .then(() => ({ action, date: new Date() }));
+        })
+        .reduce(
+          (prev, cur) =>
+            prev.then(() =>
+              cur().then((a) => {
+                submittedActions.push(a);
+              })
+            ),
+          Promise.resolve()
+        );
     }
     if (submittedActions.length) {
       const timeout =
@@ -95,13 +103,16 @@ const submitActions = (actions: typeof actionQueue) => {
       }, timeout);
     }
   };
-  processActions();
+  return processActions();
 };
 
-const createBlock = (params: Parameters<typeof gatherActions>[0]): string => {
+const createBlock = (
+  params: Parameters<typeof gatherActions>[0]
+): Promise<string> => {
   const actions = gatherActions(params);
-  submitActions(actions.map((params) => ({ params, type: "createBlock" })));
-  return actions[0].block?.uid || "";
+  return submitActions(
+    actions.map((params) => ({ params, type: "createBlock" }))
+  ).then(() => actions[0].block?.uid || "");
 };
 
 export default createBlock;

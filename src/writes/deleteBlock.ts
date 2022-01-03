@@ -1,6 +1,5 @@
-const deleteBlock = (uid: string): string => {
-  window.roamAlphaAPI.deleteBlock({ block: { uid } });
-  return uid;
+const deleteBlock = (uid: string): Promise<string> => {
+  return window.roamAlphaAPI.deleteBlock({ block: { uid } }).then(() => uid);
 };
 
 export default deleteBlock;

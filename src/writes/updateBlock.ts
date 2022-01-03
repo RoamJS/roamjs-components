@@ -7,18 +7,19 @@ const updateBlock = ({
   textAlign,
   viewType,
   open,
-}: { uid: string } & Omit<InputTextNode, "children">): string => {
-  window.roamAlphaAPI.updateBlock({
-    block: {
-      string: text,
-      uid,
-      heading,
-      "text-align": textAlign,
-      "children-view-type": viewType,
-      open,
-    },
-  });
-  return uid;
+}: { uid: string } & Omit<InputTextNode, "children">): Promise<string> => {
+  return window.roamAlphaAPI
+    .updateBlock({
+      block: {
+        string: text,
+        uid,
+        heading,
+        "text-align": textAlign,
+        "children-view-type": viewType,
+        open,
+      },
+    })
+    .then(() => uid);
 };
 
 export default updateBlock;

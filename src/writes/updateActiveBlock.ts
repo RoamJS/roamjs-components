@@ -1,6 +1,6 @@
 import getActiveUids from "../dom/getActiveUids";
 
-const updateActiveBlock = (text: string): boolean =>
+const updateActiveBlock = (text: string): Promise<void> =>
   window.roamAlphaAPI.updateBlock({
     block: {
       uid: getActiveUids().blockUid,

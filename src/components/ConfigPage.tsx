@@ -581,27 +581,30 @@ const BlockPanel: FieldPanel<BlockField> = ({
   defaultValue,
   description,
 }) => {
-  const formatUid = useMemo(
-    () =>
-      initialUid ||
-      createBlock({ node: { text: title, children: [] }, parentUid }),
-    [initialUid, parentUid, title]
-  );
   const containerRef = useRef(null);
   useEffect(() => {
     if (containerRef.current) {
-      const uid =
-        getFirstChildUidByBlockUid(formatUid) ||
-        createBlock({
-          node: defaultValue || { text: " " },
-          parentUid: formatUid,
+      const el = containerRef.current;
+      (initialUid
+        ? Promise.resolve(initialUid)
+        : createBlock({ node: { text: title, children: [] }, parentUid })
+      )
+        .then(
+          (formatUid) =>
+            getFirstChildUidByBlockUid(formatUid) ||
+            createBlock({
+              node: defaultValue || { text: " " },
+              parentUid: formatUid,
+            })
+        )
+        .then((uid) => {
+          window.roamAlphaAPI.ui.components.renderBlock({
+            uid,
+            el,
+          });
         });
-      window.roamAlphaAPI.ui.components.renderBlock({
-        uid,
-        el: containerRef.current,
-      });
     }
-  }, [formatUid, containerRef, defaultValue]);
+  }, [containerRef, defaultValue]);
   return (
     <>
       <Label>
@@ -876,20 +879,24 @@ const FieldTabs = ({
   extensionId: string;
 } & ConfigTab) => {
   const [uid, setUid] = useState(initialUid);
-  const parentUid = useMemo(
-    () =>
-      /home/i.test(id)
-        ? pageUid
-        : uid ||
-          (toggleable
-            ? ""
-            : createBlock({
-                parentUid: pageUid,
-                order,
-                node: { text: id },
-              })),
-    [pageUid, uid, id, toggleable]
-  );
+  const parentUid = useMemo(() => {
+    if (/home/i.test(id)) {
+      return pageUid;
+    }
+    if (uid) {
+      return uid;
+    }
+    if (toggleable) {
+      return "";
+    }
+    const newUid = window.roamAlphaAPI.util.generateUID();
+    createBlock({
+      parentUid: pageUid,
+      order,
+      node: { text: id, uid: newUid },
+    });
+    return newUid;
+  }, [pageUid, uid, id, toggleable]);
   const childUids = Object.fromEntries(
     getShallowTreeByParentUid(parentUid).map(({ text, uid }) => [
       text.toLowerCase().trim(),
@@ -1119,19 +1126,19 @@ const createConfigPage = ({
   });
 };
 
-export const createConfigObserver = ({
+export const createConfigObserver = async ({
   title,
   config,
 }: {
   title: string;
   config: Config;
-}): { pageUid: string } => {
+}): Promise<{ pageUid: string }> => {
   const pageUid =
     getPageUidByPageTitle(title) ||
-    createConfigPage({
+    (await createConfigPage({
       title,
       config,
-    });
+    }));
   if (config.tabs.length) {
     createHTMLObserver({
       className: "rm-title-display",

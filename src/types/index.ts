@@ -173,7 +173,7 @@ type ActionParams = {
   };
 };
 
-export type WriteAction = (a: ActionParams) => boolean;
+export type WriteAction = (a: ActionParams) => Promise<void>;
 
 export type UserSettings = {
   "global-filters": {

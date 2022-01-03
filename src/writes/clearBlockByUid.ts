@@ -1,4 +1,4 @@
-const clearBlockByUid = (uid: string): boolean =>
+const clearBlockByUid = (uid: string): Promise<void> =>
   window.roamAlphaAPI.updateBlock({
     block: {
       uid,

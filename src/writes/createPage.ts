@@ -14,10 +14,17 @@ const createPage = ({
   title: string;
   tree?: InputTextNode[];
   uid?: string;
-}): string => {
-  window.roamAlphaAPI.createPage({ page: { title, uid } });
-  tree.forEach((node, order) => createBlock({ node, parentUid: uid, order }));
-  return uid;
+}): Promise<string> => {
+  return window.roamAlphaAPI
+    .createPage({ page: { title, uid } })
+    .then(() =>
+      tree
+        .map(
+          (node, order) => () => createBlock({ node, parentUid: uid, order })
+        )
+        .reduce((prev, cur) => prev.then(() => cur()), Promise.resolve(""))
+    )
+    .then(() => uid);
 };
 
 export default createPage;

@@ -72,7 +72,7 @@ const ExternalLogin = ({
               );
               const blockUid =
                 existingTree?.uid ||
-                await createBlock({ node: { text: "oauth" }, parentUid });
+                (await createBlock({ node: { text: "oauth" }, parentUid }));
               if (useLocal) {
                 const key = `oauth-${service}`;
                 const accounts = JSON.parse(localStorageGet(key) as string);

@@ -8,7 +8,7 @@ import {
   Label,
 } from "@blueprintjs/core";
 import axios from "axios";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import createOverlayRender from "../util/createOverlayRender";
 import setInputSetting from "../util/setInputSetting";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
@@ -19,32 +19,33 @@ import localStorageSet from "../util/localStorageSet";
 import { createPage } from "../writes";
 
 const TokenDialog = ({ onClose }: { onClose: () => void }) => {
-  const pageUid = useMemo(
-    () =>
-      getPageUidByPageTitle("roam/js/roamjs") ||
-      createPage({ title: "roam/js/roamjs", tree: [{ text: "token" }] }),
-    []
-  );
   const [token, setToken] = useState("");
   const [useLocal, setUseLocal] = useState(true);
   const onSubmit = useCallback(() => {
-    if (useLocal) {
-      localStorageSet(`token`, token);
-      setInputSetting({
-        blockUid: pageUid,
-        key: "token",
-        value: "",
-      });
-    } else {
-      localStorageRemove(`token`);
-      setInputSetting({
-        blockUid: pageUid,
-        key: "token",
-        value: token,
-      });
-    }
-    onClose();
-  }, [token, pageUid, useLocal, onClose]);
+    const pageUid = getPageUidByPageTitle("roam/js/roamjs");
+    return (
+      pageUid
+        ? Promise.resolve(pageUid)
+        : createPage({ title: "roam/js/roamjs", tree: [{ text: "token" }] })
+    ).then(() => {
+      if (useLocal) {
+        localStorageSet(`token`, token);
+        setInputSetting({
+          blockUid: pageUid,
+          key: "token",
+          value: "",
+        });
+      } else {
+        localStorageRemove(`token`);
+        setInputSetting({
+          blockUid: pageUid,
+          key: "token",
+          value: token,
+        });
+      }
+      onClose();
+    });
+  }, [token, useLocal, onClose]);
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (

@@ -51,8 +51,7 @@ const addBlockCommand = ({
     label,
     callback: () => {
       const parentUid = getCurrentPageUid();
-      const blockUid = loadBlockUid(parentUid);
-      return callback(blockUid);
+      loadBlockUid(parentUid).then(callback);
     },
   });
 };

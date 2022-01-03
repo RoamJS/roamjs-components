@@ -12,7 +12,7 @@ const addInputSetting = ({
   value: string;
   key: string;
   index?: number;
-}): string => {
+}): Promise<string> => {
   const tree = getBasicTreeByParentUid(blockUid);
   const keyNode = tree.find((t) => toFlexRegex(key).test(t.text));
   if (keyNode) {

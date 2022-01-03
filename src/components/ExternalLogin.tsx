@@ -56,7 +56,7 @@ const ExternalLogin = ({
         const processAuthData = (data: string) => {
           loginWindow?.close?.();
           getAuthData(data)
-            .then((rr) => {
+            .then(async (rr) => {
               const labelUid = window.roamAlphaAPI.util.generateUID();
               const { label = "Default Account", ...rawData } = rr;
               const oauthData = JSON.stringify(rawData);
@@ -72,7 +72,7 @@ const ExternalLogin = ({
               );
               const blockUid =
                 existingTree?.uid ||
-                createBlock({ node: { text: "oauth" }, parentUid });
+                await createBlock({ node: { text: "oauth" }, parentUid });
               if (useLocal) {
                 const key = `oauth-${service}`;
                 const accounts = JSON.parse(localStorageGet(key) as string);

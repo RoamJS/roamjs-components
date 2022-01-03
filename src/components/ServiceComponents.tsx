@@ -179,7 +179,7 @@ export const runService = ({
           const tokenField = `roamjs${toCamel(id)}Token` as const;
           const tokenValue = window[tokenField];
           delete window[tokenField];
-          const uid = createPage({
+          createPage({
             title,
             tree: [
               tokenValue
@@ -194,12 +194,13 @@ export const runService = ({
                   }
                 : { text: " " },
             ],
+          }).then((uid) => {
+            window.roamAlphaAPI.ui.mainWindow.openPage({
+              page: { uid },
+            });
+            ReactDOM.unmountComponentAtNode(root);
+            root.remove();
           });
-          window.roamAlphaAPI.ui.mainWindow.openPage({
-            page: { uid },
-          });
-          ReactDOM.unmountComponentAtNode(root);
-          root.remove();
         }}
       >
         <h4>Welcome to RoamJS {idToTitle(id)}!</h4>

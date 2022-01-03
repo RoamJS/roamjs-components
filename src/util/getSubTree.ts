@@ -13,13 +13,19 @@ const getSubTree = ({
   parentUid?: string;
   tree?: RoamBasicNode[];
   order?: number;
-}): RoamBasicNode =>
-  tree.find((s) => toFlexRegex(key).test(s.text.trim())) || {
-    text: "",
-    uid: parentUid
-      ? createBlock({ node: { text: key }, parentUid, order })
-      : "",
-    children: [],
-  };
+}): RoamBasicNode => {
+  const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
+  if (node) return node;
+  const defaultNode = { text: "", children: [] };
+  if (parentUid) {
+    const uid = window.roamAlphaAPI.util.generateUID();
+    createBlock({ node: { text: key, uid }, parentUid, order });
+    return {
+      uid,
+      ...defaultNode,
+    };
+  }
+  return { uid: "", ...defaultNode };
+};
 
 export default getSubTree;

@@ -214,7 +214,7 @@ type SidebarGraphWindow = {
   "block-uid": string;
 };
 
-export type SidebarAction = (action: { window: SidebarWindowInput }) => boolean;
+export type SidebarAction = (action: { window: SidebarWindowInput }) => Promise<void>;
 
 export type SidebarWindow = {
   "collapsed?": boolean;
@@ -280,7 +280,7 @@ declare global {
           addWindow: SidebarAction;
           setWindowOrder: (action: {
             window: SidebarWindowInput & { order: number };
-          }) => boolean;
+          }) => Promise<void>;
           collapseWindow: SidebarAction;
           pinWindow: SidebarAction;
           expandWindow: SidebarAction;

@@ -274,8 +274,8 @@ declare global {
       };
       ui: {
         rightSidebar: {
-          open: () => void;
-          close: () => void;
+          open: () => Promise<void>;
+          close: () => Promise<void>;
           getWindows: () => SidebarWindow[];
           addWindow: SidebarAction;
           setWindowOrder: (action: {
@@ -321,8 +321,8 @@ declare global {
           openDailyNotes: () => Promise<void>;
         };
         setBlockFocusAndSelection: (a: {
-          location: { "block-uid": string; "window-id": string };
-          selection: { start: number; end: number };
+          location?: { "block-uid": string; "window-id": string };
+          selection?: { start: number; end?: number };
         }) => Promise<void>;
       };
     };

@@ -1,4 +1,4 @@
 const normalizePageTitle = (title: string): string =>
-  title.replace(/\\/, "\\\\").replace(/"/g, '\\"');
+  title.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
 export default normalizePageTitle;

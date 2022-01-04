@@ -12,6 +12,7 @@ export { default as getSettingValueFromTree } from "./getSettingValueFromTree";
 export { default as getSettingValuesFromTree } from "./getSettingValuesFromTree";
 export { default as getSubTree } from "./getSubTree";
 export { default as idToTitle } from "./idToTitle";
+export { default as isControl } from "./isControl";
 export { default as runExtension } from "./runExtension";
 export { default as setInputSetting } from "./setInputSetting";
 export { default as setInputSettings } from "./setInputSettings";

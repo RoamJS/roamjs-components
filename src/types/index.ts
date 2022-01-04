@@ -273,6 +273,10 @@ declare global {
         };
       };
       ui: {
+        leftSidebar: {
+          open: () => Promise<void>;
+          close: () => Promise<void>;
+        },
         rightSidebar: {
           open: () => Promise<void>;
           close: () => Promise<void>;

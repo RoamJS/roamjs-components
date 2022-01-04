@@ -229,8 +229,8 @@ declare global {
       q: (
         query: string,
         ...params: unknown[]
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ) => any[][];
+      ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      any[][];
       pull: (selector: string, id: number | string) => PullBlock;
       createBlock: WriteAction;
       updateBlock: WriteAction;
@@ -313,9 +313,17 @@ declare global {
           renderBlock: (args: { uid: string; el: HTMLElement }) => null;
         };
         mainWindow: {
-          openBlock: (p: { block: { uid: string } }) => true;
-          openPage: (p: { page: { uid: string } | { title: string } }) => true;
+          openBlock: (p: { block: { uid: string } }) => Promise<void>;
+          openPage: (p: {
+            page: { uid: string } | { title: string };
+          }) => Promise<void>;
+          getOpenPageOrBlockUid: () => string;
+          openDailyNotes: () => Promise<void>;
         };
+        setBlockFocusAndSelection: (a: {
+          location: { "block-uid": string; "window-id": string };
+          selection: { start: number; end: number };
+        }) => Promise<void>;
       };
     };
     roamDatomicAlphaAPI?: (

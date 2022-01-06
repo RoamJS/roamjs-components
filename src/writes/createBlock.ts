@@ -60,8 +60,8 @@ const submitActions = (actions: typeof actionQueue): Promise<void> => {
         0,
         ROAM_LIMIT - submittedActions.length
       );
-      await submitNow
-        .map((action) => () => {
+      Promise.all(
+        submitNow.map((action) => {
           const { params, type } = action;
           return window.roamAlphaAPI[type](params)
             .catch((e) => {
@@ -72,15 +72,7 @@ const submitActions = (actions: typeof actionQueue): Promise<void> => {
             })
             .then(() => ({ action, date: new Date() }));
         })
-        .reduce(
-          (prev, cur) =>
-            prev.then(() =>
-              cur().then((a) => {
-                submittedActions.push(a);
-              })
-            ),
-          Promise.resolve()
-        );
+      ).then((a) => submittedActions.push(...a));
     }
     if (submittedActions.length) {
       const timeout =

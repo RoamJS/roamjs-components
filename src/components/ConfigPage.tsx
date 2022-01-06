@@ -104,8 +104,8 @@ type CustomField = {
   options: {
     component: React.FC<{
       parentUid: string;
-      uid?: string;
-      defaultValue?: InputTextNode[];
+      uid: string;
+      defaultValue: InputTextNode[];
       title: string;
     }>;
   };
@@ -626,11 +626,22 @@ const BlockPanel: FieldPanel<BlockField> = ({
 const CustomPanel: FieldPanel<CustomField> = ({
   description,
   title,
-  uid,
+  uid: inputUid,
   options: { component: Component },
   parentUid,
-  defaultValue,
-}) => (
+  defaultValue = [],
+  order,
+}) => {
+  const uid = useMemo(
+    () => {
+      if (inputUid) return inputUid;
+      const newUid = window.roamAlphaAPI.util.generateUID();
+      createBlock({ node: { text: title, uid: newUid }, parentUid, order })
+      return newUid;
+    },
+    [inputUid]
+  );
+  return (
   <>
     <Label>
       {idToTitle(title)}
@@ -644,6 +655,7 @@ const CustomPanel: FieldPanel<CustomField> = ({
     />
   </>
 );
+  }
 
 const ToggleablePanel = ({
   enabled,

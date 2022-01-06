@@ -632,30 +632,27 @@ const CustomPanel: FieldPanel<CustomField> = ({
   defaultValue = [],
   order,
 }) => {
-  const uid = useMemo(
-    () => {
-      if (inputUid) return inputUid;
-      const newUid = window.roamAlphaAPI.util.generateUID();
-      createBlock({ node: { text: title, uid: newUid }, parentUid, order })
-      return newUid;
-    },
-    [inputUid]
-  );
+  const uid = useMemo(() => {
+    if (inputUid) return inputUid;
+    const newUid = window.roamAlphaAPI.util.generateUID();
+    createBlock({ node: { text: title, uid: newUid }, parentUid, order });
+    return newUid;
+  }, [inputUid]);
   return (
-  <>
-    <Label>
-      {idToTitle(title)}
-      <Description description={description} />
-    </Label>
-    <Component
-      uid={uid}
-      parentUid={parentUid}
-      title={title}
-      defaultValue={defaultValue}
-    />
-  </>
-);
-  }
+    <>
+      <Label>
+        {idToTitle(title)}
+        <Description description={description} />
+      </Label>
+      <Component
+        uid={uid}
+        parentUid={parentUid}
+        title={title}
+        defaultValue={defaultValue}
+      />
+    </>
+  );
+};
 
 const ToggleablePanel = ({
   enabled,

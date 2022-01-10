@@ -58,6 +58,8 @@ const BlockInput = ({
       isOpen={isOpen}
       onOpened={open}
       minimal={true}
+      autoFocus={false}
+      enforceFocus={false}
       position={PopoverPosition.BOTTOM_LEFT}
       modifiers={{
         flip: { enabled: false },

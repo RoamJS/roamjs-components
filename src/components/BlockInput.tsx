@@ -93,7 +93,10 @@ const BlockInput = ({
           autoFocus={true}
           onKeyDown={onKeyDown}
           onBlur={(e) => {
-            if (e.relatedTarget) {
+            if (
+              e.relatedTarget &&
+              !(e.relatedTarget as HTMLElement).closest?.(".roamjs-block-input")
+            ) {
               close();
             }
             if (onBlur) {

@@ -60,7 +60,7 @@ const submitActions = (actions: typeof actionQueue): Promise<void> => {
         0,
         ROAM_LIMIT - submittedActions.length
       );
-      Promise.all(
+      await Promise.all(
         submitNow.map((action) => {
           const { params, type } = action;
           return window.roamAlphaAPI[type](params)

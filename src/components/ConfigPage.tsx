@@ -752,7 +752,7 @@ const ToggleablePanel = ({
                   extensionId,
                   dev: !!dev,
                 },
-                { headers: { Authorization: tokenValue } }
+                { headers: { Authorization: `Bearer ${tokenValue}` } }
               )
               .then(() => {
                 enableCallback(false);
@@ -770,7 +770,7 @@ const ToggleablePanel = ({
                   extensionId,
                   dev: !!dev,
                 },
-                { headers: { Authorization: tokenValue } }
+                { headers: { Authorization: `Bearer ${tokenValue}` } }
               )
               .then((r) => {
                 if (r.data.url) {

@@ -28,12 +28,12 @@ import getToken from "../util/getToken";
 import { createPageTitleObserver } from "../dom";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
-import getCurrentUserEmail from "../queries/getCurrentUserEmail";
 import localStorageGet from "../util/localStorageGet";
 import localStorageRemove from "../util/localStorageRemove";
 import localStorageSet from "../util/localStorageSet";
 import { createPage } from "../writes";
 import type { RoamBasicNode, TreeNode } from "../types";
+import getAuthorizationHeader from "../util/getAuthorizationHeader";
 
 declare global {
   interface Window {
@@ -79,13 +79,6 @@ export const useFieldVals = (field: string): string[] => {
   ).map((t) => t.text);
 };
 
-const getAuthorization = (service: string) => {
-  const token = getToken();
-  return token
-    ? `Bearer ${window.btoa(`${getCurrentUserEmail()}:${getToken()}`)}`
-    : getToken(service);
-};
-
 export const useAuthenticatedAxiosGet = (): ((
   path: string
 ) => Promise<AxiosResponse>) => {
@@ -93,7 +86,7 @@ export const useAuthenticatedAxiosGet = (): ((
   return useCallback(
     (path: string) =>
       axios.get(`${process.env.API_URL}/${path}`, {
-        headers: { Authorization: getAuthorization(service) },
+        headers: { Authorization: getAuthorizationHeader(service) },
       }),
     [service]
   );
@@ -107,7 +100,7 @@ export const useAuthenticatedAxiosPost = (): ((
   return useCallback(
     (path: string, data?: Record<string, unknown>) =>
       axios.post(`${process.env.API_URL}/${path}`, data || {}, {
-        headers: { Authorization: getAuthorization(service) },
+        headers: { Authorization: getAuthorizationHeader(service) },
       }),
     []
   );
@@ -121,7 +114,7 @@ export const useAuthenticatedAxiosPut = (): ((
   return useCallback(
     (path: string, data?: Record<string, unknown>) =>
       axios.put(`${process.env.API_URL}/${path}`, data || {}, {
-        headers: { Authorization: getAuthorization(service) },
+        headers: { Authorization: getAuthorizationHeader(service) },
       }),
     []
   );
@@ -134,7 +127,7 @@ export const useAuthenticatedAxiosDelete = (): ((
   return useCallback(
     (path: string) =>
       axios.delete(`${process.env.API_URL}/${path}`, {
-        headers: { Authorization: getAuthorization(service) },
+        headers: { Authorization: getAuthorizationHeader(service) },
       }),
     []
   );

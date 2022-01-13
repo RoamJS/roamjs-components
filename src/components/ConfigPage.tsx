@@ -42,8 +42,8 @@ import PageInput from "./PageInput";
 import format from "date-fns/format";
 import axios, { AxiosError } from "axios";
 import Color from "color";
-import getToken from "../util/getToken";
 import { useRoamJSTokenWarning } from "..";
+import getAuthorizationHeader from "../util/getAuthorizationHeader";
 
 type TextField = {
   type: "text";
@@ -680,7 +680,6 @@ const ToggleablePanel = ({
   setUid: (s: string) => void;
 }) => {
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
-  const tokenValue = useMemo(getToken, []);
   const priceId = useMemo(
     () =>
       isPremium
@@ -752,7 +751,7 @@ const ToggleablePanel = ({
                   extensionId,
                   dev: !!dev,
                 },
-                { headers: { Authorization: `Bearer ${tokenValue}` } }
+                { headers: { Authorization: getAuthorizationHeader() } }
               )
               .then(() => {
                 enableCallback(false);
@@ -770,7 +769,7 @@ const ToggleablePanel = ({
                   extensionId,
                   dev: !!dev,
                 },
-                { headers: { Authorization: `Bearer ${tokenValue}` } }
+                { headers: { Authorization: getAuthorizationHeader() } }
               )
               .then((r) => {
                 if (r.data.url) {

@@ -760,41 +760,52 @@ const ToggleablePanel = ({
                 { headers: { Authorization: tokenValue } }
               )
               .then((r) => {
-                const width = 600;
-                const height = 525;
-                const left = window.screenX + (window.innerWidth - width) / 2;
-                const top = window.screenY + (window.innerHeight - height) / 2;
-                window.open(
-                  r.data.url,
-                  `roamjs:roamjs:stripe`,
-                  `left=${left},top=${top},width=${width},height=${height},status=1`
-                );
-                const authInterval = () => {
-                  axios
-                    .get(
-                      `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`
-                    )
-                    .then((r) => {
-                      if (r.data.success) {
-                        enableCallback(true);
-                        setLoading(false);
-                        setIsOpen(false);
-                      } else {
-                        intervalListener.current = window.setTimeout(
-                          authInterval,
-                          2000
+                if (r.data.url) {
+                  const width = 600;
+                  const height = 525;
+                  const left = window.screenX + (window.innerWidth - width) / 2;
+                  const top =
+                    window.screenY + (window.innerHeight - height) / 2;
+                  window.open(
+                    r.data.url,
+                    `roamjs:roamjs:stripe`,
+                    `left=${left},top=${top},width=${width},height=${height},status=1`
+                  );
+                  const authInterval = () => {
+                    axios
+                      .get(
+                        `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`
+                      )
+                      .then((r) => {
+                        if (r.data.success) {
+                          enableCallback(true);
+                          setLoading(false);
+                          setIsOpen(false);
+                        } else {
+                          intervalListener.current = window.setTimeout(
+                            authInterval,
+                            2000
+                          );
+                        }
+                      })
+                      .catch((e) => {
+                        setError(
+                          e.response?.data?.message ||
+                            e.response?.data ||
+                            e.message
                         );
-                      }
-                    })
-                    .catch((e) => {
-                      setError(
-                        e.response?.data?.message ||
-                          e.response?.data ||
-                          e.message
-                      );
-                    });
-                };
-                authInterval();
+                      });
+                  };
+                  authInterval();
+                } else if (r.data.success) {
+                  enableCallback(true);
+                  setLoading(false);
+                  setIsOpen(false);
+                } else {
+                  setError('Something went wrong with the subscription. Please contact support@roamjs.com for help!');
+                  setLoading(false);
+                  setIsOpen(false);
+                }
               });
           }
         }}
@@ -810,7 +821,7 @@ const ToggleablePanel = ({
             )}`
           : `By clicking submit below, you will subscribe to the premium features of the RoamJS Extension: ${idToTitle(
               extensionId
-            )} for $${price}/month. A window will first appear to log in to your RoamJS account.`}
+            )} for $${price}/month. A window may appear for checkout if this is your first premium extension`}
       </Alert>
     </>
   );

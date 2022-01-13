@@ -802,7 +802,9 @@ const ToggleablePanel = ({
                   setLoading(false);
                   setIsOpen(false);
                 } else {
-                  setError('Something went wrong with the subscription. Please contact support@roamjs.com for help!');
+                  setError(
+                    "Something went wrong with the subscription. Please contact support@roamjs.com for help!"
+                  );
                   setLoading(false);
                   setIsOpen(false);
                 }

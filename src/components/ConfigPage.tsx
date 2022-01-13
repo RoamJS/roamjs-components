@@ -744,7 +744,7 @@ const ToggleablePanel = ({
         isOpen={isOpen}
         onConfirm={() => {
           setLoading(true);
-          setError('');
+          setError("");
           if (enabled) {
             axios
               .post(

@@ -40,9 +40,10 @@ import idToTitle from "../util/idToTitle";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Color from "color";
 import getToken from "../util/getToken";
+import { useRoamJSTokenWarning } from "..";
 
 type TextField = {
   type: "text";
@@ -652,6 +653,11 @@ const CustomPanel: FieldPanel<CustomField> = ({
   );
 };
 
+const RoamJSTokenWarning = () => {
+  useRoamJSTokenWarning();
+  return <></>;
+};
+
 const ToggleablePanel = ({
   enabled,
   setEnabled,
@@ -703,19 +709,23 @@ const ToggleablePanel = ({
   };
   const [isOpen, setIsOpen] = useState(false);
   const intervalListener = useRef(0);
+  const catchError = useCallback(
+    (e: AxiosError) =>
+      setError(e.response?.data?.message || e.response?.data || e.message),
+    [setError]
+  );
   useEffect(() => {
     if (isPremium) {
       axios
         .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
         .then((r) => setPrice(r.data.price / 100))
-        .catch((e) =>
-          setError(e.response?.data?.message || e.response?.data || e.message)
-        );
+        .catch(catchError);
     }
     return () => clearTimeout(intervalListener.current);
-  }, [isPremium, toggleable, setError, priceId, dev]);
+  }, [isPremium, toggleable, catchError, priceId, dev]);
   return (
     <>
+      {isPremium && <RoamJSTokenWarning />}
       <Switch
         labelElement={"Enabled"}
         checked={enabled}
@@ -746,6 +756,9 @@ const ToggleablePanel = ({
               )
               .then(() => {
                 enableCallback(false);
+              })
+              .catch(catchError)
+              .finally(() => {
                 setLoading(false);
                 setIsOpen(false);
               });
@@ -789,11 +802,9 @@ const ToggleablePanel = ({
                         }
                       })
                       .catch((e) => {
-                        setError(
-                          e.response?.data?.message ||
-                            e.response?.data ||
-                            e.message
-                        );
+                        catchError(e);
+                        setLoading(false);
+                        setIsOpen(false);
                       });
                   };
                   authInterval();
@@ -808,6 +819,11 @@ const ToggleablePanel = ({
                   setLoading(false);
                   setIsOpen(false);
                 }
+              })
+              .catch(catchError)
+              .finally(() => {
+                setLoading(false);
+                setIsOpen(false);
               });
           }
         }}

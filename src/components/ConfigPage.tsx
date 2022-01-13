@@ -42,9 +42,7 @@ import PageInput from "./PageInput";
 import format from "date-fns/format";
 import axios from "axios";
 import Color from "color";
-import randomstring from "randomstring";
-import AES from "crypto-js/aes";
-import encutf8 from "crypto-js/enc-utf8";
+import getToken from "../util/getToken";
 
 type TextField = {
   type: "text";
@@ -676,9 +674,7 @@ const ToggleablePanel = ({
   setUid: (s: string) => void;
 }) => {
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
-  const [tokenValue, setTokenValue] = useState(
-    localStorageGet(`token-${extensionId}`) || ""
-  );
+  const tokenValue = useMemo(getToken, []);
   const priceId = useMemo(
     () =>
       isPremium
@@ -696,17 +692,13 @@ const ToggleablePanel = ({
   const enableCallback = (checked: boolean) => {
     setEnabled(checked);
     if (checked) {
-      const newUid = window.roamAlphaAPI.util.generateUID();
-      window.roamAlphaAPI.createBlock({
-        location: { "parent-uid": pageUid, order },
-        block: { string: id, uid: newUid },
-      });
-      setTimeout(() => setUid(newUid));
+      createBlock({
+        parentUid: pageUid,
+        order,
+        node: { text: id },
+      }).then((newUid) => setUid(newUid));
     } else {
-      window.roamAlphaAPI.deleteBlock({ block: { uid } });
-      localStorageRemove(`token-${extensionId}`);
-      setTokenValue("");
-      setUid("");
+      deleteBlock(uid).then(() => setUid(""));
     }
   };
   const [isOpen, setIsOpen] = useState(false);
@@ -722,9 +714,6 @@ const ToggleablePanel = ({
     }
     return () => clearTimeout(intervalListener.current);
   }, [isPremium, toggleable, setError, priceId, dev]);
-  useEffect(() => {
-    localStorageSet(`token-${extensionId}`, tokenValue);
-  }, [tokenValue, extensionId]);
   return (
     <>
       <Switch
@@ -736,19 +725,9 @@ const ToggleablePanel = ({
             : enableCallback((e.target as HTMLInputElement).checked)
         }
       />
-      {enabled && isPremium && (
-        <Label>
-          Token
-          <InputGroup
-            type={"password"}
-            value={tokenValue}
-            onChange={(e) => setTokenValue(e.target.value)}
-          />
-        </Label>
-      )}
       <p>
         {isPremium &&
-          `This is a premium extension. Enabling certain features will require a paid subscription.`}
+          `This is a premium feature. Enabling will require a paid subscription.`}
       </p>
       <p style={{ color: "red" }}>{error}</p>
       <Alert
@@ -756,7 +735,6 @@ const ToggleablePanel = ({
         onConfirm={() => {
           setLoading(true);
           if (enabled) {
-            // unsub
             axios
               .post(
                 `https://lambda.roamjs.com/unsubscribe`,
@@ -772,53 +750,52 @@ const ToggleablePanel = ({
                 setIsOpen(false);
               });
           } else {
-            // sub
-            const otp = randomstring.generate(8);
-            const key = randomstring.generate(16);
-            const state = `roamjs_${otp}_${key}`;
-            const width = 600;
-            const height = 525;
-            const left = window.screenX + (window.innerWidth - width) / 2;
-            const top = window.screenY + (window.innerHeight - height) / 2;
-            window.open(
-              `${
-                dev ? "http://localhost:3000" : "https://roamjs.com"
-              }/login?extension=${extensionId}&state=${state}`,
-              `roamjs:roamjs:login`,
-              `left=${left},top=${top},width=${width},height=${height},status=1`
-            );
-            const authInterval = () => {
-              axios
-                .post(`https://lambda.roamjs.com/auth`, {
-                  service: "roamjs",
-                  otp,
-                })
-                .then((r) => {
-                  if (r.data.auth) {
-                    const auth = AES.decrypt(r.data.auth, key).toString(
-                      encutf8
-                    );
-                    setTokenValue(JSON.parse(auth).token);
-                    enableCallback(true);
-                    setLoading(false);
-                    setIsOpen(false);
-                  } else {
-                    intervalListener.current = window.setTimeout(
-                      authInterval,
-                      2000
-                    );
-                  }
-                })
-                .catch((e) => {
-                  if (e.response?.status !== 400) {
-                    intervalListener.current = window.setTimeout(
-                      authInterval,
-                      2000
-                    );
-                  }
-                });
-            };
-            authInterval();
+            axios
+              .post(
+                `https://lambda.roamjs.com/subscribe`,
+                {
+                  extensionId,
+                  dev: !!dev,
+                },
+                { headers: { Authorization: tokenValue } }
+              )
+              .then((r) => {
+                const width = 600;
+                const height = 525;
+                const left = window.screenX + (window.innerWidth - width) / 2;
+                const top = window.screenY + (window.innerHeight - height) / 2;
+                window.open(
+                  r.data.url,
+                  `roamjs:roamjs:stripe`,
+                  `left=${left},top=${top},width=${width},height=${height},status=1`
+                );
+                const authInterval = () => {
+                  axios
+                    .get(
+                      `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`
+                    )
+                    .then((r) => {
+                      if (r.data.success) {
+                        enableCallback(true);
+                        setLoading(false);
+                        setIsOpen(false);
+                      } else {
+                        intervalListener.current = window.setTimeout(
+                          authInterval,
+                          2000
+                        );
+                      }
+                    })
+                    .catch((e) => {
+                      setError(
+                        e.response?.data?.message ||
+                          e.response?.data ||
+                          e.message
+                      );
+                    });
+                };
+                authInterval();
+              });
           }
         }}
         confirmButtonText={"Submit"}
@@ -855,6 +832,7 @@ const Panels = {
 type ConfigTab = {
   id: string;
   toggleable?: boolean | `price_${string}` | `dev_price_${string}`;
+  development?: boolean;
   fields: Field<UnionField>[];
 };
 
@@ -1067,27 +1045,30 @@ ${
         renderActiveTabPanelOnly
         className={"roamjs-config-tabs"}
       >
-        {userTabs.map(({ id: tabId, fields, toggleable }, i) => (
-          <Tab
-            id={tabId}
-            key={tabId}
-            title={idToTitle(tabId)}
-            panel={
-              <FieldTabs
-                id={tabId}
-                extensionId={id}
-                fields={fields}
-                uid={
-                  tree.find((t) => new RegExp(tabId, "i").test(t.text))?.uid ||
-                  ""
-                }
-                pageUid={pageUid}
-                order={i}
-                toggleable={toggleable}
-              />
-            }
-          />
-        ))}
+        {userTabs.map(
+          ({ id: tabId, fields, toggleable, development = false }, i) => (
+            <Tab
+              id={tabId}
+              key={tabId}
+              title={idToTitle(tabId)}
+              disabled={development}
+              panel={
+                <FieldTabs
+                  id={tabId}
+                  extensionId={id}
+                  fields={fields}
+                  uid={
+                    tree.find((t) => new RegExp(tabId, "i").test(t.text))
+                      ?.uid || ""
+                  }
+                  pageUid={pageUid}
+                  order={i}
+                  toggleable={toggleable}
+                />
+              }
+            />
+          )
+        )}
       </Tabs>
     </Card>
   );
@@ -1123,7 +1104,7 @@ const createConfigPage = ({
   const rawTree = [
     ...(homeTab ? fieldsToChildren(homeTab) : []),
     ...config.tabs
-      .filter((t) => !/home/i.test(t.id) && !t.toggleable)
+      .filter((t) => !/home/i.test(t.id) && !t.toggleable && !t.development)
       .map((t) => ({
         text: t.id,
         children: fieldsToChildren(t),

@@ -735,14 +735,16 @@ const ToggleablePanel = ({
         }
       />
       <p>
-        {isPremium &&
-          `This is a premium feature. Enabling will require a paid subscription.`}
+        {isPremium && enabled
+          ? `You have sucessfully subscribed! Configure this feature with the tabs on the left.`
+          : `This is a premium feature. Enabling will require a paid subscription.`}
       </p>
       <p style={{ color: "red" }}>{error}</p>
       <Alert
         isOpen={isOpen}
         onConfirm={() => {
           setLoading(true);
+          setError('');
           if (enabled) {
             axios
               .post(

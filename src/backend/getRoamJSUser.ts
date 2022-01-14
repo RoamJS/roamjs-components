@@ -17,7 +17,7 @@ const getRoamJSUser = (token: string, extensionId: string) =>
 
 export const awsGetRoamJSUser =
   (
-    handler: (u: RoamJSUser) => APIGatewayProxyResult,
+    handler: (u: RoamJSUser) => Promise<APIGatewayProxyResult>,
     extensionId = process.env.ROAMJS_EXTENSION_ID || ""
   ): APIGatewayProxyHandler =>
   (event) =>

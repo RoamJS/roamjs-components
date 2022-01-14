@@ -11,6 +11,11 @@ const getRoamJSUser = (token: string, extensionId: string) =>
         Authorization: process.env.ROAMJS_DEVELOPER_TOKEN,
         "x-roamjs-token": token,
         "x-roamjs-service": extensionId,
+        ...(process.env.NODE_ENV === "development"
+          ? {
+              "x-roamjs-dev": "true",
+            }
+          : {}),
       },
     })
     .then((r) => r.data);

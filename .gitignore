@@ -2,6 +2,7 @@ node_modules
 dist
 
 # new package dist
+/backend
 /components
 /date
 /dom

@@ -720,11 +720,16 @@ const ToggleablePanel = ({
   useEffect(() => {
     if (isPremium) {
       axios
-        .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
+        .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`, {
+          headers: { Authorization: getAuthorizationHeader() },
+        })
         .then((r) => setPrice(r.data.price / 100))
         .catch(catchError);
       axios
-        .get(`https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`)
+        .get(
+          `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
+          { headers: { Authorization: getAuthorizationHeader() } }
+        )
         .then((r) => {
           if (!r.data.success && initialUid.current) {
             enableCallback(false, initialUid.current);
@@ -810,7 +815,8 @@ const ToggleablePanel = ({
                   const authInterval = () => {
                     axios
                       .get(
-                        `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`
+                        `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
+                        { headers: { Authorization: getAuthorizationHeader() } }
                       )
                       .then((r) => {
                         if (r.data.success) {

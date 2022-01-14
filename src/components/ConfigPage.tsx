@@ -679,6 +679,7 @@ const ToggleablePanel = ({
   setEnabled: (b: boolean) => void;
   setUid: (s: string) => void;
 }) => {
+  const initialUid = useRef(uid);
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
   const priceId = useMemo(
     () =>
@@ -694,18 +695,21 @@ const ToggleablePanel = ({
   const [price, setPrice] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const enableCallback = (checked: boolean) => {
-    setEnabled(checked);
-    if (checked) {
-      createBlock({
-        parentUid: pageUid,
-        order,
-        node: { text: id },
-      }).then((newUid) => setUid(newUid));
-    } else {
-      deleteBlock(uid).then(() => setUid(""));
-    }
-  };
+  const enableCallback = useCallback(
+    (checked: boolean, uid: string) => {
+      setEnabled(checked);
+      if (checked) {
+        createBlock({
+          parentUid: pageUid,
+          order,
+          node: { text: id },
+        }).then((newUid) => setUid(newUid));
+      } else {
+        deleteBlock(uid).then(() => setUid(""));
+      }
+    },
+    [setUid, setEnabled, id, pageUid, order]
+  );
   const [isOpen, setIsOpen] = useState(false);
   const intervalListener = useRef(0);
   const catchError = useCallback(
@@ -719,9 +723,27 @@ const ToggleablePanel = ({
         .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`)
         .then((r) => setPrice(r.data.price / 100))
         .catch(catchError);
+      axios
+        .get(`https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`)
+        .then((r) => {
+          if (!r.data.success && initialUid.current) {
+            enableCallback(false, initialUid.current);
+          } else if (r.data.success && !initialUid.current) {
+            enableCallback(true, initialUid.current);
+          }
+        })
+        .catch(catchError);
     }
     return () => clearTimeout(intervalListener.current);
-  }, [isPremium, toggleable, catchError, priceId, dev]);
+  }, [
+    isPremium,
+    toggleable,
+    catchError,
+    priceId,
+    dev,
+    initialUid,
+    enableCallback,
+  ]);
   return (
     <>
       {isPremium && <RoamJSTokenWarning />}
@@ -731,7 +753,7 @@ const ToggleablePanel = ({
         onChange={(e) =>
           isPremium
             ? setIsOpen(true)
-            : enableCallback((e.target as HTMLInputElement).checked)
+            : enableCallback((e.target as HTMLInputElement).checked, uid)
         }
       />
       <p>
@@ -756,7 +778,7 @@ const ToggleablePanel = ({
                 { headers: { Authorization: getAuthorizationHeader() } }
               )
               .then(() => {
-                enableCallback(false);
+                enableCallback(false, uid);
               })
               .catch(catchError)
               .finally(() => {
@@ -792,7 +814,7 @@ const ToggleablePanel = ({
                       )
                       .then((r) => {
                         if (r.data.success) {
-                          enableCallback(true);
+                          enableCallback(true, uid);
                           setLoading(false);
                           setIsOpen(false);
                         } else {
@@ -810,7 +832,7 @@ const ToggleablePanel = ({
                   };
                   authInterval();
                 } else if (r.data.success) {
-                  enableCallback(true);
+                  enableCallback(true, uid);
                   setLoading(false);
                   setIsOpen(false);
                 } else {

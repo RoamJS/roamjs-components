@@ -950,7 +950,9 @@ const FieldTabs = ({
   );
   const [enabled, setEnabled] = useState(!toggleable || !!parentUid);
   const [selectedTabId, setSelectedTabId] = useState(
-    enabled && fields.length ? fields[0].title : "enabled"
+    enabled && fields.length && typeof toggleable !== "string"
+      ? fields[0].title
+      : "enabled"
   );
   const onTabsChange = useCallback(
     (tabId: string) => setSelectedTabId(tabId),

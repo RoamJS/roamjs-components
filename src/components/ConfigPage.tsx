@@ -1048,6 +1048,7 @@ const ConfigPage = ({
       <style>
         {`.roamjs-config-panel .bp3-tab-panel {
   width: 100%;
+  position: relative;
 }
 .roamjs-external-login {
   margin-bottom: 16px;

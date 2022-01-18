@@ -1,4 +1,8 @@
 export { default as addInputSetting } from "./addInputSetting";
+export { default as apiDelete} from "./apiDelete";
+export { default as apiGet} from "./apiGet";
+export { default as apiPost} from "./apiPost";
+export { default as apiPut} from "./apiPut";
 export { default as createOverlayRender } from "./createOverlayRender";
 export { default as createTagRegex } from "./createTagRegex";
 export { default as extractRef } from "./extractRef";

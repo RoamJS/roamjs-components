@@ -2,7 +2,7 @@ import axios from "axios";
 
 const meterRoamJSUser = (
   user: string,
-  quantity: number = 1,
+  quantity = 1,
   extensionId = process.env.ROAMJS_EXTENSION_ID || "",
   email = process.env.ROAMJS_EMAIL
 ) =>

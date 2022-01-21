@@ -29,14 +29,17 @@ const getRoamJSUser = (
 
 export const awsGetRoamJSUser =
   <T = Record<string, unknown>>(
-    handler: (u: RoamJSUser, body: T) => Promise<APIGatewayProxyResult>
+    handler: (
+      u: RoamJSUser & { token: string },
+      body: T
+    ) => Promise<APIGatewayProxyResult>
   ): APIGatewayProxyHandler =>
-  (event) =>
-    getRoamJSUser(
-      event.headers.Authorization || event.headers.authorization || ""
-    )
+  (event) => {
+    const token =
+      event.headers.Authorization || event.headers.authorization || "";
+    return getRoamJSUser(token)
       .then((u) =>
-        handler(u, {
+        handler({ ...u, token }, {
           ...event.queryStringParameters,
           ...JSON.parse(event.body || "{}"),
         } as T)
@@ -46,5 +49,6 @@ export const awsGetRoamJSUser =
         body: e.response?.data,
         headers,
       }));
+  };
 
 export default getRoamJSUser;

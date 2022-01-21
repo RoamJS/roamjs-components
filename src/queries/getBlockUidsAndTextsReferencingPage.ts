@@ -5,9 +5,9 @@ const getBlockUidsAndTextsReferencingPage = (
 ): { uid: string; text: string }[] =>
   window.roamAlphaAPI
     .q(
-      `[:find ?u ?s :where [?r :block/uid ?u] [?r :block/string ?s] [?r :block/refs ?p] [?p :node/title "${normalizePageTitle(
+      `[:find (pull ?r [:block/uid :block/string]) :where [?p :node/title "${normalizePageTitle(
         title
-      )}"]]`
+      )}"] [?r :block/refs ?p]]`
     )
     .map(([uid, text]: string[]) => ({ uid, text }));
 

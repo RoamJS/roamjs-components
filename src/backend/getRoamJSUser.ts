@@ -16,7 +16,7 @@ const getRoamJSUser = (
           `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`
         ).toString("base64")}`,
         "x-roamjs-token": token,
-        "x-roamjs-service": extensionId,
+        "x-roamjs-extension": extensionId,
         ...(process.env.NODE_ENV === "development"
           ? {
               "x-roamjs-dev": "true",

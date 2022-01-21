@@ -7,7 +7,8 @@ type RoamJSUser = { email: string; [k: string]: unknown };
 const getRoamJSUser = (
   token: string,
   extensionId = process.env.ROAMJS_EXTENSION_ID || "",
-  email = process.env.ROAMJS_EMAIL
+  email = process.env.ROAMJS_EMAIL,
+  dev = process.env.NODE_ENV === "development"
 ) =>
   axios
     .get<RoamJSUser>(`https://lambda.roamjs.com/user`, {
@@ -17,7 +18,7 @@ const getRoamJSUser = (
         ).toString("base64")}`,
         "x-roamjs-token": token,
         "x-roamjs-extension": extensionId,
-        ...(process.env.NODE_ENV === "development"
+        ...(dev
           ? {
               "x-roamjs-dev": "true",
             }
@@ -27,14 +28,19 @@ const getRoamJSUser = (
     .then((r) => r.data);
 
 export const awsGetRoamJSUser =
-  (
-    handler: (u: RoamJSUser) => Promise<APIGatewayProxyResult>
+  <T = Record<string, unknown>>(
+    handler: (u: RoamJSUser, body: T) => Promise<APIGatewayProxyResult>
   ): APIGatewayProxyHandler =>
   (event) =>
     getRoamJSUser(
       event.headers.Authorization || event.headers.authorization || ""
     )
-      .then(handler)
+      .then((u) =>
+        handler(u, {
+          ...event.queryStringParameters,
+          ...JSON.parse(event.body || "{}"),
+        } as T)
+      )
       .catch((e) => ({
         statusCode: 401,
         body: e.response?.data,

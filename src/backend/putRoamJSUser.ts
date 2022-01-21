@@ -5,7 +5,8 @@ const putRoamJSUser = (
   token: string,
   data: { [k: string]: unknown },
   extensionId = process.env.ROAMJS_EXTENSION_ID || "",
-  email = process.env.ROAMJS_EMAIL
+  email = process.env.ROAMJS_EMAIL,
+  dev = process.env.NODE_ENV === "development"
 ) =>
   axios
     .put(`https://lambda.roamjs.com/user`, data, {
@@ -15,7 +16,7 @@ const putRoamJSUser = (
         ).toString("base64")}`,
         "x-roamjs-token": token,
         "x-roamjs-extension": extensionId,
-        ...(process.env.NODE_ENV === "development"
+        ...(dev
           ? {
               "x-roamjs-dev": "true",
             }

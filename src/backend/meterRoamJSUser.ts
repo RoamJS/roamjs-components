@@ -4,7 +4,8 @@ const meterRoamJSUser = (
   user: string,
   quantity = 1,
   extensionId = process.env.ROAMJS_EXTENSION_ID || "",
-  email = process.env.ROAMJS_EMAIL
+  email = process.env.ROAMJS_EMAIL,
+  dev = process.env.NODE_ENV === "development"
 ) =>
   axios
     .post(
@@ -19,7 +20,7 @@ const meterRoamJSUser = (
             `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`
           ).toString("base64")}`,
           "x-roamjs-extension": extensionId,
-          ...(process.env.NODE_ENV === "development"
+          ...(dev
             ? {
                 "x-roamjs-dev": "true",
               }

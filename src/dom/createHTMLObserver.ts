@@ -1,6 +1,5 @@
 import createObserver from "./createObserver";
 import createOverlayObserver from "./createOverlayObserver";
-import getMutatedNodes from "./getMutatedNodes";
 
 const createHTMLObserver = ({
   callback,
@@ -19,23 +18,33 @@ const createHTMLObserver = ({
     className
   ) as HTMLCollectionOf<HTMLElement>;
   Array.from(blocks).forEach(callback);
+  const isNode = (d: Node) =>
+    d.nodeName === tag &&
+    Array.from((d as HTMLElement).classList).includes(className);
   return (useBody ? createOverlayObserver : createObserver)((ms) => {
-    const addedNodes = getMutatedNodes({
-      ms,
-      nodeList: "addedNodes",
-      tag,
-      className,
-    });
-    addedNodes.map((n) => n as HTMLElement).forEach(callback);
-    if (removeCallback) {
-      const removedNodes = getMutatedNodes({
-        ms,
-        nodeList: "removedNodes",
-        tag,
-        className,
-      });
-      removedNodes.map((n) => n as HTMLElement).forEach(removeCallback);
-    }
+    const nodes = ms.flatMap((m) => [
+      ...Array.from(m.addedNodes)
+        .filter((d: Node) => isNode(d) || d.hasChildNodes())
+        .flatMap((d) =>
+          isNode(d)
+            ? [d]
+            : Array.from((d as HTMLElement).getElementsByClassName(className))
+        )
+        .map((node) => ({ node, added: true })),
+      ...Array.from(m.removedNodes)
+        .filter((d: Node) => isNode(d) || d.hasChildNodes())
+        .flatMap((d) =>
+          isNode(d)
+            ? [d]
+            : Array.from((d as HTMLElement).getElementsByClassName(className))
+        )
+        .map((node) => ({ node, added: false })),
+    ]);
+    nodes.forEach((b) =>
+      b.added
+        ? callback(b.node as HTMLElement)
+        : removeCallback?.(b.node as HTMLElement)
+    );
   });
 };
 

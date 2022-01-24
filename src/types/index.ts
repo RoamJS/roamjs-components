@@ -39,6 +39,8 @@ export type PullBlock = {
   ":block/heading"?: number;
   ":block/open"?: boolean;
   ":block/text-align"?: TextAlignment;
+  ":block/page"?: { ":db/id": number };
+  ":block/parents"?: { ":db/id": number }[];
   ":children/view-type"?: `:${ViewType}`;
   ":edit/time"?: number;
   ":block/props"?: {
@@ -57,6 +59,7 @@ export type PullBlock = {
       };
     };
   };
+  ":db/id"?: number;
 };
 
 export type RoamPullResult = RoamPull | null;

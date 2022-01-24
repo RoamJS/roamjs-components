@@ -32,6 +32,7 @@ export type RoamPull = {
 
 export type PullBlock = {
   ":block/children"?: { ":db/id": number }[];
+  ":block/refs"?: { ":db/id": number }[];
   ":block/string"?: string;
   ":block/order"?: number;
   ":block/uid"?: string;
@@ -214,7 +215,9 @@ type SidebarGraphWindow = {
   "block-uid": string;
 };
 
-export type SidebarAction = (action: { window: SidebarWindowInput }) => Promise<void>;
+export type SidebarAction = (action: {
+  window: SidebarWindowInput;
+}) => Promise<void>;
 
 export type SidebarWindow = {
   "collapsed?": boolean;
@@ -276,7 +279,7 @@ declare global {
         leftSidebar: {
           open: () => Promise<void>;
           close: () => Promise<void>;
-        },
+        };
         rightSidebar: {
           open: () => Promise<void>;
           close: () => Promise<void>;

@@ -692,7 +692,8 @@ const ToggleablePanel = ({
     () => (priceId === toggleable ? "" : "&dev=true"),
     [priceId, toggleable]
   );
-  const [price, setPrice] = useState(0);
+  const [pricingMessage, setPricingMessage] = useState("");
+  const [productDescription, setProductDescription] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const enableCallback = useCallback(
@@ -723,7 +724,14 @@ const ToggleablePanel = ({
         .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`, {
           headers: { Authorization: getAuthorizationHeader() },
         })
-        .then((r) => setPrice(r.data.price / 100))
+        .then((r) => {
+          setPricingMessage(
+            `$${r.data.price / 100}${r.data.perUse ? " per use" : ""}${
+              r.data.isMonthly ? " per month" : " per year"
+            }`
+          );
+          setProductDescription(r.data.description);
+        })
         .catch(catchError);
       axios
         .get(
@@ -748,6 +756,7 @@ const ToggleablePanel = ({
     dev,
     initialUid,
     enableCallback,
+    setPricingMessage,
   ]);
   return (
     <>
@@ -765,7 +774,7 @@ const ToggleablePanel = ({
         {isPremium &&
           (enabled
             ? `You have sucessfully subscribed! Configure this feature with the tabs on the left.`
-            : `This is a premium feature. Enabling will require a paid subscription.`)}
+            : `This is a premium feature. Enabling will require a paid subscription.\n\n${productDescription}`)}
       </p>
       <p style={{ color: "red" }}>{error}</p>
       <Alert
@@ -869,7 +878,7 @@ const ToggleablePanel = ({
             )}`
           : `By clicking submit below, you will subscribe to the premium features of the RoamJS Extension: ${idToTitle(
               extensionId
-            )} for $${price}/month. A window may appear for checkout if this is your first premium extension`}
+            )} for ${pricingMessage}. A window may appear for checkout if this is your first premium extension`}
       </Alert>
     </>
   );

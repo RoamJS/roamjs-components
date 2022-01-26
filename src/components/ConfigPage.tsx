@@ -719,9 +719,12 @@ const ToggleablePanel = ({
   useEffect(() => {
     if (isPremium) {
       axios
-        .get(`https://lambda.roamjs.com/price?extensionId=${extensionId}${dev}`, {
-          headers: { Authorization: getAuthorizationHeader() },
-        })
+        .get(
+          `https://lambda.roamjs.com/price?extensionId=${extensionId}${dev}`,
+          {
+            headers: { Authorization: getAuthorizationHeader() },
+          }
+        )
         .then((r) => {
           setPricingMessage(
             `$${r.data.price / 100}${r.data.perUse ? " per use" : ""}${

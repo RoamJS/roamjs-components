@@ -19,7 +19,7 @@ import localStorageSet from "../util/localStorageSet";
 import { createPage } from "../writes";
 
 const TokenDialog = ({ onClose }: { onClose: () => void }) => {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(getToken);
   const [useLocal, setUseLocal] = useState(true);
   const onSubmit = useCallback(() => {
     const pageUid = getPageUidByPageTitle("roam/js/roamjs");
@@ -81,6 +81,7 @@ const TokenDialog = ({ onClose }: { onClose: () => void }) => {
               value={token}
               onChange={(e) => setToken(e.target.value)}
               onKeyDown={onKeyDown}
+              type="password"
             />
           </Label>
           <Checkbox

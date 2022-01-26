@@ -118,7 +118,7 @@ const useRoamJSTokenWarning = (): void => {
               r.data.exists
                 ? ""
                 : "sign up at [https://roamjs.com/signup](https://roamjs.com/signup) and "
-            }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from [https://roamjs.com/user](https://roamjs.com/user).`,
+            }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from [https://roamjs.com/user/#Extensions](https://roamjs.com/user/#Extensions).`,
             onConfirm: () => renderTokenDialog({}),
             canCancel: true,
           });

@@ -681,16 +681,14 @@ const ToggleablePanel = ({
 }) => {
   const initialUid = useRef(uid);
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
-  const priceId = useMemo(
-    () =>
-      isPremium
-        ? (toggleable as Exclude<typeof toggleable, true>).replace(/^dev_/, "")
-        : "",
-    [toggleable]
-  );
   const dev = useMemo(
-    () => (priceId === toggleable ? "" : "&dev=true"),
-    [priceId, toggleable]
+    () =>
+      ["dev", "ngrok", "localhost"].some((s) =>
+        (process.env.API_URL || "").includes(s)
+      )
+        ? "&dev=true"
+        : "",
+    []
   );
   const [pricingMessage, setPricingMessage] = useState("");
   const [productDescription, setProductDescription] = useState("");
@@ -721,7 +719,7 @@ const ToggleablePanel = ({
   useEffect(() => {
     if (isPremium) {
       axios
-        .get(`https://lambda.roamjs.com/price?id=${priceId}${dev}`, {
+        .get(`https://lambda.roamjs.com/price?extensionId=${extensionId}${dev}`, {
           headers: { Authorization: getAuthorizationHeader() },
         })
         .then((r) => {
@@ -752,7 +750,7 @@ const ToggleablePanel = ({
     isPremium,
     toggleable,
     catchError,
-    priceId,
+    extensionId,
     dev,
     initialUid,
     enableCallback,
@@ -899,7 +897,7 @@ const Panels = {
 
 type ConfigTab = {
   id: string;
-  toggleable?: boolean | `price_${string}` | `dev_price_${string}`;
+  toggleable?: boolean | "premium";
   development?: boolean;
   fields: Field<UnionField>[];
 };

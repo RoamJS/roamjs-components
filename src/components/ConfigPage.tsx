@@ -770,11 +770,11 @@ const ToggleablePanel = ({
             : enableCallback((e.target as HTMLInputElement).checked, uid)
         }
       />
-      <p>
+      <p style={{ whiteSpace: "pre-wrap" }}>
         {isPremium &&
           (enabled
-            ? `You have sucessfully subscribed! Configure this feature with the tabs on the left.`
-            : `This is a premium feature. Enabling will require a paid subscription.\n\n${productDescription}`)}
+            ? `You have sucessfully subscribed!\n\nConfigure this feature with the tabs on the left.`
+            : `This is a premium feature and will require a paid subscription to enable.\n\n${productDescription}`)}
       </p>
       <p style={{ color: "red" }}>{error}</p>
       <Alert

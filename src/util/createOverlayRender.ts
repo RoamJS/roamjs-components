@@ -11,19 +11,21 @@ const createOverlayRender =
     id: string,
     Overlay: (props: RoamOverlayProps<T>) => React.ReactElement
   ) =>
-  (props: T): void => {
+  (props: T): (() => void) => {
     const parent = getRenderRoot(id);
+    const onClose = () => {
+      if (typeof props.onClose === "function") props.onClose();
+      ReactDOM.unmountComponentAtNode(parent);
+      parent.remove();
+    };
     ReactDOM.render(
       React.createElement(Overlay, {
         ...props,
-        onClose: () => {
-          if (typeof props.onClose === "function") props.onClose();
-          ReactDOM.unmountComponentAtNode(parent);
-          parent.remove();
-        },
+        onClose,
       }),
       parent
     );
+    return onClose;
   };
 
 export default createOverlayRender;

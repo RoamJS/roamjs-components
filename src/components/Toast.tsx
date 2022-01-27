@@ -41,6 +41,7 @@ export const render = ({
   ...props
 }: {
   id: string;
-} & ToastProps): void => createOverlayRender<ToastProps>(id, Toast)(props);
+} & ToastProps): (() => void) =>
+  createOverlayRender<ToastProps>(id, Toast)(props);
 
 export default Toast;

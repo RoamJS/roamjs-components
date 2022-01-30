@@ -3,7 +3,7 @@ import { addStyle } from "../dom";
 
 const runExtension = async (
   extensionId: string,
-  run: () => void,
+  run: () => void | Promise<void>,
   options: { skipAnalytics?: boolean } = {}
 ): Promise<void> => {
   if (window.roamjs?.loaded?.has?.(extensionId)) {
@@ -31,7 +31,15 @@ const runExtension = async (
     "roamjs-default"
   );
 
-  run();
+  const result = run();
+  const dispatch = () => {
+    document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`))
+  }
+  if (result) {
+    result.then(dispatch);
+  } else {
+    dispatch();
+  }
 };
 
 export default runExtension;

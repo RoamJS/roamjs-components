@@ -229,6 +229,15 @@ export type SidebarWindow = {
   "window-id": string;
 } & SidebarWindowType;
 
+type json =
+  | string
+  | number
+  | boolean
+  | null
+  | { toJSON: () => string }
+  | json[]
+  | { [key: string]: json };
+
 declare global {
   interface Window {
     roamAlphaAPI: {
@@ -343,8 +352,24 @@ declare global {
     roamjs?: {
       loaded: Set<string>;
       extension: {
+        multiplayer: {
+          addGraphListener: (args: {
+            operation: string;
+            handler: (e: json, graph: string) => void;
+          }) => void;
+          removeGraphListener: (args: { operation: string }) => void;
+          sendToGraph: (args: {
+            graph: string;
+            operation: string;
+            data?: { [k: string]: json };
+          }) => void;
+          getConnectedGraphs: () => string[];
+          enable: () => void;
+          disable: () => void;
+        };
         [id: string]: {
-          [method: string]: (args?: unknown) => void;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          [method: string]: (args?: any) => void;
         };
       };
       version: { [id: string]: string };

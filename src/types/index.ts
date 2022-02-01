@@ -352,7 +352,7 @@ declare global {
     roamjs?: {
       loaded: Set<string>;
       extension: {
-        multiplayer: {
+        multiplayer?: {
           addGraphListener: (args: {
             operation: string;
             handler: (e: json, graph: string) => void;
@@ -370,7 +370,7 @@ declare global {
         [id: string]: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           [method: string]: (args?: any) => void;
-        };
+        } | undefined;
       };
       version: { [id: string]: string };
       // DEPRECATED remove in 2.0

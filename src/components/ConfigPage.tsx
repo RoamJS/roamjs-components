@@ -1099,6 +1099,7 @@ ${
               icon={"git-branch"}
               minimal
               onClick={() =>
+                window.roamjs?.extension.versioning &&
                 window.roamjs?.extension.versioning.switch({
                   id,
                   currentVersion,

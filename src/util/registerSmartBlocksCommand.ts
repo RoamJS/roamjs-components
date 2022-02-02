@@ -13,7 +13,7 @@ const registerSmartBlocksCommand = ({
 }): void => {
   const text = inputText.toUpperCase();
   const register = (retry: number): void | number | false =>
-    window.roamjs?.extension?.smartblocks?.registerCommand
+    window.roamjs?.extension?.smartblocks
       ? window.roamjs.extension.smartblocks.registerCommand({
           text,
           handler,
@@ -26,7 +26,7 @@ const registerSmartBlocksCommand = ({
             [text]: {
               ...window.roamjs.extension[text],
               registerSmartBlocksCommand: () => {
-                window.roamjs?.extension.smartblocks.registerCommand({
+                window.roamjs?.extension.smartblocks?.registerCommand({
                   text,
                   handler,
                 });

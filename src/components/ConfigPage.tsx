@@ -668,6 +668,8 @@ const ToggleablePanel = ({
   setUid,
   uid,
   toggleable,
+  onEnable,
+  onDisable,
 }: {
   uid: string;
   id: string;
@@ -678,6 +680,8 @@ const ToggleablePanel = ({
   toggleable: Exclude<Required<ConfigTab["toggleable"]>, false | undefined>;
   setEnabled: (b: boolean) => void;
   setUid: (s: string) => void;
+  onEnable?: () => void;
+  onDisable?: () => void;
 }) => {
   const initialUid = useRef(uid);
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
@@ -702,12 +706,16 @@ const ToggleablePanel = ({
           parentUid: pageUid,
           order,
           node: { text: id },
-        }).then((newUid) => setUid(newUid));
+        })
+          .then((newUid) => setUid(newUid))
+          .then(() => onEnable?.());
       } else {
-        deleteBlock(uid).then(() => setUid(""));
+        deleteBlock(uid)
+          .then(() => setUid(""))
+          .then(() => onDisable?.());
       }
     },
-    [setUid, setEnabled, id, pageUid, order]
+    [setUid, setEnabled, id, pageUid, order, onEnable, onDisable]
   );
   const [isOpen, setIsOpen] = useState(false);
   const intervalListener = useRef(0);
@@ -901,6 +909,8 @@ const Panels = {
 type ConfigTab = {
   id: string;
   toggleable?: boolean | "premium";
+  onEnable?: () => void;
+  onDisable?: () => void;
   development?: boolean;
   fields: Field<UnionField>[];
 };
@@ -928,6 +938,8 @@ const FieldTabs = ({
   order,
   toggleable,
   extensionId,
+  onEnable,
+  onDisable,
 }: {
   uid: string;
   pageUid: string;
@@ -993,6 +1005,8 @@ const FieldTabs = ({
                 toggleable={toggleable}
                 setUid={setUid}
                 setEnabled={setEnabled}
+                onEnable={onEnable}
+                onDisable={onDisable}
               />
             ) : undefined
           }
@@ -1119,7 +1133,17 @@ ${
         className={"roamjs-config-tabs"}
       >
         {userTabs.map(
-          ({ id: tabId, fields, toggleable, development = false }, i) => (
+          (
+            {
+              id: tabId,
+              fields,
+              toggleable,
+              development = false,
+              onEnable,
+              onDisable,
+            },
+            i
+          ) => (
             <Tab
               id={tabId}
               key={tabId}
@@ -1137,6 +1161,8 @@ ${
                   pageUid={pageUid}
                   order={i}
                   toggleable={toggleable}
+                  onEnable={onEnable}
+                  onDisable={onDisable}
                 />
               }
             />

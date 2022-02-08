@@ -9,6 +9,9 @@ const getBlockUidsAndTextsReferencingPage = (
         title
       )}"] [?r :block/refs ?p]]`
     )
-    .map(([uid, text]: string[]) => ({ uid, text }));
+    .map(([node]: Record<string, string>[]) => ({
+      uid: node.uid,
+      text: node.string || '',
+    }));
 
 export default getBlockUidsAndTextsReferencingPage;

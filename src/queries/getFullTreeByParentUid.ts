@@ -1,7 +1,8 @@
 import type { TextAlignment, TreeNode, ViewType } from "../types";
 
 type RoamRawBlock = {
-  text: string;
+  string?: string;
+  title?: string;
   uid: string;
   order: number;
   heading?: number;
@@ -14,7 +15,7 @@ type RoamRawBlock = {
 };
 
 const formatRoamNode = (n: Partial<RoamRawBlock>, v: ViewType): TreeNode => ({
-  text: n.text || "",
+  text: n.string || n.title || "",
   open: typeof n.open === "undefined" ? true : n.open,
   order: n.order || 0,
   uid: n.uid || "",
@@ -32,8 +33,8 @@ const getFullTreeByParentUid = (uid: string): TreeNode =>
   formatRoamNode(
     window.roamAlphaAPI.q(
       `[:find (pull ?b [
-      [:block/string :as "text"] 
-      [:node/title :as "text"] 
+      :block/string 
+      :node/title 
       :block/uid 
       :block/order 
       :block/heading 

@@ -16,7 +16,8 @@ const runExtension = async (
     dynamicElements: window.roamjs?.dynamicElements || new Set(),
   };
   window.roamjs.loaded.add(extensionId);
-  window.roamjs.version[extensionId] = process.env.ROAMJS_VERSION || "";
+  window.roamjs.version[extensionId] =
+    process.env.ROAMJS_VERSION || process.env.NODE_ENV || "";
 
   if (!options.skipAnalytics) {
     axios.post(`https://api.roamjs.com/mixpanel`, {
@@ -33,8 +34,8 @@ const runExtension = async (
 
   const result = run();
   const dispatch = () => {
-    document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`))
-  }
+    document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
+  };
   if (result) {
     result.then(dispatch);
   } else {

@@ -1,9 +1,12 @@
 import axios from "axios";
-import { useEffect,  } from "react";
+import { useEffect } from "react";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
 import getToken from "../util/getToken";
 import getCurrentUserEmail from "../queries/getCurrentUserEmail";
-import { addTokenDialogCommand, render as renderTokenDialog } from "../components/TokenDialog";
+import {
+  addTokenDialogCommand,
+  render as renderTokenDialog,
+} from "../components/TokenDialog";
 
 const useRoamJSTokenWarning = (): void => {
   useEffect(() => {

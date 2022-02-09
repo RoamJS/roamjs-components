@@ -41,3 +41,8 @@ export {
   render as renderSimpleAlert,
 } from "./SimpleAlert";
 export { default as Toast, render as renderToast } from "./Toast";
+export {
+  default as TokenDialog,
+  render as renderTokenDialog,
+  addTokenDialogCommand,
+} from "./TokenDialog";

@@ -1,3 +1,4 @@
+export { default as emailCatch } from "./emailCatch";
 export { default as emailError } from "./emailError";
 export { default as getRoamJSUser, awsGetRoamJSUser } from "./getRoamJSUser";
 export { default as headers } from "./headers";

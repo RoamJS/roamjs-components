@@ -1056,7 +1056,9 @@ const ConfigPage = ({
   );
   const tree = getBasicTreeByParentUid(pageUid);
   const [currentVersion, setCurrentVersion] = useState("");
-  const [experimentalMode, setExperimentalMode] = useState(!!localStorageGet('experimental'));
+  const [experimentalMode, setExperimentalMode] = useState(
+    !!localStorageGet("experimental")
+  );
   const titleRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (config.versioning) {
@@ -1068,15 +1070,21 @@ const ConfigPage = ({
         setCurrentVersion("Version Not Found");
       }
     }
-    if (userTabs.some(t => t.development)) {
-      titleRef.current?.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.metaKey && e.shiftKey && e.altKey && e.key === 'KeyM') { 
-          const newVal = !localStorageGet('experimental')
+    if (userTabs.some((t) => t.development)) {
+      titleRef.current?.addEventListener("keydown", (e) => {
+        if (
+          e.ctrlKey &&
+          e.metaKey &&
+          e.shiftKey &&
+          e.altKey &&
+          e.key === "KeyM"
+        ) {
+          const newVal = !localStorageGet("experimental");
           setExperimentalMode(newVal);
-          if (newVal) localStorageSet('experimental', 'true');
-          else localStorageRemove('experimental');
+          if (newVal) localStorageSet("experimental", "true");
+          else localStorageRemove("experimental");
         }
-      })
+      });
     }
   }, [config.versioning, id, setCurrentVersion, userTabs, titleRef]);
   const brandColor = tryColor(config.brand);
@@ -1114,7 +1122,11 @@ ${
 }`
 }`}
       </style>
-      <div style={{ display: "flex", justifyContent: "space-between" }} ref={titleRef} tabIndex={-1}>
+      <div
+        style={{ display: "flex", justifyContent: "space-between" }}
+        ref={titleRef}
+        tabIndex={-1}
+      >
         <h4 style={{ padding: 4 }}>{idToTitle(id)} Configuration</h4>
         {currentVersion && (
           <span>

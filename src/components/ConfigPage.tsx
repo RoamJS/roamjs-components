@@ -42,7 +42,7 @@ import PageInput from "./PageInput";
 import format from "date-fns/format";
 import axios, { AxiosError } from "axios";
 import Color from "color";
-import { useRoamJSTokenWarning } from "..";
+import useRoamJSTokenWarning from "../hooks/useRoamJSTokenWarning";
 import getAuthorizationHeader from "../util/getAuthorizationHeader";
 
 type TextField = {

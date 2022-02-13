@@ -1056,6 +1056,8 @@ const ConfigPage = ({
   );
   const tree = getBasicTreeByParentUid(pageUid);
   const [currentVersion, setCurrentVersion] = useState("");
+  const [experimentalMode, setExperimentalMode] = useState(!!localStorageGet('experimental'));
+  const titleRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (config.versioning) {
       addOldRoamJSDependency("versioning");
@@ -1066,7 +1068,17 @@ const ConfigPage = ({
         setCurrentVersion("Version Not Found");
       }
     }
-  }, [config.versioning, id, setCurrentVersion]);
+    if (userTabs.some(t => t.development)) {
+      titleRef.current?.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.metaKey && e.shiftKey && e.altKey && e.key === 'KeyM') { 
+          const newVal = !localStorageGet('experimental')
+          setExperimentalMode(newVal);
+          if (newVal) localStorageSet('experimental', 'true');
+          else localStorageRemove('experimental');
+        }
+      })
+    }
+  }, [config.versioning, id, setCurrentVersion, userTabs, titleRef]);
   const brandColor = tryColor(config.brand);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
@@ -1102,7 +1114,7 @@ ${
 }`
 }`}
       </style>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }} ref={titleRef} tabIndex={-1}>
         <h4 style={{ padding: 4 }}>{idToTitle(id)} Configuration</h4>
         {currentVersion && (
           <span>
@@ -1148,7 +1160,7 @@ ${
               id={tabId}
               key={tabId}
               title={idToTitle(tabId)}
-              disabled={development}
+              disabled={development && !experimentalMode}
               panel={
                 <FieldTabs
                   id={tabId}

@@ -364,6 +364,7 @@ declare global {
             data?: { [k: string]: json };
           }) => void;
           getConnectedGraphs: () => string[];
+          getNetworkedGraphs: () => string[];
           enable: () => void;
           disable: () => void;
         };
@@ -375,19 +376,6 @@ declare global {
       version: { [id: string]: string };
       // DEPRECATED remove in 2.0
       dynamicElements: Set<HTMLElement>;
-    };
-    roam42?: {
-      smartBlocks?: {
-        customCommands: {
-          key: string; // `<% ${string} %> (SmartBlock function)`, sad - https://github.com/microsoft/TypeScript/issues/13969
-          icon: "gear";
-          value: string;
-          processor: (match: string) => Promise<string | void>;
-        }[];
-        activeWorkflow: {
-          outputAdditionalBlock: (text: string) => void;
-        };
-      };
     };
   }
 }

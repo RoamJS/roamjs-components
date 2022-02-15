@@ -30,6 +30,7 @@ const emailError = (subject: string, e: AxiosError): Promise<string> =>
         },
         React.createElement("img", {
           src: "https://roamjs.com/images/logo-low-res.png",
+          width: 128
         })
       ),
       React.createElement(
@@ -41,7 +42,7 @@ const emailError = (subject: string, e: AxiosError): Promise<string> =>
             fontSize: 16,
           },
         },
-        React.createElement("h1", {}, `An error was thrown in a RoamJS Lambda`),
+        React.createElement("h3", {}, `An error was thrown in a RoamJS Lambda`),
         React.createElement(
           "p",
           {},

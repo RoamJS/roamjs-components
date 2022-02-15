@@ -2,7 +2,7 @@ import axios from "axios";
 import { APIGatewayProxyResult, APIGatewayProxyHandler } from "aws-lambda";
 import headers from "./headers";
 
-type RoamJSUser = { email: string; [k: string]: unknown };
+type RoamJSUser = { email: string; id: string; [k: string]: unknown };
 
 const getRoamJSUser = (
   token: string,

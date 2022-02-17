@@ -1263,11 +1263,7 @@ export const render = ({
       h.parentElement?.nextElementSibling || null
     );
     ReactDOM.render(
-      <ConfigPage
-        id={configPageId}
-        config={config}
-        pageUid={pageUid}
-      />,
+      <ConfigPage id={configPageId} config={config} pageUid={pageUid} />,
       parent
     );
   }

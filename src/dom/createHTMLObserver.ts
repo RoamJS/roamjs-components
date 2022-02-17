@@ -14,31 +14,24 @@ const createHTMLObserver = ({
   removeCallback?: (b: HTMLElement) => void;
   useBody?: boolean;
 }): MutationObserver => {
-  const blocks = document.getElementsByClassName(
-    className
-  ) as HTMLCollectionOf<HTMLElement>;
-  Array.from(blocks).forEach(callback);
+  const getChildren = (d: Node) =>
+    Array.from((d as HTMLElement).getElementsByClassName(className)).filter(
+      (d) => d.nodeName === tag
+    ) as HTMLElement[];
+  getChildren(document).forEach(callback);
+
   const isNode = (d: Node) =>
     d.nodeName === tag &&
     Array.from((d as HTMLElement).classList).includes(className);
+  const getNodes = (nodes: NodeList) =>
+    Array.from(nodes)
+      .filter((d: Node) => isNode(d) || d.hasChildNodes())
+      .flatMap((d) => (isNode(d) ? [d] : getChildren(d)));
+
   return (useBody ? createOverlayObserver : createObserver)((ms) => {
     const nodes = ms.flatMap((m) => [
-      ...Array.from(m.addedNodes)
-        .filter((d: Node) => isNode(d) || d.hasChildNodes())
-        .flatMap((d) =>
-          isNode(d)
-            ? [d]
-            : Array.from((d as HTMLElement).getElementsByClassName(className))
-        )
-        .map((node) => ({ node, added: true })),
-      ...Array.from(m.removedNodes)
-        .filter((d: Node) => isNode(d) || d.hasChildNodes())
-        .flatMap((d) =>
-          isNode(d)
-            ? [d]
-            : Array.from((d as HTMLElement).getElementsByClassName(className))
-        )
-        .map((node) => ({ node, added: false })),
+      ...getNodes(m.addedNodes).map((node) => ({ node, added: true })),
+      ...getNodes(m.removedNodes).map((node) => ({ node, added: false })),
     ]);
     nodes.forEach((b) =>
       b.added

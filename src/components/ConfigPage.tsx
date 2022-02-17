@@ -1239,6 +1239,40 @@ const createConfigPage = ({
   });
 };
 
+export const render = ({
+  h,
+  title,
+  pageUid = getPageUidByPageTitle(title),
+  config,
+}: {
+  h: HTMLHeadingElement;
+  title: string;
+  pageUid?: string;
+  config: Config;
+}) => {
+  const uid = getPageUidByPageTitle(title);
+  const attribute = `data-roamjs-${uid}`;
+  const containerParent = h.parentElement?.parentElement;
+  if (containerParent && !containerParent.hasAttribute(attribute)) {
+    containerParent.setAttribute(attribute, "true");
+    const parent = document.createElement("div");
+    const configPageId = title.split("/").slice(-1)[0];
+    parent.id = `${configPageId}-config`;
+    containerParent.insertBefore(
+      parent,
+      h.parentElement?.nextElementSibling || null
+    );
+    ReactDOM.render(
+      <ConfigPage
+        id={configPageId}
+        config={config}
+        pageUid={pageUid}
+      />,
+      parent
+    );
+  }
+};
+
 export const createConfigObserver = async ({
   title,
   config,
@@ -1259,26 +1293,12 @@ export const createConfigObserver = async ({
       callback: (d: HTMLElement) => {
         const h = d as HTMLHeadingElement;
         if (h.innerText === title) {
-          const uid = getPageUidByPageTitle(title);
-          const attribute = `data-roamjs-${uid}`;
-          const containerParent = h.parentElement?.parentElement;
-          if (containerParent && !containerParent.hasAttribute(attribute)) {
-            containerParent.setAttribute(attribute, "true");
-            const parent = document.createElement("div");
-            parent.id = `${title.replace("roam/js/", "roamjs-")}-config`;
-            containerParent.insertBefore(
-              parent,
-              d.parentElement?.nextElementSibling || null
-            );
-            ReactDOM.render(
-              <ConfigPage
-                id={title.replace("roam/js/", "")}
-                config={config}
-                pageUid={pageUid}
-              />,
-              parent
-            );
-          }
+          render({
+            pageUid,
+            config,
+            title,
+            h,
+          });
         }
       },
     });

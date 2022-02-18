@@ -685,8 +685,7 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
 
 .roamjs-config-blocks > div > .rm-block-children {
   margin-left: -4px;
-}`
-}</style>
+}`}</style>
       <div
         ref={containerRef}
         style={{
@@ -694,7 +693,7 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
           padding: "8px 0",
           borderRadius: 4,
         }}
-        className={'roamjs-config-blocks'}
+        className={"roamjs-config-blocks"}
       ></div>
     </>
   );

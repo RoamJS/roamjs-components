@@ -642,24 +642,24 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
         ? Promise.resolve(initialUid)
         : createBlock({ node: { text: title, children: [] }, parentUid })
       )
-        .then(
-          (formatUid) =>
-            getFirstChildUidByBlockUid(formatUid) ||
-            (defaultValue?.length
-              ? Promise.all(
-                  defaultValue.map((node, order) =>
-                    createBlock({
-                      node,
-                      parentUid: formatUid,
-                      order,
-                    })
+        .then((formatUid) =>
+          getFirstChildUidByBlockUid(formatUid)
+            ? formatUid
+            : (defaultValue?.length
+                ? Promise.all(
+                    defaultValue.map((node, order) =>
+                      createBlock({
+                        node,
+                        parentUid: formatUid,
+                        order,
+                      })
+                    )
                   )
-                )
-              : createBlock({
-                  node: { text: " " },
-                  parentUid: formatUid,
-                })
-            ).then(() => formatUid)
+                : createBlock({
+                    node: { text: " " },
+                    parentUid: formatUid,
+                  })
+              ).then(() => formatUid)
         )
         .then((uid) => {
           window.roamAlphaAPI.ui.components.renderBlock({

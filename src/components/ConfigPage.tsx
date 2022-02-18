@@ -97,6 +97,11 @@ type BlockField = {
   defaultValue?: InputTextNode;
 };
 
+type BlocksField = {
+  type: "blocks";
+  defaultValue?: InputTextNode[];
+};
+
 type CustomField = {
   type: "custom";
   defaultValue?: InputTextNode[];
@@ -110,7 +115,7 @@ type CustomField = {
   };
 };
 
-type ArrayField = PagesField | MultiTextField | CustomField;
+type ArrayField = PagesField | MultiTextField | CustomField | BlocksField;
 type UnionField =
   | ArrayField
   | TextField
@@ -622,6 +627,66 @@ const BlockPanel: FieldPanel<BlockField> = ({
   );
 };
 
+const BlocksPanel: FieldPanel<BlocksField> = ({
+  uid: initialUid,
+  parentUid,
+  title,
+  defaultValue,
+  description,
+}) => {
+  const containerRef = useRef(null);
+  useEffect(() => {
+    if (containerRef.current) {
+      const el = containerRef.current;
+      (initialUid
+        ? Promise.resolve(initialUid)
+        : createBlock({ node: { text: title, children: [] }, parentUid })
+      )
+        .then(
+          (formatUid) =>
+            getFirstChildUidByBlockUid(formatUid) ||
+            (defaultValue?.length
+              ? Promise.all(
+                  defaultValue.map((node, order) =>
+                    createBlock({
+                      node,
+                      parentUid: formatUid,
+                      order,
+                    })
+                  )
+                )
+              : createBlock({
+                  node: { text: " " },
+                  parentUid: formatUid,
+                })
+            ).then(() => formatUid)
+        )
+        .then((uid) => {
+          window.roamAlphaAPI.ui.components.renderBlock({
+            uid,
+            el,
+          });
+        });
+    }
+  }, [containerRef, defaultValue]);
+  return (
+    <>
+      <Label>
+        {idToTitle(title)}
+        <Description description={description} />
+      </Label>
+      <div
+        ref={containerRef}
+        style={{
+          border: "1px solid #33333333",
+          padding: "8px 0",
+          borderRadius: 4,
+        }}
+      ></div>
+    </>
+  );
+};
+
 const CustomPanel: FieldPanel<CustomField> = ({
   description,
   title,
@@ -903,6 +968,7 @@ const Panels = {
   multitext: MultiTextPanel,
   select: SelectPanel,
   block: BlockPanel,
+  blocks: BlocksPanel,
   custom: CustomPanel,
 } as { [UField in UnionField as UField["type"]]: FieldPanel<UField> };
 

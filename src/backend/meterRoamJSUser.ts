@@ -11,7 +11,7 @@ const meterRoamJSUser = (
     .post(
       `https://lambda.roamjs.com/meter`,
       {
-        email: user,
+        ...(user.startsWith("user_") ? { id: user } : { email: user }),
         quantity,
       },
       {

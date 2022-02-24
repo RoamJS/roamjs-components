@@ -60,6 +60,19 @@ export type PullBlock = {
     };
   };
   ":db/id"?: number;
+  ":user/display-name"?: string;
+  ":user/display-page"?: { ":db/id": number };
+  ":user/settings"?: {
+    ":namespace-options": [":none", ":partial", ":full"];
+    ":link-brackets?": boolean;
+    ":showing-inline-references?": boolean;
+    ":right-sidebar-pinned": {
+      [uuid: string]: SidebarWindow;
+    };
+    ":showing-own-icons?": boolean;
+    ":showing-user-icons?": boolean;
+  };
+  ":user/uid"?: string;
 };
 
 export type RoamPullResult = RoamPull | null;
@@ -368,10 +381,12 @@ declare global {
           enable: () => void;
           disable: () => void;
         };
-        [id: string]: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          [method: string]: (args?: any) => void;
-        } | undefined;
+        [id: string]:
+          | {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              [method: string]: (args?: any) => void;
+            }
+          | undefined;
       };
       version: { [id: string]: string };
       // DEPRECATED remove in 2.0

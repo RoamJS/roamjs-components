@@ -25,8 +25,17 @@ export const render = ({
     return () => toasterRoot.remove();
   } else {
     const toaster = Toaster.create({
+      position,
       className,
     });
+    toaster.show(
+      {
+        message: <Markdown>{props.content || "RoamJS Notification"}</Markdown>,
+        intent: Intent.PRIMARY,
+        timeout: props.timeout || 5000,
+      },
+      props.id
+    );
     setTimeout(() => {
       const toasterRoot = document.querySelector<HTMLDivElement>(
         `.bp3-toast-container.${className}`

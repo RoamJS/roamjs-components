@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Intent,
-  Toaster,
-  ToasterPosition,
-} from "@blueprintjs/core";
+import { Intent, Toaster, ToasterPosition } from "@blueprintjs/core";
 import Markdown from "markdown-to-jsx";
 
 type ToastProps = {
@@ -19,7 +15,9 @@ export const render = ({
   ...props
 }: ToastProps): (() => void) => {
   const className = `roamjs-toast-${position}`;
-  const toasterRoot = document.querySelector(`.bp3-toast-container.${className}`);
+  const toasterRoot = document.querySelector(
+    `.bp3-toast-container.${className}`
+  );
   if (toasterRoot) {
     toasterRoot.dispatchEvent(
       new CustomEvent("roamjs-toast", { detail: props })
@@ -29,14 +27,21 @@ export const render = ({
     const toaster = Toaster.create({
       className,
     });
-    const toasterRoot = document.querySelector<HTMLDivElement>(`.bp3-toast-container.${className}`)!;
+    const toasterRoot = document.querySelector<HTMLDivElement>(
+      `.bp3-toast-container.${className}`
+    )!;
     toasterRoot.addEventListener("roamjs-toast", ((e: CustomEvent) => {
       const props = e.detail;
-      toaster.show({
-        message: <Markdown>{props.content || "RoamJS Notification"}</Markdown>,
-        intent: Intent.PRIMARY,
-        timeout: props.timeout || 5000,
-      }, props.id);
+      toaster.show(
+        {
+          message: (
+            <Markdown>{props.content || "RoamJS Notification"}</Markdown>
+          ),
+          intent: Intent.PRIMARY,
+          timeout: props.timeout || 5000,
+        },
+        props.id
+      );
     }) as EventListener);
     return () => toaster.dismiss(props.id);
   }

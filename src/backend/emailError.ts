@@ -2,7 +2,11 @@ import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import type { AxiosError } from "axios";
 import React from "react";
 
-const emailError = (subject: string, e: AxiosError): Promise<string> =>
+const emailError = (
+  subject: string,
+  e: AxiosError,
+  moreBody?: React.ReactNode
+): Promise<string> =>
   sendEmail({
     to: process.env.ROAMJS_EMAIL,
     from: "support@roamjs.com",
@@ -30,7 +34,7 @@ const emailError = (subject: string, e: AxiosError): Promise<string> =>
         },
         React.createElement("img", {
           src: "https://roamjs.com/images/logo-low-res.png",
-          width: 128
+          width: 128,
         })
       ),
       React.createElement(
@@ -52,7 +56,8 @@ const emailError = (subject: string, e: AxiosError): Promise<string> =>
               : e.response?.data || e.message
           }`
         ),
-        React.createElement("p", {}, e.stack)
+        React.createElement("p", {}, e.stack),
+        ...(moreBody ? [React.createElement("div", {}, moreBody)] : [])
       ),
       React.createElement(
         "div",

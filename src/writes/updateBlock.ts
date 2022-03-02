@@ -7,7 +7,9 @@ const updateBlock = ({
   textAlign,
   viewType,
   open,
-}: { uid: string } & Omit<InputTextNode, "children">): Promise<string> => {
+}: { uid: string } & Partial<
+  Omit<InputTextNode, "children">
+>): Promise<string> => {
   return window.roamAlphaAPI
     .updateBlock({
       block: {

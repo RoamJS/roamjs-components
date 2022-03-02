@@ -25,6 +25,7 @@ const useRoamJSTokenWarning = (): void => {
             }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from [https://roamjs.com/user/#Extensions](https://roamjs.com/user/#Extensions).`,
             onConfirm: () => renderTokenDialog({}),
             canCancel: true,
+            externalLink: true,
           });
         });
     }

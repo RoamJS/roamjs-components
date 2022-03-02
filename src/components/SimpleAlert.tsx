@@ -7,6 +7,7 @@ type Props = {
   content: string;
   onConfirm: () => void;
   canCancel?: boolean;
+  externalLink?: boolean;
 };
 
 const SimpleAlert = ({
@@ -14,6 +15,7 @@ const SimpleAlert = ({
   content,
   onConfirm,
   canCancel,
+  externalLink,
 }: Props & { onClose: () => void }): React.ReactElement => {
   const cancelProps = canCancel
     ? {
@@ -33,7 +35,22 @@ const SimpleAlert = ({
         className={Classes.ALERT_CONTENTS}
         style={{ whiteSpace: "pre-wrap" }}
       >
-        <Markdown>{content}</Markdown>
+        <Markdown
+          options={{
+            overrides: {
+              a: {
+                props: externalLink
+                  ? {
+                      target: "_blank",
+                      rel: "nooperner",
+                    }
+                  : {},
+              },
+            },
+          }}
+        >
+          {content}
+        </Markdown>
       </div>
     </Alert>
   );

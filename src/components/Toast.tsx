@@ -31,7 +31,7 @@ export const render = ({
     toaster.show(
       {
         message: <Markdown>{props.content || "RoamJS Notification"}</Markdown>,
-        intent: Intent.PRIMARY,
+        intent: props.intent || Intent.PRIMARY,
         timeout: props.timeout || 5000,
       },
       props.id
@@ -47,7 +47,7 @@ export const render = ({
             message: (
               <Markdown>{props.content || "RoamJS Notification"}</Markdown>
             ),
-            intent: Intent.PRIMARY,
+            intent: props.intent || Intent.PRIMARY,
             timeout: props.timeout || 5000,
           },
           props.id

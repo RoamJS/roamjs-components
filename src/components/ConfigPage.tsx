@@ -44,7 +44,7 @@ import format from "date-fns/format";
 import axios, { AxiosError } from "axios";
 import Color from "color";
 import getAuthorizationHeader from "../util/getAuthorizationHeader";
-import { checkRoamJSTokenWarning } from "./TokenDialog";
+import { addTokenDialogCommand, checkRoamJSTokenWarning } from "./TokenDialog";
 
 type TextField = {
   type: "text";
@@ -815,45 +815,51 @@ const ToggleablePanel = ({
         .catch(catchError);
     }
   }, [isPremium, setPricingMessage, setProductDescription, dev]);
-  const checkSubscription = useCallback(() => {
-    setLoading(true);
-    checkRoamJSTokenWarning()
-      .then((token) =>
-        token
-          ? axios
-              .get(
-                `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
-                {
-                  headers: { Authorization: getAuthorizationHeader() },
-                }
-              )
-              .then((r) => {
-                if (!r.data.success && initialUid.current) {
-                  enableCallback(false, initialUid.current);
-                } else if (r.data.success && !initialUid.current) {
-                  enableCallback(true, initialUid.current);
-                }
-              })
-          : Promise.reject(
-              new Error(
-                `Must set a RoamJS token in order to use these features. To set your RoamJS token, open the Roam command palette and enter "Set RoamJS Token"`
-              )
+  const checkSubscription = useCallback(
+    (token: string) => {
+      setLoading(true);
+      (token
+        ? axios
+            .get(
+              `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
+              {
+                headers: { Authorization: getAuthorizationHeader() },
+              }
             )
+            .then((r) => {
+              if (!r.data.success && initialUid.current) {
+                enableCallback(false, initialUid.current);
+              } else if (r.data.success && !initialUid.current) {
+                enableCallback(true, initialUid.current);
+              }
+            })
+        : Promise.reject(
+            new Error(
+              `Must set a RoamJS token in order to use these features. To set your RoamJS token, open the Roam command palette and enter "Set RoamJS Token"`
+            )
+          )
       )
-      .catch((e) => {
-        if (initialUid.current) enableCallback(false, initialUid.current);
-        catchError(e);
-      })
-      .finally(() => setLoading(false));
-  }, [catchError, extensionId, dev, initialUid, enableCallback, setLoading]);
+        .catch((e) => {
+          if (initialUid.current) enableCallback(false, initialUid.current);
+          catchError(e);
+        })
+        .finally(() => setLoading(false));
+    },
+    [catchError, extensionId, dev, initialUid, enableCallback, setLoading]
+  );
+  const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (isPremium) {
-      checkSubscription();
+      checkRoamJSTokenWarning().then(checkSubscription);
+      if (containerRef.current)
+        containerRef.current?.addEventListener("roamjs:token:set", ((
+          e: CustomEvent
+        ) => checkSubscription(e.detail)) as EventListener);
     }
     return () => clearTimeout(intervalListener.current);
   }, [isPremium, checkSubscription]);
   return (
-    <>
+    <div id={"roamjs-toggleable-container"} ref={containerRef}>
       {loading ? (
         <div
           style={{
@@ -991,7 +997,7 @@ const ToggleablePanel = ({
               extensionId
             )} for ${pricingMessage}. A window may appear for checkout if this is your first premium extension`}
       </Alert>
-    </>
+    </div>
   );
 };
 
@@ -1386,6 +1392,18 @@ export const createConfigObserver = async ({
       config,
     }));
   if (config.tabs.length) {
+    if (config.tabs.some((t) => t.toggleable === "premium"))
+      addTokenDialogCommand({
+        onEnter: (token) => {
+          const toggleablePanel = document.getElementById(
+            "roamjs-toggleable-container"
+          );
+          if (toggleablePanel)
+            toggleablePanel.dispatchEvent(
+              new CustomEvent("roamjs:token:set", { detail: token })
+            );
+        },
+      });
     createHTMLObserver({
       className: "rm-title-display",
       tag: "H1",

@@ -839,6 +839,8 @@ const ToggleablePanel = ({
                 enableCallback(false, uidRef.current);
               } else if (r.data.success && !uidRef.current) {
                 enableCallback(true, uidRef.current);
+              } else {
+                setEnabled(r.data.success);
               }
             })
         : Promise.reject(

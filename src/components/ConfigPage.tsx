@@ -825,6 +825,7 @@ const ToggleablePanel = ({
     (token: string) => {
       setLoading(true);
       setError("");
+      setEnabled(false);
       (token
         ? axios
             .get(

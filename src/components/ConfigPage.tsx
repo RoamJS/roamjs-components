@@ -756,7 +756,7 @@ const ToggleablePanel = ({
   onEnable?: () => void;
   onDisable?: () => void;
 }) => {
-  const initialUid = useRef(uid);
+  const uidRef = useRef(uid);
   const isPremium = useMemo(() => toggleable !== true, [toggleable]);
   const dev = useMemo(
     () =>
@@ -781,11 +781,17 @@ const ToggleablePanel = ({
           order,
           node: { text: id },
         })
-          .then((newUid) => setUid(newUid))
+          .then((newUid) => {
+            setUid(newUid);
+            uidRef.current = newUid;
+          })
           .then(() => onEnable?.());
       } else {
         deleteBlock(uid)
-          .then(() => setUid(""))
+          .then(() => {
+            setUid("");
+            uidRef.current = "";
+          })
           .then(() => onDisable?.());
       }
     },
@@ -818,6 +824,7 @@ const ToggleablePanel = ({
   const checkSubscription = useCallback(
     (token: string) => {
       setLoading(true);
+      setError("");
       (token
         ? axios
             .get(
@@ -827,10 +834,10 @@ const ToggleablePanel = ({
               }
             )
             .then((r) => {
-              if (!r.data.success && initialUid.current) {
-                enableCallback(false, initialUid.current);
-              } else if (r.data.success && !initialUid.current) {
-                enableCallback(true, initialUid.current);
+              if (!r.data.success && uidRef.current) {
+                enableCallback(false, uidRef.current);
+              } else if (r.data.success && !uidRef.current) {
+                enableCallback(true, uidRef.current);
               }
             })
         : Promise.reject(
@@ -840,12 +847,20 @@ const ToggleablePanel = ({
           )
       )
         .catch((e) => {
-          if (initialUid.current) enableCallback(false, initialUid.current);
+          if (uidRef.current) enableCallback(false, uidRef.current);
           catchError(e);
         })
         .finally(() => setLoading(false));
     },
-    [catchError, extensionId, dev, initialUid, enableCallback, setLoading]
+    [
+      catchError,
+      extensionId,
+      dev,
+      uidRef,
+      enableCallback,
+      setLoading,
+      setError,
+    ]
   );
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

@@ -808,7 +808,9 @@ const ToggleablePanel = ({
               r.data.isMonthly ? " per month" : " per year"
             }`
           );
-          setProductDescription(r.data.description || 'No extension specific description found.');
+          setProductDescription(
+            r.data.description || "No extension specific description found."
+          );
         })
         .catch(catchError);
     }
@@ -853,9 +855,16 @@ const ToggleablePanel = ({
   return (
     <>
       {loading ? (
-        <div style={{ whiteSpace: "pre-wrap", display: 'flex', justifyContent: 'space-between' }}>
+        <div
+          style={{
+            whiteSpace: "pre-wrap",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
           <span style={{ opacity: 0.75 }}>
-            Checking to see if you are subscribed to RoamJS {idToTitle(extensionId)}...
+            Checking to see if you are subscribed to RoamJS{" "}
+            {idToTitle(extensionId)}...
           </span>
           <Spinner size={16} />
         </div>

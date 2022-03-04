@@ -17,9 +17,9 @@ const SimpleAlert = ({
   onCancel,
   externalLink,
 }: Props & { onClose: () => void }): React.ReactElement => {
-  const alertOnClose = useCallback(() => {
+  const alertOnClose = useCallback((confirmed: boolean) => {
     onClose();
-    onCancel?.();
+    if (!confirmed) onCancel?.();
   }, [onCancel, onClose]);
   const cancelProps = onCancel
     ? {

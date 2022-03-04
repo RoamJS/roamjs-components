@@ -19,7 +19,7 @@ import axios from "axios";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
 import getCurrentUserEmail from "../queries/getCurrentUserEmail";
 
-type Props = { onEnter?: (token: string) => void }
+type Props = { onEnter?: (token: string) => void };
 
 const TokenDialog = ({ onClose, onEnter }: { onClose: () => void } & Props) => {
   const [token, setToken] = useState(getToken);
@@ -27,7 +27,7 @@ const TokenDialog = ({ onClose, onEnter }: { onClose: () => void } & Props) => {
   const dialogOnClose = useCallback(() => {
     onClose();
     onEnter?.("");
-  }, [onClose, onEnter])
+  }, [onClose, onEnter]);
   const onSubmit = useCallback(() => {
     const pageUid = getPageUidByPageTitle("roam/js/roamjs");
     return (

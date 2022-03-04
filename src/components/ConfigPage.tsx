@@ -852,15 +852,7 @@ const ToggleablePanel = ({
         })
         .finally(() => setLoading(false));
     },
-    [
-      catchError,
-      extensionId,
-      dev,
-      uidRef,
-      enableCallback,
-      setLoading,
-      setError,
-    ]
+    [catchError, extensionId, dev, uidRef, enableCallback, setLoading, setError]
   );
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

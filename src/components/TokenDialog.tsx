@@ -15,10 +15,19 @@ import { getPageUidByPageTitle } from "../queries";
 import localStorageRemove from "../util/localStorageRemove";
 import localStorageSet from "../util/localStorageSet";
 import { createPage } from "../writes";
+import axios from "axios";
+import { render as renderSimpleAlert } from "../components/SimpleAlert";
+import getCurrentUserEmail from "../queries/getCurrentUserEmail";
 
-const TokenDialog = ({ onClose }: { onClose: () => void }) => {
+type Props = { onEnter?: (token: string) => void }
+
+const TokenDialog = ({ onClose, onEnter }: { onClose: () => void } & Props) => {
   const [token, setToken] = useState(getToken);
   const [useLocal, setUseLocal] = useState(true);
+  const dialogOnClose = useCallback(() => {
+    onClose();
+    onEnter?.("");
+  }, [onClose, onEnter])
   const onSubmit = useCallback(() => {
     const pageUid = getPageUidByPageTitle("roam/js/roamjs");
     return (
@@ -42,6 +51,7 @@ const TokenDialog = ({ onClose }: { onClose: () => void }) => {
         });
       }
       onClose();
+      onEnter?.(token);
     });
   }, [token, useLocal, onClose]);
   const onKeyDown = useCallback(
@@ -64,7 +74,7 @@ const TokenDialog = ({ onClose }: { onClose: () => void }) => {
       <Dialog
         isOpen={true}
         title={`Add RoamJS Token`}
-        onClose={onClose}
+        onClose={dialogOnClose}
         isCloseButtonShown
         canOutsideClickClose
         canEscapeKeyClose
@@ -92,7 +102,7 @@ const TokenDialog = ({ onClose }: { onClose: () => void }) => {
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button text={"Cancel"} onClick={onClose} />
+            <Button text={"Cancel"} onClick={dialogOnClose} />
             <Button text={"Save"} intent={Intent.PRIMARY} onClick={onSubmit} />
           </div>
         </div>
@@ -103,10 +113,36 @@ const TokenDialog = ({ onClose }: { onClose: () => void }) => {
 
 export const render = createOverlayRender("token-dialog", TokenDialog);
 
-export const addTokenDialogCommand = () =>
+export const addTokenDialogCommand = (props: Props = {}) =>
   window.roamAlphaAPI.ui.commandPalette.addCommand({
     label: "Set RoamJS Token",
-    callback: () => render({}),
+    callback: () => render(props),
   });
+
+export const checkRoamJSTokenWarning = () => {
+  const token = getToken();
+  if (!token) {
+    return new Promise<string>((resolve) =>
+      axios
+        .post(`https://lambda.roamjs.com/users`, {
+          email: getCurrentUserEmail(),
+        })
+        .then((r) => {
+          return renderSimpleAlert({
+            content: `You need to ${
+              r.data.exists
+                ? ""
+                : "sign up at [https://roamjs.com/signup](https://roamjs.com/signup) and "
+            }add your RoamJS token to Roam to use this extension. You will only need to do this once per graph as this token will authorize you for all premium extensions.\n\nGrab your token from [https://roamjs.com/user/#Extensions](https://roamjs.com/user/#Extensions).`,
+            onConfirm: () => render({ onEnter: resolve }),
+            onCancel: () => resolve(""),
+            externalLink: true,
+          });
+        })
+    );
+  } else {
+    return Promise.resolve(token);
+  }
+};
 
 export default TokenDialog;

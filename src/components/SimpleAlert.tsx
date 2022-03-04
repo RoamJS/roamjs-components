@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Alert, Classes } from "@blueprintjs/core";
 import createOverlayRender from "../util/createOverlayRender";
 import Markdown from "markdown-to-jsx";
@@ -6,7 +6,7 @@ import Markdown from "markdown-to-jsx";
 type Props = {
   content: string;
   onConfirm: () => void;
-  canCancel?: boolean;
+  onCancel?: () => void;
   externalLink?: boolean;
 };
 
@@ -14,10 +14,14 @@ const SimpleAlert = ({
   onClose,
   content,
   onConfirm,
-  canCancel,
+  onCancel,
   externalLink,
 }: Props & { onClose: () => void }): React.ReactElement => {
-  const cancelProps = canCancel
+  const alertOnClose = useCallback(() => {
+    onClose();
+    onCancel?.();
+  }, [onCancel, onClose]);
+  const cancelProps = onCancel
     ? {
         cancelButtonText: "Cancel",
         canOutsideClickCancel: true,
@@ -27,7 +31,7 @@ const SimpleAlert = ({
   return (
     <Alert
       isOpen={true}
-      onClose={onClose}
+      onClose={alertOnClose}
       onConfirm={onConfirm}
       {...cancelProps}
     >

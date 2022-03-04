@@ -7,6 +7,7 @@ import {
   Intent,
   Label,
   NumericInput,
+  Spinner,
   Switch,
   Tab,
   Tabs,
@@ -42,8 +43,8 @@ import PageInput from "./PageInput";
 import format from "date-fns/format";
 import axios, { AxiosError } from "axios";
 import Color from "color";
-import useRoamJSTokenWarning from "../hooks/useRoamJSTokenWarning";
 import getAuthorizationHeader from "../util/getAuthorizationHeader";
+import { checkRoamJSTokenWarning } from "./TokenDialog";
 
 type TextField = {
   type: "text";
@@ -730,11 +731,6 @@ const CustomPanel: FieldPanel<CustomField> = ({
   );
 };
 
-const RoamJSTokenWarning = () => {
-  useRoamJSTokenWarning();
-  return <></>;
-};
-
 const ToggleablePanel = ({
   enabled,
   setEnabled,
@@ -774,7 +770,8 @@ const ToggleablePanel = ({
   const [pricingMessage, setPricingMessage] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [alertLoading, setAlertLoading] = useState(false);
   const enableCallback = useCallback(
     (checked: boolean, uid: string) => {
       setEnabled(checked);
@@ -804,12 +801,7 @@ const ToggleablePanel = ({
   useEffect(() => {
     if (isPremium) {
       axios
-        .get(
-          `https://lambda.roamjs.com/price?extensionId=${extensionId}${dev}`,
-          {
-            headers: { Authorization: getAuthorizationHeader() },
-          }
-        )
+        .get(`https://lambda.roamjs.com/price?extensionId=${extensionId}${dev}`)
         .then((r) => {
           setPricingMessage(
             `$${r.data.price / 100}${r.data.perUse ? " per use" : ""}${
@@ -819,54 +811,78 @@ const ToggleablePanel = ({
           setProductDescription(r.data.description);
         })
         .catch(catchError);
-      axios
-        .get(
-          `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
-          { headers: { Authorization: getAuthorizationHeader() } }
-        )
-        .then((r) => {
-          if (!r.data.success && initialUid.current) {
-            enableCallback(false, initialUid.current);
-          } else if (r.data.success && !initialUid.current) {
-            enableCallback(true, initialUid.current);
-          }
-        })
-        .catch(catchError);
+    }
+  }, [isPremium, setPricingMessage, setProductDescription, dev]);
+  const checkSubscription = useCallback(() => {
+    setLoading(true);
+    checkRoamJSTokenWarning()
+      .then((token) =>
+        token
+          ? axios
+              .get(
+                `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
+                {
+                  headers: { Authorization: getAuthorizationHeader() },
+                }
+              )
+              .then((r) => {
+                if (!r.data.success && initialUid.current) {
+                  enableCallback(false, initialUid.current);
+                } else if (r.data.success && !initialUid.current) {
+                  enableCallback(true, initialUid.current);
+                }
+              })
+          : Promise.reject(
+              new Error(
+                `Must set a RoamJS token in order to use these features. To set your RoamJS token, open the Roam command palette and enter "Set RoamJS Token"`
+              )
+            )
+      )
+      .catch((e) => {
+        if (initialUid.current) enableCallback(false, initialUid.current);
+        catchError(e);
+      })
+      .finally(() => setLoading(false));
+  }, [catchError, extensionId, dev, initialUid, enableCallback, setLoading]);
+  useEffect(() => {
+    if (isPremium) {
+      checkSubscription();
     }
     return () => clearTimeout(intervalListener.current);
-  }, [
-    isPremium,
-    toggleable,
-    catchError,
-    extensionId,
-    dev,
-    initialUid,
-    enableCallback,
-    setPricingMessage,
-  ]);
+  }, [isPremium, checkSubscription]);
   return (
     <>
-      {isPremium && <RoamJSTokenWarning />}
-      <Switch
-        labelElement={"Enabled"}
-        checked={enabled}
-        onChange={(e) =>
-          isPremium
-            ? setIsOpen(true)
-            : enableCallback((e.target as HTMLInputElement).checked, uid)
-        }
-      />
-      <p style={{ whiteSpace: "pre-wrap" }}>
-        {isPremium &&
-          (enabled
-            ? `You have sucessfully subscribed!\n\nConfigure this feature with the tabs on the left.`
-            : `This is a premium feature and will require a paid subscription to enable.\n\n${productDescription}`)}
-      </p>
+      {loading ? (
+        <p style={{ whiteSpace: "pre-wrap" }}>
+          <span style={{ opacity: 0.75, marginRight: 32 }}>
+            Checking to see if you are subscribed to {idToTitle(extensionId)}...
+          </span>{" "}
+          <Spinner size={16} />
+        </p>
+      ) : (
+        <>
+          <Switch
+            labelElement={"Enabled"}
+            checked={enabled}
+            onChange={(e) =>
+              isPremium
+                ? setIsOpen(true)
+                : enableCallback((e.target as HTMLInputElement).checked, uid)
+            }
+          />
+          <p style={{ whiteSpace: "pre-wrap" }}>
+            {isPremium &&
+              (enabled
+                ? `You have sucessfully subscribed!\n\nConfigure this feature with the tabs on the left.`
+                : `This is a premium feature and will require a paid subscription to enable.\n\n${productDescription}`)}
+          </p>
+        </>
+      )}
       <p style={{ color: "red" }}>{error}</p>
       <Alert
         isOpen={isOpen}
         onConfirm={() => {
-          setLoading(true);
+          setAlertLoading(true);
           setError("");
           if (enabled) {
             axios
@@ -883,7 +899,7 @@ const ToggleablePanel = ({
               })
               .catch(catchError)
               .finally(() => {
-                setLoading(false);
+                setAlertLoading(false);
                 setIsOpen(false);
               });
           } else {
@@ -917,7 +933,7 @@ const ToggleablePanel = ({
                       .then((r) => {
                         if (r.data.success) {
                           enableCallback(true, uid);
-                          setLoading(false);
+                          setAlertLoading(false);
                           setIsOpen(false);
                         } else {
                           intervalListener.current = window.setTimeout(
@@ -928,26 +944,26 @@ const ToggleablePanel = ({
                       })
                       .catch((e) => {
                         catchError(e);
-                        setLoading(false);
+                        setAlertLoading(false);
                         setIsOpen(false);
                       });
                   };
                   authInterval();
                 } else if (r.data.success) {
                   enableCallback(true, uid);
-                  setLoading(false);
+                  setAlertLoading(false);
                   setIsOpen(false);
                 } else {
                   setError(
                     "Something went wrong with the subscription. Please contact support@roamjs.com for help!"
                   );
-                  setLoading(false);
+                  setAlertLoading(false);
                   setIsOpen(false);
                 }
               })
               .catch(catchError)
               .finally(() => {
-                setLoading(false);
+                setAlertLoading(false);
                 setIsOpen(false);
               });
           }
@@ -955,7 +971,7 @@ const ToggleablePanel = ({
         confirmButtonText={"Submit"}
         cancelButtonText={"Cancel"}
         intent={Intent.PRIMARY}
-        loading={loading}
+        loading={alertLoading}
         onCancel={() => setIsOpen(false)}
       >
         {enabled

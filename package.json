@@ -14,7 +14,8 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push origin main && git push --tags",
     "pretest": "npm run lint",
-    "test": "jest --config jestconfig.json"
+    "jest": "jest --config jestconfig.json",
+    "test": "npm run jest"
   },
   "license": "MIT",
   "files": [

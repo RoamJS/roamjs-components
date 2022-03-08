@@ -11,7 +11,7 @@ const getAttributeValueByBlockAndName = ({
     window.roamAlphaAPI.q(
       `[:find (pull ?b [:block/string]) :where [?a :node/title "${normalizePageTitle(
         name
-      )}"] [?p :block/uid "${uid}"] [?b :block/refs ?a] [?b :block/page ?p]]`
+      )}"] [?p :block/uid "${uid}"] [?b :block/refs ?a] [?b :block/parents ?p]]`
     )?.[0]?.[0]?.string || ""
   )
     .slice(name.length + 2)

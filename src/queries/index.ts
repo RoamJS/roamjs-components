@@ -1,6 +1,7 @@
 export { default as getAllBlockUids } from "./getAllBlockUids";
 export { default as getAllBlockUidsAndTexts } from "./getAllBlockUidsAndTexts";
 export { default as getAllPageNames } from "./getAllPageNames";
+export { default as getAttributeValueByBlockAndName } from "./getAttributeValueByBlockAndName"; 
 export { default as getBasicTreeByParentUid } from "./getBasicTreeByParentUid";
 export { default as getBlockUidAndTextIncludingText } from "./getBlockUidAndTextIncludingText";
 export { default as getBlockUidByTextOnPage } from "./getBlockUidByTextOnPage";

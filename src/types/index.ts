@@ -19,30 +19,29 @@ export type RoamUnorderedBasicNode = {
 };
 
 export type RoamPull = {
-  "create/time"?: number;
-  "node/title"?: string;
-  "log/id"?: number;
-  "block/uid"?: string;
-  "edit/time"?: number;
   "block/children"?: RoamNode[];
+  "block/heading"?: number;
   "block/open"?: boolean;
   "block/order"?: number;
+  "block/page"?: RoamNode;
+  "block/parents"?: RoamNode[];
+  "block/refs"?: RoamNode[];
   "block/string"?: string;
+  "block/uid"?: string;
+  "children/view-type"?: `:${ViewType}`;
+  "create/time"?: number;
+  "edit/time"?: number;
+  "log/id"?: number;
+  "node/title"?: string;
 } & RoamNode;
 
 export type PullBlock = {
   ":block/children"?: { ":db/id": number }[];
-  ":block/refs"?: { ":db/id": number }[];
-  ":block/string"?: string;
-  ":block/order"?: number;
-  ":block/uid"?: string;
   ":block/heading"?: number;
   ":block/open"?: boolean;
-  ":block/text-align"?: TextAlignment;
+  ":block/order"?: number;
   ":block/page"?: { ":db/id": number };
   ":block/parents"?: { ":db/id": number }[];
-  ":children/view-type"?: `:${ViewType}`;
-  ":edit/time"?: number;
   ":block/props"?: {
     ":image-size"?: {
       [p: string]: {
@@ -59,7 +58,16 @@ export type PullBlock = {
       };
     };
   };
+  ":block/refs"?: { ":db/id": number }[];
+  ":block/string"?: string;
+  ":block/text-align"?: TextAlignment;
+  ":block/uid"?: string;
+  ":children/view-type"?: `:${ViewType}`;
+  ":create/time"?: number;
+  ":edit/time"?: number;
   ":db/id"?: number;
+  ":log/id"?: number;
+  ":node/title"?: string;
   ":user/display-name"?: string;
   ":user/display-page"?: { ":db/id": number };
   ":user/settings"?: {
@@ -283,7 +291,7 @@ declare global {
           delete: WriteAction;
         };
         fast: {
-          q: (query: string, ...params: unknown[]) => unknown[][]
+          q: (query: string, ...params: unknown[]) => unknown[][];
         };
         page: {
           create: WriteAction;

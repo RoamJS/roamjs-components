@@ -282,12 +282,16 @@ declare global {
           move: WriteAction;
           delete: WriteAction;
         };
+        fast: {
+          q: (query: string, ...params: unknown[]) => unknown[][]
+        };
         page: {
           create: WriteAction;
           update: WriteAction;
           delete: WriteAction;
         };
         pull: (selector: string, id: number) => PullBlock;
+        pull_many: (pattern: string, eid: string[][]) => PullBlock[];
         q: (query: string, ...params: unknown[]) => unknown[][];
         removePullWatch: (
           pullPattern: string,

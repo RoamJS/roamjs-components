@@ -30,7 +30,9 @@ export type RoamPull = {
   "block/uid"?: string;
   "children/view-type"?: `:${ViewType}`;
   "create/time"?: number;
+  "create/user"?: RoamNode;
   "edit/time"?: number;
+  "edit/user"?: RoamNode;
   "log/id"?: number;
   "node/title"?: string;
 } & RoamNode;
@@ -64,7 +66,9 @@ export type PullBlock = {
   ":block/uid"?: string;
   ":children/view-type"?: `:${ViewType}`;
   ":create/time"?: number;
+  ":create/user"?: { ":db/id": number };
   ":edit/time"?: number;
+  ":edit/user"?: { ":db/id": number };
   ":db/id"?: number;
   ":log/id"?: number;
   ":node/title"?: string;

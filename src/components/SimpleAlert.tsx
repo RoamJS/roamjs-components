@@ -5,7 +5,7 @@ import Markdown from "markdown-to-jsx";
 
 type Props = {
   content: string;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   onCancel?: () => void;
   externalLink?: boolean;
 };
@@ -13,7 +13,7 @@ type Props = {
 const SimpleAlert = ({
   onClose,
   content,
-  onConfirm,
+  onConfirm = () => {},
   onCancel,
   externalLink,
 }: Props & { onClose: () => void }): React.ReactElement => {

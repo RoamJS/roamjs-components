@@ -13,7 +13,7 @@ type Props = {
 const SimpleAlert = ({
   onClose,
   content,
-  onConfirm = () => {},
+  onConfirm,
   onCancel,
   externalLink,
 }: Props & { onClose: () => void }): React.ReactElement => {

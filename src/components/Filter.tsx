@@ -22,8 +22,8 @@ const Filter = ({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const openFilter = useCallback(
     (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsFilterOpen(true);
+      e.stopPropagation();
+      setIsFilterOpen(true);
     },
     [setIsFilterOpen]
   );

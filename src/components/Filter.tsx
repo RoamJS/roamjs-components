@@ -4,7 +4,8 @@ import React, { useCallback, useRef, useState } from "react";
 const Filter = ({
   data,
   onChange,
-  renderButtonText = (s) => s ? s.toString() : <i style={{ opacity: 0.5 }}>(Empty)</i>,
+  renderButtonText = (s) =>
+    s ? s.toString() : <i style={{ opacity: 0.5 }}>(Empty)</i>,
   includeHelpMessage = "Only include these values",
   excludeHelpMessage = "Exclude these values",
 }: {

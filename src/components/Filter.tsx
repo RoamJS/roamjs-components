@@ -109,7 +109,7 @@ const Filter = ({
                                         cursor: "pointer",
                                         borderBottomColor: "rgb(92, 112, 128)",
                                       }}
-                                      onClick={() => {
+                                      onClick={(e) => {
                                         filtersRef.current.includes[key].delete(
                                           n
                                         );
@@ -118,6 +118,7 @@ const Filter = ({
                                         };
                                         setFilters(filters);
                                         onChange(filters);
+                                        e.stopPropagation();
                                       }}
                                     >
                                       {renderButtonText(n, key)}
@@ -178,7 +179,7 @@ const Filter = ({
                                         cursor: "pointer",
                                         borderBottomColor: "rgb(92, 112, 128)",
                                       }}
-                                      onClick={() => {
+                                      onClick={(e) => {
                                         filtersRef.current.excludes[key].delete(
                                           n
                                         );
@@ -187,6 +188,7 @@ const Filter = ({
                                         };
                                         setFilters(filters);
                                         onChange(filters);
+                                        e.stopPropagation();
                                       }}
                                     >
                                       {renderButtonText(n, key)}
@@ -252,6 +254,7 @@ const Filter = ({
                                   const filters = { ...filtersRef.current };
                                   setFilters(filters);
                                   onChange(filters);
+                                  e.stopPropagation();
                                 }}
                               >
                                 {renderButtonText(n, k)}

@@ -11,6 +11,7 @@ export {
   getCoordsFromTextarea,
 } from "./CursorMenu";
 export { default as Description } from "./Description";
+export { default as Filter } from "./Filter";
 export { default as Loading, renderLoading } from "./Loading";
 export { default as MenuItemSelect } from "./MenuItemSelect";
 export { useOauthAccounts } from "./OauthSelect";

@@ -1,21 +1,19 @@
 import { Tooltip, Position, Popover, Button } from "@blueprintjs/core";
 import React, { useCallback, useRef, useState } from "react";
 
-type Value = string | number | Date;
-
 const Filter = ({
   data,
   onChange,
-  renderButtonText = (s) => s,
+  renderButtonText = (s) => s ? s.toString() : <i style={{ opacity: 0.5 }}>(Empty)</i>,
   includeHelpMessage = "Only include these values",
   excludeHelpMessage = "Exclude these values",
 }: {
-  data: Record<string, Value[]>;
+  data: Record<string, string[]>;
   onChange: (filters: {
-    includes: Record<string, Set<Value>>;
-    excludes: Record<string, Set<Value>>;
+    includes: Record<string, Set<string>>;
+    excludes: Record<string, Set<string>>;
   }) => void;
-  renderButtonText?: (s: Value, key: string) => React.ReactNode;
+  renderButtonText?: (s: string, key: string) => React.ReactNode;
   includeHelpMessage?: string;
   excludeHelpMessage?: string;
 }) => {
@@ -33,10 +31,10 @@ const Filter = ({
   );
   const filtersRef = useRef({
     includes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<Value>()])
+      Object.keys(data).map((k) => [k, new Set<string>()])
     ),
     excludes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<Value>()])
+      Object.keys(data).map((k) => [k, new Set<string>()])
     ),
   });
   const [filters, setFilters] = useState(filtersRef.current);

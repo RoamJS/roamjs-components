@@ -92,13 +92,13 @@ const Filter = ({
                         : Object.keys(data).flatMap((key) =>
                             data[key]
                               .filter((n) => filters.includes[key].has(n))
-                              .map((n) => (
+                              .map((n, i) => (
                                 <div
                                   style={{
                                     position: "relative",
                                     display: "inline-block",
                                   }}
-                                  key={n.toString()}
+                                  key={`${n.toString()}-${i}`}
                                 >
                                   <div>
                                     <button
@@ -162,13 +162,13 @@ const Filter = ({
                         : Object.keys(data).flatMap((key) =>
                             data[key]
                               .filter((n) => filters.excludes[key].has(n))
-                              .map((n) => (
+                              .map((n, i) => (
                                 <div
                                   style={{
                                     position: "relative",
                                     display: "inline-block",
                                   }}
-                                  key={n.toString()}
+                                  key={`${n.toString()}-${i}`}
                                 >
                                   <div>
                                     <button
@@ -230,13 +230,13 @@ const Filter = ({
                             !filters.includes[k].has(n) &&
                             !filters.excludes[k].has(n)
                         )
-                        .map((n) => (
+                        .map((n, i) => (
                           <div
                             style={{
                               position: "relative",
                               display: "inline-block",
                             }}
-                            key={n.toString()}
+                            key={`${n.toString()}-${i}`}
                           >
                             <div>
                               <button
@@ -249,8 +249,8 @@ const Filter = ({
                                 }}
                                 onClick={(e) => {
                                   if (e.shiftKey)
-                                    filtersRef.current.excludes.nodes.add(n);
-                                  else filtersRef.current.includes.nodes.add(n);
+                                    filtersRef.current.excludes[k].add(n);
+                                  else filtersRef.current.includes[k].add(n);
                                   const filters = { ...filtersRef.current };
                                   setFilters(filters);
                                   onChange(filters);

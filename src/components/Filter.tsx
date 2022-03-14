@@ -1,6 +1,8 @@
 import { Tooltip, Position, Popover, Button } from "@blueprintjs/core";
 import React, { useCallback, useRef, useState } from "react";
 
+type Value = string | number | Date;
+
 const Filter = ({
   data,
   onChange,
@@ -8,12 +10,12 @@ const Filter = ({
   includeHelpMessage = "Only include these values",
   excludeHelpMessage = "Exclude these values",
 }: {
-  data: Record<string, string[]>;
+  data: Record<string, Value[]>;
   onChange: (filters: {
-    includes: Record<string, Set<string | number | Date>>;
-    excludes: Record<string, Set<string | number | Date>>;
+    includes: Record<string, Set<Value>>;
+    excludes: Record<string, Set<Value>>;
   }) => void;
-  renderButtonText?: (s: string, key: string) => React.ReactNode;
+  renderButtonText?: (s: Value, key: string) => React.ReactNode;
   includeHelpMessage?: string;
   excludeHelpMessage?: string;
 }) => {
@@ -28,10 +30,10 @@ const Filter = ({
   );
   const filtersRef = useRef({
     includes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string | number | Date>()])
+      Object.keys(data).map((k) => [k, new Set<Value>()])
     ),
     excludes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string | number | Date>()])
+      Object.keys(data).map((k) => [k, new Set<Value>()])
     ),
   });
   const [filters, setFilters] = useState(filtersRef.current);
@@ -92,7 +94,7 @@ const Filter = ({
                                     position: "relative",
                                     display: "inline-block",
                                   }}
-                                  key={n}
+                                  key={n.toString()}
                                 >
                                   <div>
                                     <button
@@ -161,7 +163,7 @@ const Filter = ({
                                     position: "relative",
                                     display: "inline-block",
                                   }}
-                                  key={n}
+                                  key={n.toString()}
                                 >
                                   <div>
                                     <button
@@ -228,7 +230,7 @@ const Filter = ({
                               position: "relative",
                               display: "inline-block",
                             }}
-                            key={n}
+                            key={n.toString()}
                           >
                             <div>
                               <button

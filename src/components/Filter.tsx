@@ -21,7 +21,10 @@ const Filter = ({
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const openFilter = useCallback(
-    () => setIsFilterOpen(true),
+    (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsFilterOpen(true);
+    },
     [setIsFilterOpen]
   );
   const closeFilter = useCallback(
@@ -45,7 +48,8 @@ const Filter = ({
           <Button
             icon={"filter"}
             onClick={openFilter}
-            style={{ marginRight: 8 }}
+            className="roamjs-filter"
+            minimal
           />
         }
         content={

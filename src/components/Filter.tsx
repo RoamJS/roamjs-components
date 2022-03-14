@@ -10,10 +10,10 @@ const Filter = ({
 }: {
   data: Record<string, string[]>;
   onChange: (filters: {
-    includes: Record<string, Set<string>>;
-    excludes: Record<string, Set<string>>;
+    includes: Record<string, Set<string | number | Date>>;
+    excludes: Record<string, Set<string | number | Date>>;
   }) => void;
-  renderButtonText?: (s: string) => React.ReactNode;
+  renderButtonText?: (s: string, key: string) => React.ReactNode;
   includeHelpMessage?: string;
   excludeHelpMessage?: string;
 }) => {
@@ -28,10 +28,10 @@ const Filter = ({
   );
   const filtersRef = useRef({
     includes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string>()])
+      Object.keys(data).map((k) => [k, new Set<string | number | Date>()])
     ),
     excludes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string>()])
+      Object.keys(data).map((k) => [k, new Set<string | number | Date>()])
     ),
   });
   const [filters, setFilters] = useState(filtersRef.current);
@@ -114,7 +114,7 @@ const Filter = ({
                                         onChange(filters);
                                       }}
                                     >
-                                      {renderButtonText(n)}
+                                      {renderButtonText(n, key)}
                                     </button>
                                   </div>
                                 </div>
@@ -183,7 +183,7 @@ const Filter = ({
                                         onChange(filters);
                                       }}
                                     >
-                                      {renderButtonText(n)}
+                                      {renderButtonText(n, key)}
                                     </button>
                                   </div>
                                 </div>
@@ -248,7 +248,7 @@ const Filter = ({
                                   onChange(filters);
                                 }}
                               >
-                                {renderButtonText(n)}
+                                {renderButtonText(n, k)}
                               </button>
                             </div>
                           </div>

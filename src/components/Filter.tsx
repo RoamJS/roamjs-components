@@ -23,13 +23,9 @@ const Filter = ({
   excludeHelpMessage?: string;
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const openFilter = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setIsFilterOpen(true);
-    },
-    [setIsFilterOpen]
-  );
+  const openFilter = useCallback(() => {
+    setIsFilterOpen(true);
+  }, [setIsFilterOpen]);
   const closeFilter = useCallback(
     () => setIsFilterOpen(false),
     [setIsFilterOpen]
@@ -66,7 +62,10 @@ const Filter = ({
           />
         }
         content={
-          <div style={{ maxWidth: 600, maxHeight: 245, overflowY: "scroll" }}>
+          <div
+            style={{ maxWidth: 600, maxHeight: 245, overflowY: "scroll" }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div
               style={{
                 display: "flex",
@@ -122,7 +121,7 @@ const Filter = ({
                                         cursor: "pointer",
                                         borderBottomColor: "rgb(92, 112, 128)",
                                       }}
-                                      onClick={(e) => {
+                                      onClick={() => {
                                         filtersRef.current.includes[key].delete(
                                           n
                                         );
@@ -131,7 +130,6 @@ const Filter = ({
                                         };
                                         setFilters(filters);
                                         onChange(filters);
-                                        e.stopPropagation();
                                       }}
                                     >
                                       {renderButtonText(n, key)}
@@ -192,7 +190,7 @@ const Filter = ({
                                         cursor: "pointer",
                                         borderBottomColor: "rgb(92, 112, 128)",
                                       }}
-                                      onClick={(e) => {
+                                      onClick={() => {
                                         filtersRef.current.excludes[key].delete(
                                           n
                                         );
@@ -201,7 +199,6 @@ const Filter = ({
                                         };
                                         setFilters(filters);
                                         onChange(filters);
-                                        e.stopPropagation();
                                       }}
                                     >
                                       {renderButtonText(n, key)}
@@ -267,7 +264,6 @@ const Filter = ({
                                   const filters = { ...filtersRef.current };
                                   setFilters(filters);
                                   onChange(filters);
-                                  e.stopPropagation();
                                 }}
                               >
                                 {renderButtonText(n, k)}

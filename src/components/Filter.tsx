@@ -27,7 +27,10 @@ const Filter = ({
     setIsFilterOpen(true);
   }, [setIsFilterOpen]);
   const closeFilter = useCallback(
-    () => setIsFilterOpen(false),
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setIsFilterOpen(false);
+    },
     [setIsFilterOpen]
   );
   const filtersRef = useRef({

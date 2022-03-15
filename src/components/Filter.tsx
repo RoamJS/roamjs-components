@@ -8,14 +8,7 @@ type Filters = {
 
 const Filter = ({
   data,
-  initialValue = {
-    includes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string>()])
-    ),
-    excludes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string>()])
-    ),
-  },
+  initialValue,
   onChange,
   renderButtonText = (s) =>
     s ? s.toString() : <i style={{ opacity: 0.5 }}>(Empty)</i>,
@@ -41,7 +34,24 @@ const Filter = ({
     () => setIsFilterOpen(false),
     [setIsFilterOpen]
   );
-  const filtersRef = useRef(initialValue);
+  const filtersRef = useRef({
+    includes: Object.fromEntries(
+      Object.keys(data).map((k) => [
+        k,
+        new Set<string>(
+          data[k].filter((d) => initialValue && initialValue.includes[k].has(d))
+        ),
+      ])
+    ),
+    excludes: Object.fromEntries(
+      Object.keys(data).map((k) => [
+        k,
+        new Set<string>(
+          data[k].filter((d) => initialValue && initialValue.excludes[k].has(d))
+        ),
+      ])
+    ),
+  });
   const [filters, setFilters] = useState(filtersRef.current);
   const [filterSearch, setFilterSearch] = useState("");
   return (

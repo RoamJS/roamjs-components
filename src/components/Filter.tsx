@@ -1,19 +1,30 @@
 import { Tooltip, Position, Popover, Button } from "@blueprintjs/core";
 import React, { useCallback, useRef, useState } from "react";
 
+type Filters = {
+  includes: Record<string, Set<string>>;
+  excludes: Record<string, Set<string>>;
+};
+
 const Filter = ({
   data,
+  initialValue = {
+    includes: Object.fromEntries(
+      Object.keys(data).map((k) => [k, new Set<string>()])
+    ),
+    excludes: Object.fromEntries(
+      Object.keys(data).map((k) => [k, new Set<string>()])
+    ),
+  },
   onChange,
   renderButtonText = (s) =>
     s ? s.toString() : <i style={{ opacity: 0.5 }}>(Empty)</i>,
   includeHelpMessage = "Only include these values",
   excludeHelpMessage = "Exclude these values",
 }: {
+  initialValue?: Filters;
   data: Record<string, string[]>;
-  onChange: (filters: {
-    includes: Record<string, Set<string>>;
-    excludes: Record<string, Set<string>>;
-  }) => void;
+  onChange: (filters: Filters) => void;
   renderButtonText?: (s: string, key: string) => React.ReactNode;
   includeHelpMessage?: string;
   excludeHelpMessage?: string;
@@ -30,14 +41,7 @@ const Filter = ({
     () => setIsFilterOpen(false),
     [setIsFilterOpen]
   );
-  const filtersRef = useRef({
-    includes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string>()])
-    ),
-    excludes: Object.fromEntries(
-      Object.keys(data).map((k) => [k, new Set<string>()])
-    ),
-  });
+  const filtersRef = useRef(initialValue);
   const [filters, setFilters] = useState(filtersRef.current);
   const [filterSearch, setFilterSearch] = useState("");
   return (

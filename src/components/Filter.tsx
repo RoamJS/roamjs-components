@@ -23,16 +23,16 @@ const Filter = ({
   excludeHelpMessage?: string;
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const openFilter = useCallback(() => {
-    setIsFilterOpen(true);
-  }, [setIsFilterOpen]);
-  const closeFilter = useCallback(
+  const openFilter = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      setIsFilterOpen(false);
+      setIsFilterOpen(true);
     },
     [setIsFilterOpen]
   );
+  const closeFilter = useCallback(() => {
+    setIsFilterOpen(false);
+  }, [setIsFilterOpen]);
   const filtersRef = useRef({
     includes: Object.fromEntries(
       Object.keys(data).map((k) => [

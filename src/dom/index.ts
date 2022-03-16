@@ -2,6 +2,7 @@ export * from "./constants";
 export { default as addBlockCommand } from "./addBlockCommand";
 export { default as addOldRoamJSDependency } from "./addOldRoamJSDependency";
 export { default as addRoamJSDependency } from "./addRoamJSDependency";
+export { default as addScriptAsDependency } from "./addScriptAsDependency";
 export { default as addStyle } from "./addStyle";
 export { default as createBlockObserver } from "./createBlockObserver";
 export { default as createButtonObserver } from "./createButtonObserver";

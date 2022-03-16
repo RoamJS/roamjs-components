@@ -1,4 +1,4 @@
-let nextPort = 3100;
+let nextPort = 3000;
 
 const addOldRoamJSDependency = (extension: string, source?: string): void => {
   const id = `roamjs-${extension.replace(/\/main$/, "")}`;
@@ -7,7 +7,7 @@ const addOldRoamJSDependency = (extension: string, source?: string): void => {
     const script = document.createElement("script");
     script.src = `${
       process.env.NODE_ENV === "development"
-        ? `http://localhost:${nextPort}`
+        ? `http://localhost:${nextPort+=100}`
         : "https://roamjs.com"
     }/${extension}.js`;
     script.async = true;

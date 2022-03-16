@@ -1,5 +1,6 @@
 import { Tooltip, Position, Popover, Button } from "@blueprintjs/core";
 import React, { useCallback, useRef, useState } from "react";
+import fuzzy from "fuzzy";
 
 type Filters = {
   includes: Record<string, Set<string>>;
@@ -62,6 +63,16 @@ const Filter = ({
             onClick={openFilter}
             className="roamjs-filter"
             minimal
+            style={
+              Object.keys(filters.includes).some(
+                (k) => filters.includes[k].size === 0
+              ) ||
+              Object.keys(filters.excludes).some(
+                (k) => filters.includes[k].size === 0
+              )
+                ? { color: "#a82a2a" }
+                : {}
+            }
           />
         }
         content={
@@ -237,7 +248,12 @@ const Filter = ({
                         paddingLeft: 4,
                       }}
                     >
-                      {data[k]
+                      {(filterSearch
+                        ? fuzzy
+                            .filter(filterSearch, data[k])
+                            .map((s) => s.string)
+                        : data[k]
+                      )
                         .filter(
                           (n) =>
                             !filters.includes[k].has(n) &&

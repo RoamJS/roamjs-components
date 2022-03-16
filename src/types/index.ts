@@ -1,3 +1,9 @@
+import {
+  Condition as QueryBuilderCondition,
+  Selection as QueryBuilderSelection,
+  Result as QueryBuilderResult,
+} from "./query-builder";
+
 export type RoamBasicBlock = {
   string: string;
   uid: string;
@@ -396,6 +402,41 @@ declare global {
           getNetworkedGraphs: () => string[];
           enable: () => void;
           disable: () => void;
+        };
+        queryBuilder?: {
+          QueryEditor: (props: {
+            parentUid: string;
+            defaultQuery: string[];
+            onQuery: (query: {
+              returnNode: string;
+              conditions: QueryBuilderCondition[];
+              selections: QueryBuilderSelection[];
+            }) => Promise<void>;
+          }) => JSX.Element;
+          QueryPage: (props: {
+            pageUid: string;
+            configUid?: string;
+          }) => JSX.Element;
+          ResultsView: (props: {
+            parentUid: string;
+            header?: React.ReactNode;
+            results: QueryBuilderResult[];
+            resultContent?: React.ReactElement<
+              any,
+              string | React.JSXElementConstructor<any>
+            >;
+          }) => JSX.Element;
+          fireQuery: (query: {
+            returnNode: string;
+            conditions: QueryBuilderCondition[];
+            selections: QueryBuilderSelection[];
+          }) => QueryBuilderResult[];
+          parseQuery: (q: string[]) => {
+            returnNode: string;
+            conditionNodes: QueryBuilderCondition[];
+            selectionNodes: QueryBuilderSelection[];
+          };
+          conditionToDatalog: (condition: QueryBuilderCondition) => string;
         };
         [id: string]:
           | {

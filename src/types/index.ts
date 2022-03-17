@@ -425,6 +425,8 @@ declare global {
               any,
               string | React.JSXElementConstructor<any>
             >;
+            hideResults?: boolean;
+            resultFilter?: (r: QueryBuilderResult) => boolean;
           }) => JSX.Element;
           fireQuery: (query: {
             returnNode: string;
@@ -437,6 +439,21 @@ declare global {
             selectionNodes: QueryBuilderSelection[];
           };
           conditionToDatalog: (condition: QueryBuilderCondition) => string;
+          registerDatalogTransfer: (args: {
+            key: string;
+            callback: (args: {
+              freeVar: (s: string) => string;
+              source: string;
+              target: string;
+              uid: string;
+            }) => string;
+          }) => void;
+          unregisterDatalogTransfer: (args: { key: string }) => void;
+          registerSelection: (args: {
+            test: RegExp;
+            pull: (a: { returnNode: string; match: RegExpExecArray }) => string;
+            mapper: (r: PullBlock, key: string) => QueryBuilderResult;
+          }) => void;
         };
         [id: string]:
           | {

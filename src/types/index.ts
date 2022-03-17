@@ -452,7 +452,7 @@ declare global {
           registerSelection: (args: {
             test: RegExp;
             pull: (a: { returnNode: string; match: RegExpExecArray }) => string;
-            mapper: (r: PullBlock, key: string) => QueryBuilderResult;
+            mapper: (r: PullBlock, key: string) => QueryBuilderResult[string];
           }) => void;
         };
         [id: string]:

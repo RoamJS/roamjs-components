@@ -412,6 +412,7 @@ declare global {
               conditions: QueryBuilderCondition[];
               selections: QueryBuilderSelection[];
             }) => Promise<void>;
+            defaultReturnNode?: string;
           }) => JSX.Element;
           QueryPage: (props: {
             pageUid: string;

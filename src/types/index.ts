@@ -439,7 +439,7 @@ declare global {
             selectionNodes: QueryBuilderSelection[];
           };
           conditionToDatalog: (condition: QueryBuilderCondition) => string;
-          registerDatalogTransfer: (args: {
+          registerDatalogTranslator: (args: {
             key: string;
             callback: (args: {
               freeVar: (s: string) => string;
@@ -448,7 +448,7 @@ declare global {
               uid: string;
             }) => string;
           }) => void;
-          unregisterDatalogTransfer: (args: { key: string }) => void;
+          unregisterDatalogTranslator: (args: { key: string }) => void;
           registerSelection: (args: {
             test: RegExp;
             pull: (a: { returnNode: string; match: RegExpExecArray }) => string;

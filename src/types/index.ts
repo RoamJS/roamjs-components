@@ -427,6 +427,7 @@ declare global {
             >;
             hideResults?: boolean;
             resultFilter?: (r: QueryBuilderResult) => boolean;
+            ctrlClick?: (r: QueryBuilderResult) => void;
           }) => JSX.Element;
           fireQuery: (query: {
             returnNode: string;

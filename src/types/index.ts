@@ -417,6 +417,7 @@ declare global {
           QueryPage: (props: {
             pageUid: string;
             configUid?: string;
+            defaultReturnNode?: string;
           }) => JSX.Element;
           ResultsView: (props: {
             parentUid: string;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { addStyle } from "../dom";
+import addStyle from "../dom/addStyle";
 
 const runExtension = async (
   extensionId: string,

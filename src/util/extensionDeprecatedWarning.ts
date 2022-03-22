@@ -19,10 +19,10 @@ const extensionDeprecatedWarning = async ({
     content: `RoamJS will soon be deprecating and then removing the ${idToTitle(
       extensionId
     )} extension.
-    
-    ${reason}
-    
-    If you no longer use this extension, feel free to uninstall it${
+
+${reason}
+
+If you no longer use this extension, feel free to uninstall it${
       blocks.length
         ? ` by removing the block from [here](${getRoamUrl(
             blocks[0]

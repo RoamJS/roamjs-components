@@ -2,6 +2,7 @@ import idToTitle from "./idToTitle";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
 import getRoamUrl from "../dom/getRoamUrl";
 import deleteBlock from "../writes/deleteBlock";
+import { render as renderToast } from "../components/Toast";
 
 const extensionDeprecatedWarning = async ({
   extensionId,
@@ -29,7 +30,14 @@ If you no longer use this extension, feel free to uninstall it${
           )}) or by clicking confirm`
         : ""
     }. If this will be an issue for any reason, please reach out to support@roamjs.com.`,
-    onConfirm: () => blocks.map(b => deleteBlock(b)),
+    onConfirm: () => blocks.map((b) => deleteBlock(b)),
+    onCancel: () =>
+      renderToast({
+        content:
+          "Reach out to supprt@roamjs.com if you would like to keep the extension.",
+        id: `deprecated-${extensionId}`,
+      }),
+    confirmText: "Confirm",
   });
 };
 

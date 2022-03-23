@@ -6,6 +6,7 @@ import Markdown from "markdown-to-jsx";
 type Props = {
   content: string;
   onConfirm?: () => void;
+  confirmText?: string;
   onCancel?: () => void;
   externalLink?: boolean;
 };
@@ -16,6 +17,7 @@ const SimpleAlert = ({
   onConfirm,
   onCancel,
   externalLink,
+  confirmText = "Ok",
 }: Props & { onClose: () => void }): React.ReactElement => {
   const alertOnClose = useCallback(
     (confirmed: boolean) => {
@@ -36,6 +38,7 @@ const SimpleAlert = ({
       isOpen={true}
       onClose={alertOnClose}
       onConfirm={onConfirm}
+      confirmButtonText={confirmText}
       {...cancelProps}
     >
       <div

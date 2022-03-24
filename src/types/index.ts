@@ -10,7 +10,7 @@ import {
 export type DatalogFnArg = DatalogSrcVar | DatalogVariable | DatalogConstant;
 
 export type DatalogSrcVar = {
-  type: "srcvar";
+  type: "src-var";
   value: string;
 };
 

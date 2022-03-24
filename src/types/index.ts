@@ -4,6 +4,137 @@ import {
   Result as QueryBuilderResult,
 } from "./query-builder";
 
+// emulating Datalog Grammar
+// https://docs.datomic.com/cloud/query/query-data-reference.html#or-clauses
+
+export type DatalogFnArg = DatalogSrcVar | DatalogVariable | DatalogConstant;
+
+export type DatalogSrcVar = {
+  type: "srcvar";
+  value: string;
+};
+
+export type DatalogVariable = {
+  type: "variable";
+  value: string;
+};
+
+export type DatalogAndClause = {
+  type: "and-clause";
+  clauses: DatalogClause[];
+};
+
+export type DatalogExpressionClause =
+  | DatalogDataPattern
+  | DatalogPredExpr
+  | DatalogFnExpr
+  | DatalogRuleExpr;
+
+export type DatalogRuleExpr = {
+  type: "rule-expr";
+  srcVar?: DatalogSrcVar;
+  ruleName: DatalogRuleName;
+  arguments: DatalogArgument[];
+};
+
+export type DatalogNotClause = {
+  type: "not-clause";
+  srcVar?: DatalogSrcVar;
+  clauses: DatalogClause[];
+};
+
+export type DatalogNotJoinClause = {
+  type: "not-join-clause";
+  srcVar?: DatalogSrcVar;
+  variables: DatalogVariable[];
+  clauses: DatalogClause[];
+};
+
+export type DatalogOrClause = {
+  type: "or-clause";
+  srcVar?: DatalogSrcVar;
+  clauses: (DatalogClause | DatalogAndClause)[];
+};
+
+export type DatalogOrJoinClause = {
+  type: "or-join-clause";
+  srcVar?: DatalogSrcVar;
+  variables: DatalogVariable[];
+  clauses: (DatalogClause | DatalogAndClause)[];
+};
+
+export type DatalogClause =
+  | DatalogNotClause
+  | DatalogOrJoinClause
+  | DatalogExpressionClause
+  | DatalogOrClause
+  | DatalogNotJoinClause;
+
+export type DatalogDataPattern = {
+  type: "data-pattern";
+  srcVar?: DatalogSrcVar;
+  arguments: DatalogArgument[];
+};
+
+export type DatalogArgument = DatalogVariable | DatalogConstant | DatalogUnderscore;
+
+export type DatalogConstant = {
+  type: "constant";
+  value: string;
+};
+
+export type DatalogPredExpr = {
+  type: "pred-expr";
+  pred: "re-matches" | "clojure.string/includes?";
+  arguments: DatalogFnArg[];
+};
+
+export type DatalogFnExpr = {
+  type: "fn-expr";
+  fn: DatalogFn;
+  arguments: DatalogFnArg[];
+  binding: DatalogBinding;
+};
+
+export type DatalogBinding =
+  | DatalogBindScalar
+  | DatalogBindTuple
+  | DatalogBindColl
+  | DatalogBindRel;
+
+export type DatalogBindScalar = {
+  type: "bind-scalar";
+  variable: DatalogVariable;
+};
+export type DatalogBindTuple = {
+  type: "bind-tuple";
+  args: (DatalogVariable | DatalogUnderscore)[];
+};
+export type DatalogBindColl = {
+  type: "bind-col";
+  variable: DatalogVariable;
+};
+
+export type DatalogBindRel = {
+  type: "bind-rel";
+  args: (DatalogVariable | DatalogUnderscore)[];
+};
+
+export type DatalogFn = {
+  type: "fn";
+  value: string;
+};
+
+export type DatalogUnderscore = {
+  type: "underscore";
+  value: "_";
+};
+
+export type DatalogRuleName = {
+  type: "rulename";
+  value: string;
+};
+
 export type RoamBasicBlock = {
   string: string;
   uid: string;
@@ -441,15 +572,14 @@ declare global {
             conditionNodes: QueryBuilderCondition[];
             selectionNodes: QueryBuilderSelection[];
           };
-          conditionToDatalog: (condition: QueryBuilderCondition) => string;
+          conditionToDatalog: (condition: QueryBuilderCondition) => DatalogClause[];
           registerDatalogTranslator: (args: {
             key: string;
             callback: (args: {
-              freeVar: (s: string) => string;
               source: string;
               target: string;
               uid: string;
-            }) => string;
+            }) => DatalogClause[];
           }) => void;
           unregisterDatalogTranslator: (args: { key: string }) => void;
           registerSelection: (args: {

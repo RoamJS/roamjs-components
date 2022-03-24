@@ -573,6 +573,7 @@ declare global {
             selectionNodes: QueryBuilderSelection[];
           };
           conditionToDatalog: (condition: QueryBuilderCondition) => DatalogClause[];
+          getConditionLabels: () => string[];
           registerDatalogTranslator: (args: {
             key: string;
             callback: (args: {

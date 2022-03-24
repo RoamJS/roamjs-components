@@ -1,9 +1,16 @@
+import submitActions from "./submitActions";
+
 const clearBlockByUid = (uid: string): Promise<void> =>
-  window.roamAlphaAPI.updateBlock({
-    block: {
-      uid,
-      string: "",
+  submitActions([
+    {
+      type: "updateBlock",
+      params: {
+        block: {
+          uid,
+          string: "",
+        },
+      },
     },
-  });
+  ]);
 
 export default clearBlockByUid;

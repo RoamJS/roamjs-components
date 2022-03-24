@@ -40,27 +40,27 @@ const compileDatalog = (
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
       }${d.arguments.map((a) => compileDatalog(a, level)).join(" ")}]`;
     case "not-clause":
-      return `[${
+      return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }not ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")}]`;
+      }not ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")})`;
     case "or-clause":
-      return `[${
+      return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }or ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")}]`;
+      }or ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")})`;
     case "and-clause":
       return `(and ${d.clauses.map((c) => compileDatalog(c, level + 1)).join('\n')})`;
     case "not-join-clause":
-      return `[${
+      return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
       }not-join [${d.variables.map((v) =>
         compileDatalog(v, level)
-      ).join(' ')}] ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")}]`;
+      ).join(' ')}] ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")})`;
     case "or-join-clause":
-      return `[${
+      return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
       }or-join [${d.variables.map((v) => compileDatalog(v, level)).join(' ')}] ${d.clauses
         .map((a) => compileDatalog(a, level + 1))
-        .join(" ")}]`;
+        .join(" ")})`;
     default:
       return "";
   }

@@ -1,4 +1,5 @@
 import type { InputTextNode } from "../types";
+import submitActions from "./submitActions";
 
 const updateBlock = ({
   text,
@@ -10,18 +11,21 @@ const updateBlock = ({
 }: { uid: string } & Partial<
   Omit<InputTextNode, "children">
 >): Promise<string> => {
-  return window.roamAlphaAPI
-    .updateBlock({
-      block: {
-        string: text,
-        uid,
-        heading,
-        "text-align": textAlign,
-        "children-view-type": viewType,
-        open,
+  return submitActions([
+    {
+      type: "updateBlock",
+      params: {
+        block: {
+          string: text,
+          uid,
+          heading,
+          "text-align": textAlign,
+          "children-view-type": viewType,
+          open,
+        },
       },
-    })
-    .then(() => uid);
+    },
+  ]).then(() => uid);
 };
 
 export default updateBlock;

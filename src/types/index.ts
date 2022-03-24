@@ -327,7 +327,7 @@ export type ClientParams = {
   inputs?: string[];
 } & ActionParams;
 
-type ActionParams = {
+export type ActionParams = {
   location?: {
     "parent-uid": string;
     order: number;

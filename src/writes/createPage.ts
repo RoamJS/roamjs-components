@@ -1,8 +1,9 @@
-import createBlock from "./createBlock";
+import { gatherActions } from "./createBlock";
 import { DAILY_NOTE_PAGE_TITLE_REGEX } from "../date";
 import type { InputTextNode } from "../types";
 import toRoamDateUid from "../date/toRoamDateUid";
 import parseRoamDate from "../date/parseRoamDate";
+import submitActions from "./submitActions";
 
 const createPage = ({
   title,
@@ -15,16 +16,15 @@ const createPage = ({
   tree?: InputTextNode[];
   uid?: string;
 }): Promise<string> => {
-  return window.roamAlphaAPI
-    .createPage({ page: { title, uid } })
-    .then(() =>
-      tree
-        .map(
-          (node, order) => () => createBlock({ node, parentUid: uid, order })
-        )
-        .reduce((prev, cur) => prev.then(() => cur()), Promise.resolve(""))
-    )
-    .then(() => uid);
+  return submitActions([
+    {
+      type: "createPage",
+      params: { page: { title, uid } },
+    },
+    ...tree
+      .flatMap((node, order) => gatherActions({ node, parentUid: uid, order }))
+      .map((params) => ({ type: "createBlock" as const, params })),
+  ]).then(() => uid);
 };
 
 export default createPage;

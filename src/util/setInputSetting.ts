@@ -1,4 +1,6 @@
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
+import createBlock from "../writes/createBlock";
+import updateBlock from "../writes/updateBlock";
 import toFlexRegex from "./toFlexRegex";
 
 const setInputSetting = ({
@@ -11,30 +13,32 @@ const setInputSetting = ({
   value: string;
   key: string;
   index?: number;
-}): Promise<void> => {
+}): Promise<string> => {
   const tree = getBasicTreeByParentUid(blockUid);
   const keyNode = tree.find((t) => toFlexRegex(key).test(t.text));
   if (keyNode && keyNode.children.length) {
-    return window.roamAlphaAPI.updateBlock({
-      block: { uid: keyNode.children[0].uid, string: value },
+    return updateBlock({
+      uid: keyNode.children[0].uid,
+      text: value,
     });
   } else if (!keyNode) {
     const uid = window.roamAlphaAPI.util.generateUID();
-    return window.roamAlphaAPI
-      .createBlock({
-        location: { "parent-uid": blockUid, order: index },
-        block: { string: key, uid },
+    return createBlock({
+      parentUid: blockUid,
+      order: index,
+      node: { text: key, uid },
+    }).then(() =>
+      createBlock({
+        parentUid: uid,
+        order: 0,
+        node: { text: value },
       })
-      .then(() =>
-        window.roamAlphaAPI.createBlock({
-          location: { "parent-uid": uid, order: 0 },
-          block: { string: value },
-        })
-      );
+    );
   } else {
-    return window.roamAlphaAPI.createBlock({
-      location: { "parent-uid": keyNode.uid, order: 0 },
-      block: { string: value },
+    return createBlock({
+      parentUid: keyNode.uid,
+      order: 0,
+      node: { text: value },
     });
   }
 };

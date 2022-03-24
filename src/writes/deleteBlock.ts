@@ -1,5 +1,9 @@
+import submitActions from "./submitActions";
+
 const deleteBlock = (uid: string): Promise<string> => {
-  return window.roamAlphaAPI.deleteBlock({ block: { uid } }).then(() => uid);
+  return submitActions([
+    { params: { block: { uid } }, type: "deleteBlock" },
+  ]).then(() => uid);
 };
 
 export default deleteBlock;

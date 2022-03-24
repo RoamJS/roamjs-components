@@ -76,7 +76,10 @@ export type DatalogDataPattern = {
   arguments: DatalogArgument[];
 };
 
-export type DatalogArgument = DatalogVariable | DatalogConstant | DatalogUnderscore;
+export type DatalogArgument =
+  | DatalogVariable
+  | DatalogConstant
+  | DatalogUnderscore;
 
 export type DatalogConstant = {
   type: "constant";
@@ -85,7 +88,11 @@ export type DatalogConstant = {
 
 export type DatalogPredExpr = {
   type: "pred-expr";
-  pred: "re-matches" | "clojure.string/includes?";
+  pred:
+    | "re-matches"
+    | "clojure.string/includes?"
+    | "clojure.string/ends-with?"
+    | "clojure.string/starts-with?";
   arguments: DatalogFnArg[];
 };
 
@@ -572,7 +579,9 @@ declare global {
             conditionNodes: QueryBuilderCondition[];
             selectionNodes: QueryBuilderSelection[];
           };
-          conditionToDatalog: (condition: QueryBuilderCondition) => DatalogClause[];
+          conditionToDatalog: (
+            condition: QueryBuilderCondition
+          ) => DatalogClause[];
           getConditionLabels: () => string[];
           registerDatalogTranslator: (args: {
             key: string;

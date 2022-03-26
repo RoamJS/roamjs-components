@@ -598,12 +598,7 @@ declare global {
             mapper: (r: PullBlock, key: string) => QueryBuilderResult[string];
           }) => void;
         };
-        [id: string]:
-          | {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              [method: string]: (args?: any) => void;
-            }
-          | undefined;
+        [id: string]: Record<string, unknown> | undefined;
       };
       version: { [id: string]: string };
       // DEPRECATED remove in 2.0

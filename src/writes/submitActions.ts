@@ -1,8 +1,10 @@
 import { differenceInMilliseconds } from "date-fns";
 import type { ActionParams } from "../types";
 import { render as renderToast } from "../components/Toast";
+import { v4 } from "uuid";
 
 const actionQueue: {
+  uuid: string;
   params: ActionParams;
   type:
     | "createBlock"
@@ -12,22 +14,28 @@ const actionQueue: {
     | "updatePage"
     | "deletePage";
 }[] = [];
-const submittedActions: { date: Date; action: typeof actionQueue[number] }[] =
-  [];
+const submittedActions: Record<
+  string,
+  { date: Date; action: typeof actionQueue[number] } | undefined
+> = {};
+let nextProcess = 0;
 const ROAM_LIMIT = 300;
 const ROAM_TIMEOUT = 61000; // One minute, plus an extra second to be safe.
-const submitActions = (actions: typeof actionQueue): Promise<void> => {
-  actionQueue.push(...actions);
+const submitActions = (
+  actions: Omit<typeof actionQueue[number], "uuid">[]
+): Promise<void> => {
+  actionQueue.push(...actions.map((a) => ({ ...a, uuid: v4() })));
   let close: (() => void) | undefined = undefined;
   const processActions = async () => {
-    if (ROAM_LIMIT > submittedActions.length) {
-      const submitNow = actionQueue.splice(
-        0,
-        ROAM_LIMIT - submittedActions.length
-      );
+    const capacity = ROAM_LIMIT - Object.keys(submittedActions).length;
+    actionQueue
+      .slice(0, capacity)
+      .forEach(({ uuid }) => (submittedActions[uuid] = undefined));
+    if (capacity > 0) {
+      const submitNow = actionQueue.splice(0, capacity);
       await Promise.all(
         submitNow.map((action) => {
-          const { params, type } = action;
+          const { params, type, uuid } = action;
           return window.roamAlphaAPI[type](params)
             .catch((e) => {
               console.error(`Failed action of type ${type} with params:`);
@@ -35,16 +43,23 @@ const submitActions = (actions: typeof actionQueue): Promise<void> => {
               console.error(`Here's the error:`);
               console.error(e);
             })
-            .then(() => ({ action, date: new Date() }));
+            .then(() => {
+              submittedActions[uuid] = { action, date: new Date() };
+            });
         })
-      ).then((a) => submittedActions.push(...a));
+      );
     }
-    if (submittedActions.length) {
+    const actionEntries= Object.entries(submittedActions);
+    if (actionEntries.length && !nextProcess) {
       const timeout =
         ROAM_TIMEOUT -
         differenceInMilliseconds(
           new Date(),
-          submittedActions.slice(-1)[0].date
+          new Date(
+            actionEntries
+              .map(([,a]) => (a ? a.date.valueOf() : 0))
+              .reduce((p, c) => (c > p ? c : p), 0)
+          )
         );
       if (actionQueue.length)
         close = renderToast({
@@ -56,12 +71,16 @@ const submitActions = (actions: typeof actionQueue): Promise<void> => {
           timeout: 0,
         });
       else close?.();
-      setTimeout(() => {
+      nextProcess = window.setTimeout(() => {
         const now = new Date();
-        const index = submittedActions.findIndex(
-          ({ date }) => differenceInMilliseconds(now, date) < ROAM_TIMEOUT
-        );
-        submittedActions.splice(0, index < 0 ? ROAM_LIMIT : index);
+        actionEntries.forEach(([k, action]) => {
+          if (
+            action &&
+            differenceInMilliseconds(now, action.date) > (ROAM_TIMEOUT - 1000)
+          )
+            delete submittedActions[k];
+        });
+        nextProcess = 0;
         processActions();
       }, timeout);
     }

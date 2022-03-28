@@ -599,6 +599,9 @@ declare global {
             mapper: (r: PullBlock, key: string) => QueryBuilderResult[string];
           }) => void;
         };
+        versioning?: {
+          switch: (args: { id: string; currentVersion: string }) => void;
+        };
         [id: string]: Record<string, unknown> | undefined;
       };
       version: { [id: string]: string };

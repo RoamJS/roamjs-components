@@ -4,6 +4,11 @@ import {
   Result as QueryBuilderResult,
 } from "./query-builder";
 
+type CommandOutput = string | string[] | InputTextNode[];
+export type CommandHandler = (
+  ...args: string[]
+) => CommandOutput | Promise<CommandOutput>;
+
 // emulating Datalog Grammar
 // https://docs.datomic.com/cloud/query/query-data-reference.html#or-clauses
 
@@ -602,6 +607,12 @@ declare global {
         versioning?: {
           switch: (args: { id: string; currentVersion: string }) => void;
         };
+        smartblocks?: {
+          registerCommand: (args: {
+          text: string,
+          handler:  (u: unknown) => CommandHandler,
+        }) => void
+      };
         [id: string]: Record<string, unknown> | undefined;
       };
       version: { [id: string]: string };

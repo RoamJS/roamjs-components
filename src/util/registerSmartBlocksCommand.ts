@@ -1,9 +1,5 @@
-import { InputTextNode } from "../types";
+import { CommandHandler } from "../types";
 
-type CommandOutput = string | string[] | InputTextNode[];
-type CommandHandler = (
-  ...args: string[]
-) => CommandOutput | Promise<CommandOutput>;
 const registerSmartBlocksCommand = ({
   text: inputText,
   handler,

@@ -1,4 +1,4 @@
-type QBClauseData = {
+export type QBClauseData = {
   relation: string;
   source: string;
   target: string;

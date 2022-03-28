@@ -590,6 +590,7 @@ declare global {
               target: string;
               uid: string;
             }) => DatalogClause[];
+            targetOptions?: string[] | ((source: string) => string[]);
           }) => void;
           unregisterDatalogTranslator: (args: { key: string }) => void;
           registerSelection: (args: {

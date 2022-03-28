@@ -1,10 +1,26 @@
-export type Condition = {
+type QBClauseData = {
   relation: string;
   source: string;
   target: string;
   uid: string;
-  not: boolean;
+  //@deprecated
+  not?: boolean;
 };
+
+type QBClause = QBClauseData & { type: "clause" };
+type QBNot = QBClauseData & { type: "not" };
+
+type QBNestedData = { conditions: Condition[] };
+
+type QBOr = QBNestedData & {
+  type: "or";
+};
+
+type QBNor = QBNestedData & {
+  type: "not or";
+};
+
+export type Condition = QBClause | QBNot | QBOr | QBNor;
 
 export type Selection = {
   text: string;

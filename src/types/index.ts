@@ -549,7 +549,6 @@ declare global {
         queryBuilder?: {
           QueryEditor: (props: {
             parentUid: string;
-            defaultQuery: string[];
             onQuery: (query: {
               returnNode: string;
               conditions: QueryBuilderCondition[];

@@ -549,11 +549,7 @@ declare global {
         queryBuilder?: {
           QueryEditor: (props: {
             parentUid: string;
-            onQuery: (query: {
-              returnNode: string;
-              conditions: QueryBuilderCondition[];
-              selections: QueryBuilderSelection[];
-            }) => Promise<void>;
+            onQuery?: () => void;
             defaultReturnNode?: string;
           }) => JSX.Element;
           QueryPage: (props: {
@@ -580,6 +576,7 @@ declare global {
             returnNode: string;
             conditions: QueryBuilderCondition[];
             selections: QueryBuilderSelection[];
+            returnNodeUid: string,
             conditionsNodesUid: string,
             selectionsNodesUid: string,
           };

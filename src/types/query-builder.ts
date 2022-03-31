@@ -7,7 +7,7 @@ export type QBClauseData = {
   //@deprecated
   not?: boolean;
 } & QBBase;
-export type QBNestedData = { conditions: Condition[] } & QBBase;
+export type QBNestedData = { conditions: Condition[][] } & QBBase;
 
 export type QBClause = QBClauseData & { type: "clause" };
 export type QBNot = QBClauseData & { type: "not" };

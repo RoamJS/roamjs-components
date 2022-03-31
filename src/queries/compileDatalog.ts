@@ -21,12 +21,12 @@ const compileDatalog = (
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
       }${d.arguments.map((a) => compileDatalog(a, level)).join(" ")}]`;
     case "src-var":
-      return `$${d.value.replace(/\s/g, "")}`;
+      return `$${d.value.replace(/[\s,]/g, "")}`;
     case "constant":
     case "underscore":
       return d.value;
     case "variable":
-      return `?${d.value.replace(/\s/g, "")}`;
+      return `?${d.value.replace(/[\s,]/g, "")}`;
     case "fn-expr":
       return `[(${d.fn} ${d.arguments
         .map((a) => compileDatalog(a, level))

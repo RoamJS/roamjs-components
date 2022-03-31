@@ -1,22 +1,21 @@
+type QBBase = { uid: string };
+
 export type QBClauseData = {
   relation: string;
   source: string;
   target: string;
-  uid: string;
   //@deprecated
   not?: boolean;
-};
+} & QBBase;
+export type QBNestedData = { conditions: Condition[] } & QBBase;
 
-type QBClause = QBClauseData & { type: "clause" };
-type QBNot = QBClauseData & { type: "not" };
+export type QBClause = QBClauseData & { type: "clause" };
+export type QBNot = QBClauseData & { type: "not" };
 
-type QBNestedData = { conditions: Condition[] };
-
-type QBOr = QBNestedData & {
+export type QBOr = QBNestedData & {
   type: "or";
 };
-
-type QBNor = QBNestedData & {
+export type QBNor = QBNestedData & {
   type: "not or";
 };
 

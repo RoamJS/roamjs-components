@@ -566,23 +566,23 @@ declare global {
             parentUid: string;
             header?: React.ReactNode;
             results: QueryBuilderResult[];
-            resultContent?: React.ReactElement<
-              any,
-              string | React.JSXElementConstructor<any>
-            >;
             hideResults?: boolean;
             resultFilter?: (r: QueryBuilderResult) => boolean;
-            ctrlClick?: (r: QueryBuilderResult) => void;
+            ctrlClick?: (e: QueryBuilderResult) => void;
+            preventSavingSettings?: boolean;
+            onEdit?: () => void;
           }) => JSX.Element;
           fireQuery: (query: {
             returnNode: string;
             conditions: QueryBuilderCondition[];
             selections: QueryBuilderSelection[];
           }) => QueryBuilderResult[];
-          parseQuery: (q: string[]) => {
+          parseQuery: (q: RoamBasicNode) => {
             returnNode: string;
-            conditionNodes: QueryBuilderCondition[];
-            selectionNodes: QueryBuilderSelection[];
+            conditions: QueryBuilderCondition[];
+            selections: QueryBuilderSelection[];
+            conditionsNodesUid: string,
+            selectionsNodesUid: string,
           };
           conditionToDatalog: (
             condition: QueryBuilderCondition

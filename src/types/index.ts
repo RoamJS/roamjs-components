@@ -563,7 +563,7 @@ declare global {
             pageUid: string;
             configUid?: string;
             defaultReturnNode?: string;
-            exportTypes?: ExportTypes;
+            getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
           }) => JSX.Element;
           ResultsView: (props: {
             parentUid: string;
@@ -574,7 +574,7 @@ declare global {
             ctrlClick?: (e: QueryBuilderResult) => void;
             preventSavingSettings?: boolean;
             onEdit?: () => void;
-            exportTypes?: ExportTypes;
+            getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
           }) => JSX.Element;
           fireQuery: (query: {
             returnNode: string;

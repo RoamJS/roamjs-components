@@ -1,7 +1,8 @@
-import React, { useCallback } from "react";
-import { Alert, Classes } from "@blueprintjs/core";
+import React, { useCallback, useState } from "react";
+import { Alert, Checkbox, Classes } from "@blueprintjs/core";
 import createOverlayRender from "../util/createOverlayRender";
 import Markdown from "markdown-to-jsx";
+import { createBlock } from "..";
 
 type Props = {
   content: string;
@@ -9,6 +10,7 @@ type Props = {
   confirmText?: string;
   onCancel?: () => void;
   externalLink?: boolean;
+  dontShowAgain?: string;
 };
 
 const SimpleAlert = ({
@@ -18,6 +20,7 @@ const SimpleAlert = ({
   onCancel,
   externalLink,
   confirmText = "Ok",
+  dontShowAgain,
 }: Props & { onClose: () => void }): React.ReactElement => {
   const alertOnClose = useCallback(
     (confirmed: boolean) => {
@@ -33,11 +36,21 @@ const SimpleAlert = ({
         canEscapeKeyCancel: true,
       }
     : {};
+  const [checked, setChecked] = useState(false);
+  const alerOnConfirm = useCallback(() => {
+    (checked && dontShowAgain
+      ? createBlock({
+          parentUid: dontShowAgain,
+          node: { text: "Do not show again" },
+        })
+      : Promise.resolve()
+    ).then(onConfirm);
+  }, [onConfirm, checked, dontShowAgain]);
   return (
     <Alert
       isOpen={true}
       onClose={alertOnClose}
-      onConfirm={onConfirm}
+      onConfirm={alerOnConfirm}
       confirmButtonText={confirmText}
       {...cancelProps}
     >
@@ -61,6 +74,13 @@ const SimpleAlert = ({
         >
           {content}
         </Markdown>
+        {dontShowAgain && (
+          <Checkbox
+            checked={checked}
+            label="Don't show again"
+            onChange={(e) => setChecked((e.target as HTMLInputElement).checked)}
+          />
+        )}
       </div>
     </Alert>
   );

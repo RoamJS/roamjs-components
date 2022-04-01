@@ -58,7 +58,7 @@ const compileDatalog = (
     case "or-join-clause":
       return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }or-join [${d.variables.map((v) => compileDatalog(v, level)).join(' ')}] ${d.clauses
+      }or-join [${d.variables.map((v) => compileDatalog(v, level)).join(' ')}]\n${d.clauses
         .map((a) => compileDatalog(a, level + 1))
         .join(" ")})`;
     default:

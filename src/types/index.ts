@@ -547,6 +547,17 @@ declare global {
           disable: () => void;
         };
         queryBuilder?: {
+          ExportDialog: (props: {
+            onClose: () => void;
+            isOpen?: boolean;
+            exportTypes?: {
+              name: string;
+              callback: (args: {
+                filename: string;
+              }) => { title: string; content: string }[];
+            }[];
+            results?: QueryBuilderResult[];
+          }) => JSX.Element;
           QueryEditor: (props: {
             parentUid: string;
             onQuery?: () => void;
@@ -576,9 +587,9 @@ declare global {
             returnNode: string;
             conditions: QueryBuilderCondition[];
             selections: QueryBuilderSelection[];
-            returnNodeUid: string,
-            conditionsNodesUid: string,
-            selectionsNodesUid: string,
+            returnNodeUid: string;
+            conditionsNodesUid: string;
+            selectionsNodesUid: string;
           };
           conditionToDatalog: (
             condition: QueryBuilderCondition
@@ -605,10 +616,10 @@ declare global {
         };
         smartblocks?: {
           registerCommand: (args: {
-          text: string,
-          handler:  (u: unknown) => CommandHandler,
-        }) => void
-      };
+            text: string;
+            handler: (u: unknown) => CommandHandler;
+          }) => void;
+        };
         [id: string]: Record<string, unknown> | undefined;
       };
       version: { [id: string]: string };

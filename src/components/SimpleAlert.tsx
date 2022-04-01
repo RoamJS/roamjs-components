@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Alert, Checkbox, Classes } from "@blueprintjs/core";
 import createOverlayRender from "../util/createOverlayRender";
 import Markdown from "markdown-to-jsx";
-import { createBlock } from "..";
+import createBlock from "../writes/createBlock";
 
 type Props = {
   content: string;

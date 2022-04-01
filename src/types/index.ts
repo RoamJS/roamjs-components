@@ -554,6 +554,7 @@ declare global {
               name: string;
               callback: (args: {
                 filename: string;
+                graph: string;
               }) => { title: string; content: string }[];
             }[];
             results?: QueryBuilderResult[];

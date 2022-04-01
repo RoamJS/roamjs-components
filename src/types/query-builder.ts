@@ -31,3 +31,11 @@ export type Result = { text: string; uid: string } & Record<
   string,
   string | number | Date
 >;
+
+export type ExportTypes = {
+  name: string;
+  callback: (args: {
+    filename: string;
+    graph: string;
+  }) => { title: string; content: string }[];
+}[];

@@ -2,6 +2,7 @@ import {
   Condition as QueryBuilderCondition,
   Selection as QueryBuilderSelection,
   Result as QueryBuilderResult,
+  ExportTypes,
 } from "./query-builder";
 
 type CommandOutput = string | string[] | InputTextNode[];
@@ -549,15 +550,9 @@ declare global {
         queryBuilder?: {
           ExportDialog: (props: {
             onClose: () => void;
-            isOpen?: boolean;
-            exportTypes?: {
-              name: string;
-              callback: (args: {
-                filename: string;
-                graph: string;
-              }) => { title: string; content: string }[];
-            }[];
-            results?: QueryBuilderResult[];
+            isOpen: boolean;
+            exportTypes: ExportTypes;
+            results: QueryBuilderResult[];
           }) => JSX.Element;
           QueryEditor: (props: {
             parentUid: string;
@@ -568,6 +563,7 @@ declare global {
             pageUid: string;
             configUid?: string;
             defaultReturnNode?: string;
+            exportTypes?: ExportTypes;
           }) => JSX.Element;
           ResultsView: (props: {
             parentUid: string;
@@ -578,6 +574,7 @@ declare global {
             ctrlClick?: (e: QueryBuilderResult) => void;
             preventSavingSettings?: boolean;
             onEdit?: () => void;
+            exportTypes?: ExportTypes;
           }) => JSX.Element;
           fireQuery: (query: {
             returnNode: string;

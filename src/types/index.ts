@@ -573,6 +573,7 @@ declare global {
             resultFilter?: (r: QueryBuilderResult) => boolean;
             ctrlClick?: (e: QueryBuilderResult) => void;
             preventSavingSettings?: boolean;
+            preventExport?: boolean;
             onEdit?: () => void;
             getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
           }) => JSX.Element;

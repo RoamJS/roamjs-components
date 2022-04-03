@@ -1,3 +1,4 @@
+export { default as AutocompleteInput } from "./AutocompleteInput";
 export { default as BlockInput } from "./BlockInput";
 export { default as BlockErrorBoundary } from "./BlockErrorBoundary";
 export {

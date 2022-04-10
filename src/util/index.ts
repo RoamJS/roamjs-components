@@ -16,6 +16,7 @@ export { default as getSettingIntFromTree } from "./getSettingIntFromTree";
 export { default as getSettingValueFromTree } from "./getSettingValueFromTree";
 export { default as getSettingValuesFromTree } from "./getSettingValuesFromTree";
 export { default as getSubTree } from "./getSubTree";
+export { default as getWorkerClient } from "./getWorkerClient";
 export { default as idToTitle } from "./idToTitle";
 export { default as isControl } from "./isControl";
 export { default as runExtension } from "./runExtension";

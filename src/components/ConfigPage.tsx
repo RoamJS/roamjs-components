@@ -767,7 +767,6 @@ const ToggleablePanel = ({
         : "",
     []
   );
-  const [pricingMessage, setPricingMessage] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(isPremium);
@@ -809,18 +808,13 @@ const ToggleablePanel = ({
       axios
         .get(`https://lambda.roamjs.com/price?extensionId=${extensionId}${dev}`)
         .then((r) => {
-          setPricingMessage(
-            `$${r.data.price / 100}${r.data.perUse ? " per use" : ""}${
-              r.data.isMonthly ? " per month" : " per year"
-            }`
-          );
           setProductDescription(
             r.data.description || "No extension specific description found."
           );
         })
         .catch(catchError);
     }
-  }, [isPremium, setPricingMessage, setProductDescription, dev]);
+  }, [isPremium, setProductDescription, dev]);
   const checkSubscription = useCallback(
     (token: string) => {
       setLoading(true);
@@ -1005,7 +999,7 @@ const ToggleablePanel = ({
             )}`
           : `By clicking submit below, you will subscribe to the premium features of the RoamJS Extension: ${idToTitle(
               extensionId
-            )} for ${pricingMessage}. A window may appear for checkout if this is your first premium extension`}
+            )}.\n\nA window may appear for checkout if this is your first premium extension.`}
       </Alert>
     </div>
   );

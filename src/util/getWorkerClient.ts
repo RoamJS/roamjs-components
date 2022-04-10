@@ -18,7 +18,7 @@ const getWorkerClient = ({
   };
 
   const listeners: { [name: string]: (a: unknown) => void } = {};
-  const initializeDataWorker = () =>
+  const initializeWorker = () =>
     axios
       .get(workerUrl, { responseType: "blob" })
       .then((r) => {
@@ -34,10 +34,10 @@ const getWorkerClient = ({
         document.body.dispatchEvent(new Event(`roamjs:${name}-worker:init`));
         return worker.current;
       });
-  const terminateDataWorker = () => {
+  const terminateWorker = () => {
     worker.current?.terminate();
   };
-  const getDataWorker = (): Promise<Worker> =>
+  const getWorker = (): Promise<Worker> =>
     worker.current && worker.init
       ? Promise.resolve(worker.current)
       : new Promise((resolve) =>
@@ -46,9 +46,9 @@ const getWorkerClient = ({
           )
         );
   return {
-    getDataWorker,
-    terminateDataWorker,
-    initializeDataWorker,
+    getWorker,
+    terminateWorker,
+    initializeWorker,
     listeners,
   };
 };

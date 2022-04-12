@@ -881,7 +881,7 @@ const ToggleablePanel = ({
       ) : (
         <>
           <Switch
-            labelElement={"Enabled"}
+            labelElement={enabled ? "Enabled" : "Disabled"}
             checked={enabled}
             onChange={(e) =>
               isPremium

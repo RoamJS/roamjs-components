@@ -18,13 +18,15 @@ const createOverlayRender =
       ReactDOM.unmountComponentAtNode(parent);
       parent.remove();
     };
-    ReactDOM.render(
-      React.createElement(Overlay, {
-        ...props,
-        onClose,
-      }),
-      parent
-    );
+    if (!parent.hasAttribute("data-existing")) {
+      ReactDOM.render(
+        React.createElement(Overlay, {
+          ...props,
+          onClose,
+        }),
+        parent
+      );
+    }
     return onClose;
   };
 

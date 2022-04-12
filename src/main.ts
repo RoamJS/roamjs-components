@@ -27,4 +27,31 @@ window.roamjs.extension.components = {
   types,
   util,
   writes,
+  tests: {
+    limit: () => {
+      Promise.all(
+        Array(20)
+          .fill(null)
+          .map((_, i) =>
+            writes.createPage({
+              title: `Test page ${i}`,
+              tree: Array(i + 10)
+                .fill(null)
+                .map((_, j) => ({ text: `Block ${j}` })),
+            })
+          )
+      ).then(() => console.log("Okay I'm done"));
+    },
+    cleanup: () => {
+      Promise.all(
+        Array(20)
+          .fill(null)
+          .map((_, i) =>
+            window.roamAlphaAPI.deletePage({
+              page: { uid: queries.getPageUidByPageTitle(`Test page ${i}`) },
+            })
+          )
+      ).then(() => console.log("Okay I'm done"));
+    },
+  },
 };

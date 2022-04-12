@@ -1,6 +1,6 @@
 import { differenceInMilliseconds } from "date-fns";
 import type { ActionParams } from "../types";
-import { render as renderToast } from "../components/Toast";
+import { render as renderProgressDialog } from "../components/ProgressDialog";
 import { v4 } from "uuid";
 
 const actionQueue: {
@@ -21,18 +21,35 @@ const submittedActions: Record<
 let nextProcess = 0;
 const ROAM_LIMIT = 300;
 const ROAM_TIMEOUT = 61000; // One minute, plus an extra second to be safe.
+const log = (detail: Record<string, string | number>) => {
+  const element = document.getElementById("roamjs-progress-dialog-root");
+  if (element) {
+    element.dispatchEvent(new CustomEvent("log", { detail }));
+  }
+};
+
 const submitActions = (
   actions: Omit<typeof actionQueue[number], "uuid">[]
 ): Promise<void> => {
   actionQueue.push(...actions.map((a) => ({ ...a, uuid: v4() })));
-  let close: (() => void) | undefined = undefined;
+  let close: (() => void) | undefined = renderProgressDialog({
+    actionQueueLength: actionQueue.length,
+  }); // undefined;
+  log({
+    actionQueueLength: actionQueue.length,
+  });
   const processActions = async () => {
     const capacity = ROAM_LIMIT - Object.keys(submittedActions).length;
     actionQueue
       .slice(0, capacity)
       .forEach(({ uuid }) => (submittedActions[uuid] = undefined));
+    log({
+      capacity,
+      submittedActionsLength: Object.keys(submittedActions).length,
+    });
     if (capacity > 0) {
       const submitNow = actionQueue.splice(0, capacity);
+      log({ actionQueueLength: actionQueue.length });
       await Promise.all(
         submitNow.map((action) => {
           const { params, type, uuid } = action;
@@ -49,37 +66,34 @@ const submitActions = (
         })
       );
     }
-    const actionEntries= Object.entries(submittedActions);
+    const actionEntries = Object.entries(submittedActions);
     if (actionEntries.length && !nextProcess) {
+      const maxDateEntered = new Date(
+        actionEntries
+          .map(([, a]) => (a ? a.date.valueOf() : 0))
+          .reduce((p, c) => (c > p ? c : p), 0)
+      );
       const timeout =
-        ROAM_TIMEOUT -
-        differenceInMilliseconds(
-          new Date(),
-          new Date(
-            actionEntries
-              .map(([,a]) => (a ? a.date.valueOf() : 0))
-              .reduce((p, c) => (c > p ? c : p), 0)
-          )
-        );
-      if (actionQueue.length)
-        close = renderToast({
-          id: "roamjs-write-action",
-          content: `Writing to Roam. Actions left: ${
-            actionQueue.length
-          }. Trying again in ${timeout / 1000} seconds...`,
-          position: "bottom-right",
-          timeout: 0,
+        ROAM_TIMEOUT - differenceInMilliseconds(new Date(), maxDateEntered);
+      log({ timeout });
+      if (!actionQueue.length) close?.();
+      const interval = window.setInterval(() => {
+        log({
+          timeout:
+            ROAM_TIMEOUT - differenceInMilliseconds(new Date(), maxDateEntered),
         });
-      else close?.();
+      }, 1000);
       nextProcess = window.setTimeout(() => {
+        window.clearInterval(interval);
         const now = new Date();
         actionEntries.forEach(([k, action]) => {
           if (
             action &&
-            differenceInMilliseconds(now, action.date) > (ROAM_TIMEOUT - 1000)
+            differenceInMilliseconds(now, action.date) > ROAM_TIMEOUT - 1000
           )
             delete submittedActions[k];
         });
+        log({ submittedActionsLength: Object.keys(submittedActions).length });
         nextProcess = 0;
         processActions();
       }, timeout);

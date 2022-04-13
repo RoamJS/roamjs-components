@@ -1,7 +1,7 @@
 {
   "name": "roamjs-components",
   "description": "Description for roamjs-components",
-  "version": "0.56.1",
+  "version": "0.56.2",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {

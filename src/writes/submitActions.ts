@@ -80,24 +80,24 @@ const submitActions = (
           actionQueueLength: actionQueue.length,
         });
         if (rendered) close = rendered;
+        const interval = window.setInterval(() => {
+          log({
+            timeout: Math.ceil(
+              (ROAM_TIMEOUT -
+                differenceInMilliseconds(new Date(), maxDateEntered)) /
+                1000
+            ),
+          });
+        }, 1000);
+        nextProcess = window.setTimeout(() => {
+          window.clearInterval(interval);
+          submittedActionsEntries.forEach(([k]) => {
+            delete submittedActions[k];
+          });
+          nextProcess = 0;
+          processActions();
+        }, timeout);
       }
-      const interval = window.setInterval(() => {
-        log({
-          timeout: Math.ceil(
-            (ROAM_TIMEOUT -
-              differenceInMilliseconds(new Date(), maxDateEntered)) /
-              1000
-          ),
-        });
-      }, 1000);
-      nextProcess = window.setTimeout(() => {
-        window.clearInterval(interval);
-        submittedActionsEntries.forEach(([k]) => {
-          delete submittedActions[k];
-        });
-        nextProcess = 0;
-        processActions();
-      }, timeout);
     }
   };
   return processActions();

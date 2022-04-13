@@ -15,9 +15,9 @@ const ProgressDialog = ({
   onClose: () => void;
 } & Props) => {
   const [actionQueueLength, setActionQueueLength] = useState(
-    defaultActionQueueLength
+    defaultActionQueueLength || 0
   );
-  const [timeout, setTimeout] = useState(defaultTimeout);
+  const [timeout, setTimeout] = useState(defaultTimeout || 60);
   useEffect(() => {
     const element = document.getElementById(`roamjs-progress-dialog-root`);
     if (element) {
@@ -55,13 +55,14 @@ const ProgressDialog = ({
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
         hasBackdrop={false}
+        enforceFocus={false}
       >
         <div style={{ padding: 16 }}>
           <h4>Performing Write actions to Roam...</h4>
           <p>Roam only allows 300 writes per minute, waiting to finish.</p>
           <p>
-            Still have <b>{actionQueueLength}</b> actions to write in {timeout}{" "}
-            seconds...
+            Still have <b>{actionQueueLength}</b> actions to write in{" "}
+            <b>{timeout}</b> seconds...
           </p>
         </div>
       </Dialog>

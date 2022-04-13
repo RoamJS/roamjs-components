@@ -21,10 +21,16 @@ const submittedActions: Record<
 let nextProcess = 0;
 const ROAM_LIMIT = 300;
 const ROAM_TIMEOUT = 61000; // One minute, plus an extra second to be safe.
-const log = (detail: Record<string, string | number>) => {
+const log = (detail: {
+  actionQueueLength?: number;
+  timeout?: number;
+}): (() => void) | undefined => {
   const element = document.getElementById("roamjs-progress-dialog-root");
   if (element) {
     element.dispatchEvent(new CustomEvent("log", { detail }));
+    return undefined;
+  } else {
+    return renderProgressDialog(detail);
   }
 };
 
@@ -32,24 +38,14 @@ const submitActions = (
   actions: Omit<typeof actionQueue[number], "uuid">[]
 ): Promise<void> => {
   actionQueue.push(...actions.map((a) => ({ ...a, uuid: v4() })));
-  let close: (() => void) | undefined = renderProgressDialog({
-    actionQueueLength: actionQueue.length,
-  }); // undefined;
-  log({
-    actionQueueLength: actionQueue.length,
-  });
+  let close: (() => void) | undefined = undefined;
   const processActions = async () => {
     const capacity = ROAM_LIMIT - Object.keys(submittedActions).length;
     actionQueue
       .slice(0, capacity)
       .forEach(({ uuid }) => (submittedActions[uuid] = undefined));
-    log({
-      capacity,
-      submittedActionsLength: Object.keys(submittedActions).length,
-    });
     if (capacity > 0) {
       const submitNow = actionQueue.splice(0, capacity);
-      log({ actionQueueLength: actionQueue.length });
       await Promise.all(
         submitNow.map((action) => {
           const { params, type, uuid } = action;
@@ -66,34 +62,39 @@ const submitActions = (
         })
       );
     }
-    const actionEntries = Object.entries(submittedActions);
-    if (actionEntries.length && !nextProcess) {
+    const submittedActionsEntries = Object.entries(submittedActions).filter(
+      ([, v]) => !!v
+    );
+    if (submittedActionsEntries.length && !nextProcess) {
       const maxDateEntered = new Date(
-        actionEntries
+        submittedActionsEntries
           .map(([, a]) => (a ? a.date.valueOf() : 0))
           .reduce((p, c) => (c > p ? c : p), 0)
       );
       const timeout =
         ROAM_TIMEOUT - differenceInMilliseconds(new Date(), maxDateEntered);
-      log({ timeout });
       if (!actionQueue.length) close?.();
+      else {
+        const rendered = log({
+          timeout: Math.ceil(timeout / 1000),
+          actionQueueLength: actionQueue.length,
+        });
+        if (rendered) close = rendered;
+      }
       const interval = window.setInterval(() => {
         log({
-          timeout:
-            ROAM_TIMEOUT - differenceInMilliseconds(new Date(), maxDateEntered),
+          timeout: Math.ceil(
+            (ROAM_TIMEOUT -
+              differenceInMilliseconds(new Date(), maxDateEntered)) /
+              1000
+          ),
         });
       }, 1000);
       nextProcess = window.setTimeout(() => {
         window.clearInterval(interval);
-        const now = new Date();
-        actionEntries.forEach(([k, action]) => {
-          if (
-            action &&
-            differenceInMilliseconds(now, action.date) > ROAM_TIMEOUT - 1000
-          )
-            delete submittedActions[k];
+        submittedActionsEntries.forEach(([k]) => {
+          delete submittedActions[k];
         });
-        log({ submittedActionsLength: Object.keys(submittedActions).length });
         nextProcess = 0;
         processActions();
       }, timeout);

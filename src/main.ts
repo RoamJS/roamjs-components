@@ -29,16 +29,25 @@ window.roamjs.extension.components = {
   writes,
   tests: {
     limit: () => {
+      const parentUid = "04-13-2022";
       Promise.all(
         Array(20)
           .fill(null)
           .map((_, i) =>
-            writes.createPage({
-              title: `Test page ${i}`,
-              tree: Array(i + 10)
-                .fill(null)
-                .map((_, j) => ({ text: `Block ${j}` })),
-            })
+            writes
+              .createPage({
+                title: `Test page ${i + 1}`,
+                tree: Array(i + 10)
+                  .fill(null)
+                  .map((_, j) => ({ text: `Block ${j + 1}` })),
+              })
+              .then(() =>
+                writes.createBlock({
+                  node: { text: `[[Test page ${i + 1}]]` },
+                  order: i + 1,
+                  parentUid,
+                })
+              )
           )
       ).then(() => console.log("Okay I'm done"));
     },
@@ -48,7 +57,7 @@ window.roamjs.extension.components = {
           .fill(null)
           .map((_, i) =>
             window.roamAlphaAPI.deletePage({
-              page: { uid: queries.getPageUidByPageTitle(`Test page ${i}`) },
+              page: { uid: queries.getPageUidByPageTitle(`Test page ${i + 1}`) },
             })
           )
       ).then(() => console.log("Okay I'm done"));

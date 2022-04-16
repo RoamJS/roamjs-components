@@ -33,7 +33,16 @@ const getRoamJSUser = ({
           : {}),
       },
     })
-    .then((r) => r.data);
+    .then((r) => r.data)
+    .catch((e) =>
+      Promise.reject(
+        new Error(
+          typeof e.response?.data === "object"
+            ? e.response.data.message || JSON.stringify(e.response.data)
+            : e.response?.data || e.message
+        )
+      )
+    );
 };
 
 export const awsGetRoamJSUser =
@@ -55,7 +64,7 @@ export const awsGetRoamJSUser =
       )
       .catch((e) => ({
         statusCode: 401,
-        body: e.response?.data,
+        body: e.message,
         headers,
       }));
   };

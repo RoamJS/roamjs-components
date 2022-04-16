@@ -17,9 +17,10 @@ const getRoamJSUser = ({
   dev?: boolean;
   params?: Record<string, string>;
 }) => {
-  const search = new URLSearchParams(params).toString();
+  const url = new URL(`https://lambda.roamjs.com/user`);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.append(k, v))
   return axios
-    .get<RoamJSUser>(`https://lambda.roamjs.com/user${search}`, {
+    .get<RoamJSUser>(url.toString(), {
       headers: {
         Authorization: `Bearer ${Buffer.from(
           `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`

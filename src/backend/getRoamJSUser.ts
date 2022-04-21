@@ -18,7 +18,7 @@ const getRoamJSUser = ({
   params?: Record<string, string>;
 }) => {
   const url = new URL(`https://lambda.roamjs.com/user`);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.append(k, v))
+  Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
   return axios
     .get<RoamJSUser>(url.toString(), {
       headers: {
@@ -51,12 +51,13 @@ export const awsGetRoamJSUser =
     handler: (
       u: RoamJSUser & { token: string },
       body: T
-    ) => Promise<APIGatewayProxyResult>
+    ) => Promise<APIGatewayProxyResult>,
+    params?: Record<string, string>
   ): APIGatewayProxyHandler =>
   (event) => {
     const token =
       event.headers.Authorization || event.headers.authorization || "";
-    return getRoamJSUser({ token })
+    return getRoamJSUser({ token, params })
       .then((u) =>
         handler({ ...u, token }, {
           ...event.queryStringParameters,

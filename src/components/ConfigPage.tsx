@@ -89,7 +89,7 @@ type SelectField = {
   type: "select";
   defaultValue?: string;
   options: {
-    items: string[];
+    items: string[] | (() => string[]);
   };
 };
 
@@ -386,8 +386,12 @@ const SelectPanel: FieldPanel<SelectField> = ({
   defaultValue = "",
   options: { items },
 }) => {
+  const optionItems = useMemo(
+    () => (typeof items === "function" ? items() : items),
+    [items]
+  );
   const { value, onChange } = useSingleChildValue({
-    defaultValue: defaultValue || items[0],
+    defaultValue: defaultValue || optionItems[0],
     title,
     uid,
     parentUid,
@@ -402,7 +406,7 @@ const SelectPanel: FieldPanel<SelectField> = ({
       <MenuItemSelect
         activeItem={value}
         onItemSelect={(e) => onChange(e)}
-        items={items}
+        items={optionItems}
       />
     </Label>
   );

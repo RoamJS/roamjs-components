@@ -96,6 +96,7 @@ export type DatalogPredExpr = {
   type: "pred-expr";
   pred:
     | "re-matches"
+    | "re-find"
     | "clojure.string/includes?"
     | "clojure.string/ends-with?"
     | "clojure.string/starts-with?";
@@ -104,7 +105,7 @@ export type DatalogPredExpr = {
 
 export type DatalogFnExpr = {
   type: "fn-expr";
-  fn: DatalogFn;
+  fn: "re-pattern";
   arguments: DatalogFnArg[];
   binding: DatalogBinding;
 };
@@ -131,11 +132,6 @@ export type DatalogBindColl = {
 export type DatalogBindRel = {
   type: "bind-rel";
   args: (DatalogVariable | DatalogUnderscore)[];
-};
-
-export type DatalogFn = {
-  type: "fn";
-  value: string;
 };
 
 export type DatalogUnderscore = {

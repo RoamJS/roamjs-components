@@ -48,19 +48,27 @@ const compileDatalog = (
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
       }or ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")})`;
     case "and-clause":
-      return `(and ${d.clauses.map((c) => compileDatalog(c, level + 1)).join('\n')})`;
+      return `(and ${d.clauses
+        .map((c) => compileDatalog(c, level + 1))
+        .join("\n")})`;
     case "not-join-clause":
       return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }not-join [${d.variables.map((v) =>
-        compileDatalog(v, level)
-      ).join(' ')}] ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")})`;
+      }not-join [${d.variables
+        .map((v) => compileDatalog(v, level))
+        .join(" ")}] ${d.clauses
+        .map((a) => compileDatalog(a, level + 1))
+        .join(" ")})`;
     case "or-join-clause":
       return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }or-join [${d.variables.map((v) => compileDatalog(v, level)).join(' ')}]\n${d.clauses
+      }or-join [${d.variables
+        .map((v) => compileDatalog(v, level))
+        .join(" ")}]\n${d.clauses
         .map((a) => compileDatalog(a, level + 1))
         .join(" ")})`;
+    case "bind-scalar":
+      return compileDatalog(d.variable, level);
     default:
       return "";
   }

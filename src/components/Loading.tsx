@@ -6,15 +6,16 @@ const Loading = () => {
   return <Spinner size={SpinnerSize.SMALL} />;
 };
 
-export const renderLoading = (targetUid: string) => {
+export const renderLoading = (targetUid?: string) => {
   const reactParent = document.createElement("div");
   reactParent.style.position = "absolute";
-  reactParent.style.top = "0";
+  reactParent.style.bottom = "0";
   reactParent.style.right = "0";
-  const parent =
-    document.querySelector<HTMLDivElement>(
-      `.rm-block__input[id$="${targetUid}"]`
-    )?.parentElement || document.querySelector(".roam-article");
+  const parent = targetUid
+    ? document.querySelector<HTMLDivElement>(
+        `.rm-block__input[id$="${targetUid}"]`
+      )?.parentElement || document.querySelector(".roam-article")
+    : document.querySelector(".roam-article");
   if (parent) {
     parent.appendChild(reactParent);
     ReactDOM.render(<Loading />, reactParent);

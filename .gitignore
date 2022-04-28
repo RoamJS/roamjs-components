@@ -1,5 +1,6 @@
 node_modules
 dist
+build
 
 # new package dist
 /backend
@@ -16,4 +17,7 @@ dist
 /index.d.ts
 /index.js
 /index.js.map
+/main.d.ts
+/main.js
+/main.js.map
 /debug.json

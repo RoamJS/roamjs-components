@@ -57,10 +57,50 @@ window.roamjs.extension.components = {
           .fill(null)
           .map((_, i) =>
             window.roamAlphaAPI.deletePage({
-              page: { uid: queries.getPageUidByPageTitle(`Test page ${i + 1}`) },
+              page: {
+                uid: queries.getPageUidByPageTitle(`Test page ${i + 1}`),
+              },
             })
           )
       ).then(() => console.log("Okay I'm done"));
+    },
+    sb: () => {
+      const location = window.roamAlphaAPI.ui.getFocusedBlock();
+      components.renderCursorMenu({
+        initialItems: [
+          {
+            text: "NOCURSOR",
+            id: "NOCURSOR",
+            help: "Workflow modifier that removes the cursor from Roam Blocks at the end of the workflow",
+          },
+          {
+            text: "HIDE",
+            id: "HIDE",
+            help: "Workflow modifier that hides this workflow from the standard SmartBlock menu execution",
+          },
+        ],
+        onItemSelect: async (item) => {
+          if (location) {
+            await writes.updateBlock({
+              uid: location?.["block-uid"],
+              text: `<%${item.text}%>`,
+            });
+            components.renderToast({
+              id: "smartblocks-command-help",
+              content: `###### ${item.text}\n\n${item.help}`,
+              position: "bottom-right",
+              timeout: 10000,
+            });
+            await window.roamAlphaAPI.ui.setBlockFocusAndSelection({
+              location,
+              selection: { start: 8 },
+            });
+          } else {
+            console.log("AHHH MAYDAYMAYDAY")
+          }
+        },
+        textarea: document.activeElement as HTMLTextAreaElement,
+      });
     },
   },
 };

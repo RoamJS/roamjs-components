@@ -241,7 +241,7 @@ const CursorMenu = <T extends Record<string, string>>({
                     )}
                   active={i === activeIndex}
                   onMouseEnter={() => setActiveIndex(i)}
-                  onClick={() => onSelect(itemsById[id])}
+                  onClick={() => setTimeout(() => onSelect(itemsById[id]), 1)}
                 />
               );
             })

@@ -615,6 +615,13 @@ declare global {
             text: string;
             handler: (u: unknown) => CommandHandler;
           }) => void;
+          triggerSmartblock: (args: {
+            srcName?: string;
+            srcUid?: string;
+            targetName?: string;
+            targetUid?: string;
+            variables?: Record<string, string>;
+        }) => Promise<unknown>
         };
         [id: string]: Record<string, unknown> | undefined;
       };

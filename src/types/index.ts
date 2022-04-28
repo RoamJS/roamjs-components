@@ -572,6 +572,7 @@ declare global {
             preventExport?: boolean;
             onEdit?: () => void;
             getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
+            onResultsInViewChange?: (r: QueryBuilderResult[]) => void;
           }) => JSX.Element;
           fireQuery: (query: {
             returnNode: string;

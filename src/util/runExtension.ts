@@ -20,7 +20,7 @@ const runExtension = async (
     process.env.ROAMJS_VERSION || process.env.NODE_ENV || "";
 
   if (!options.skipAnalytics) {
-    axios.post(`https://api.roamjs.com/mixpanel`, {
+    axios.post(`https://lambda.roamjs.com/mixpanel`, {
       eventName: "Load Extension",
       properties: { extensionId },
     });

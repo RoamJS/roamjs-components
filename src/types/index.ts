@@ -95,6 +95,8 @@ export type DatalogConstant = {
 export type DatalogPredExpr = {
   type: "pred-expr";
   pred:
+    | "<"
+    | ">"
     | "re-matches"
     | "re-find"
     | "clojure.string/includes?"

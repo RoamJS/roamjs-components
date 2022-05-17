@@ -4,10 +4,11 @@ import React from "react";
 
 const emailError = (
   subject: string,
-  e: AxiosError,
+  e: AxiosError | Error,
   moreBody?: React.ReactNode
-): Promise<string> =>
-  sendEmail({
+): Promise<string> => {
+  const asAxios = e as AxiosError;
+  return sendEmail({
     to: process.env.ROAMJS_EMAIL,
     from: "support@roamjs.com",
     subject: `RoamJS Error: ${subject}`,
@@ -51,9 +52,10 @@ const emailError = (
           "p",
           {},
           `${e.name}: ${
-            typeof e.response?.data === "object"
-              ? e.response.data.message || JSON.stringify(e.response.data)
-              : e.response?.data || e.message
+            typeof asAxios.response?.data === "object"
+              ? asAxios.response.data.message ||
+                JSON.stringify(asAxios.response.data)
+              : asAxios.response?.data || e.message
           }`
         ),
         React.createElement("p", {}, e.stack),
@@ -99,5 +101,6 @@ const emailError = (
       )
     ),
   });
+};
 
 export default emailError;

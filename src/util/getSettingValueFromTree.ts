@@ -1,12 +1,15 @@
+import { getBasicTreeByParentUid } from "../queries";
 import type { InputTextNode } from "../types";
 import toFlexRegex from "./toFlexRegex";
 
 const getSettingValueFromTree = ({
-  tree,
+  parentUid = "",
+  tree = getBasicTreeByParentUid(parentUid),
   key,
   defaultValue = "",
 }: {
-  tree: InputTextNode[];
+  parentUid?: string;
+  tree?: InputTextNode[];
   key: string;
   defaultValue?: string;
 }): string => {

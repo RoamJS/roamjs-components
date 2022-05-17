@@ -580,7 +580,7 @@ declare global {
             returnNode: string;
             conditions: QueryBuilderCondition[];
             selections: QueryBuilderSelection[];
-          }) => QueryBuilderResult[];
+          }) => Promise<QueryBuilderResult[]>;
           parseQuery: (q: RoamBasicNode) => {
             returnNode: string;
             conditions: QueryBuilderCondition[];

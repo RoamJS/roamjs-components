@@ -1,11 +1,21 @@
-import { ClientParams, DatalogClause, PullBlock, RoamBasicNode, RoamBlock, SidebarAction, SidebarWindow, SidebarWindowInput, WriteAction } from "./native";
+import {
+  ClientParams,
+  DatalogClause,
+  PullBlock,
+  RoamBasicNode,
+  RoamBlock,
+  SidebarAction,
+  SidebarWindow,
+  SidebarWindowInput,
+  WriteAction,
+} from "./native";
 import {
   Condition as QueryBuilderCondition,
   Selection as QueryBuilderSelection,
   Result as QueryBuilderResult,
   ExportTypes,
 } from "./query-builder";
-import { CommandHandler, SmartBlocksContext } from "./smartblocks";
+import { RegisterCommand } from "./smartblocks";
 export * from "./native";
 
 type json =
@@ -219,21 +229,14 @@ declare global {
           switch: (args: { id: string; currentVersion: string }) => void;
         };
         smartblocks?: {
-          registerCommand: (args: {
-            text: string;
-            help?: string;
-            handler: (
-              c: Pick<SmartBlocksContext, "targetUid" | "variables">
-            ) => CommandHandler;
-            delayArgs?: true;
-          }) => void;
+          registerCommand: RegisterCommand;
           triggerSmartblock: (args: {
             srcName?: string;
             srcUid?: string;
             targetName?: string;
             targetUid?: string;
             variables?: Record<string, string>;
-        }) => Promise<unknown>
+          }) => Promise<unknown>;
         };
         [id: string]: Record<string, unknown> | undefined;
       };

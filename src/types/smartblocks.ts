@@ -23,3 +23,12 @@ export type SmartBlocksContext = {
   refMapping: Record<string, string>;
   afterWorkflowMethods: (() => void | Promise<void>)[];
 };
+
+export type RegisterCommand = (args: {
+  text: string;
+  help?: string;
+  handler: (
+    c: Pick<SmartBlocksContext, "targetUid" | "variables">
+  ) => CommandHandler;
+  delayArgs?: true;
+}) => void;

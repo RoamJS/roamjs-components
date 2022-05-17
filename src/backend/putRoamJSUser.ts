@@ -9,7 +9,7 @@ const putRoamJSUser = (
   dev = process.env.NODE_ENV === "development"
 ) =>
   axios
-    .put(`https://lambda.roamjs.com/user`, data, {
+    .put<{ success: boolean }>(`https://lambda.roamjs.com/user`, data, {
       headers: {
         Authorization: `Bearer ${Buffer.from(
           `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`
@@ -32,7 +32,13 @@ export const awsPutRoamJSUser = (
   putRoamJSUser(
     event.headers.Authorization || event.headers.authorization || "",
     data
-  ).catch((e) => ({
+  )
+  .then((data) => ({
+    statusCode: 200,
+    body: JSON.stringify(data),
+    headers,
+  }))
+  .catch((e) => ({
     statusCode: 401,
     body: e.response?.data,
     headers,

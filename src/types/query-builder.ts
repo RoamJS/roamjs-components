@@ -37,5 +37,5 @@ export type ExportTypes = {
   callback: (args: {
     filename: string;
     graph: string;
-  }) => { title: string; content: string }[];
+  }) => Promise<{ title: string; content: string }[]>;
 }[];

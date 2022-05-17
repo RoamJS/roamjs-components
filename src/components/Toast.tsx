@@ -39,20 +39,21 @@ export const render = ({
     setTimeout(() => {
       const toasterRoot = document.querySelector<HTMLDivElement>(
         `.bp3-toast-container.${className}`
-      )!;
-      toasterRoot.addEventListener("roamjs-toast", ((e: CustomEvent) => {
-        const props = e.detail;
-        toaster.show(
-          {
-            message: (
-              <Markdown>{props.content || "RoamJS Notification"}</Markdown>
-            ),
-            intent: props.intent || Intent.PRIMARY,
-            timeout: props.timeout || 5000,
-          },
-          props.id
-        );
-      }) as EventListener);
+      );
+      if (toasterRoot)
+        toasterRoot.addEventListener("roamjs-toast", ((e: CustomEvent) => {
+          const props = e.detail;
+          toaster.show(
+            {
+              message: (
+                <Markdown>{props.content || "RoamJS Notification"}</Markdown>
+              ),
+              intent: props.intent || Intent.PRIMARY,
+              timeout: props.timeout || 5000,
+            },
+            props.id
+          );
+        }) as EventListener);
     }, 1);
     return () => toaster.dismiss(props.id);
   }

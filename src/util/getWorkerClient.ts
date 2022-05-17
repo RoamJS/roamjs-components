@@ -41,8 +41,9 @@ const getWorkerClient = ({
     worker.current && worker.init
       ? Promise.resolve(worker.current)
       : new Promise((resolve) =>
-          document.body.addEventListener(`roamjs:${name}-worker:init`, () =>
-            resolve(worker.current!)
+          document.body.addEventListener(
+            `roamjs:${name}-worker:init`,
+            () => worker.current && resolve(worker.current)
           )
         );
   return {

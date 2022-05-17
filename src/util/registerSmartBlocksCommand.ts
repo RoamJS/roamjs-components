@@ -1,4 +1,4 @@
-import { CommandHandler } from "../types";
+import { CommandHandler } from "../types/smartblocks";
 
 const registerSmartBlocksCommand = ({
   text: inputText,

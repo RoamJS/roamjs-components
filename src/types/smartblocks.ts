@@ -28,7 +28,9 @@ export type RegisterCommand = (args: {
   text: string;
   help?: string;
   handler: (
-    c: Pick<SmartBlocksContext, "targetUid" | "variables">
+    c: Pick<SmartBlocksContext, "targetUid" | "variables"> & {
+      proccessBlockText: (s: string) => Promise<InputTextNode[]>;
+    }
   ) => CommandHandler;
   delayArgs?: true;
 }) => void;

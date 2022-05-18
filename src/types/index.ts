@@ -221,8 +221,21 @@ declare global {
           unregisterDatalogTranslator: (args: { key: string }) => void;
           registerSelection: (args: {
             test: RegExp;
-            pull: (a: { returnNode: string; match: RegExpExecArray }) => string;
-            mapper: (r: PullBlock, key: string) => QueryBuilderResult[string];
+            pull: (a: {
+              returnNode: string;
+              match: RegExpExecArray;
+              where: DatalogClause[];
+            }) => string;
+            mapper: (
+              r: PullBlock,
+              key: string
+            ) =>
+              | QueryBuilderResult[string]
+              | Record<string, QueryBuilderResult[string]>
+              | Promise<
+                  | QueryBuilderResult[string]
+                  | Record<string, QueryBuilderResult[string]>
+                >;
           }) => void;
         };
         versioning?: {

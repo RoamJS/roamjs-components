@@ -14,11 +14,11 @@ const runExtension = (
 
   // @deprecated both args
   _run: () => void | Promise<void> = Promise.resolve,
-  options: { skipAnalytics?: boolean; forRoam?: boolean } = {}
+  options: { skipAnalytics?: boolean } = {}
 ): void | { onload: () => void; onunload: () => void } => {
   const extensionId = typeof args === "string" ? args : args.extensionId;
   const run = typeof args === "string" ? _run : args.run;
-  const forRoam =
+  const roamMarketplace =
     typeof args === "string"
       ? false
       : args.roamMarketplace || process.env.ROAM_MARKETPLACE === "true";
@@ -67,7 +67,7 @@ const runExtension = (
   const onunload = () => {
     unload?.();
   };
-  if (forRoam) {
+  if (roamMarketplace) {
     return {
       onload,
       onunload,

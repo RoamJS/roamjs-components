@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 14.17.6
+      - name: Use Node.js 16.14.0
         uses: actions/setup-node@v1
         with:
-          node-version: 14.17.6
+          node-version: 16.14.0
       - name: install
         run: npm install
       - uses: JS-DevTools/npm-publish@v1

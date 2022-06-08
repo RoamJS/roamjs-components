@@ -34,3 +34,5 @@ export type RegisterCommand = (args: {
   ) => CommandHandler;
   delayArgs?: true;
 }) => void;
+
+export type UnregisterCommand = (t: string) => void;

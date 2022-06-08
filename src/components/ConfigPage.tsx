@@ -1378,7 +1378,7 @@ export const createConfigObserver = async ({
 }: {
   title: string;
   config: Config;
-}): Promise<{ pageUid: string }> => {
+}): Promise<{ pageUid: string; observer?: MutationObserver }> => {
   const pageUid =
     getPageUidByPageTitle(title) ||
     (await createConfigPage({
@@ -1398,7 +1398,7 @@ export const createConfigObserver = async ({
             );
         },
       });
-    createHTMLObserver({
+    const observer = createHTMLObserver({
       className: "rm-title-display",
       tag: "H1",
       callback: (d: HTMLElement) => {
@@ -1413,6 +1413,10 @@ export const createConfigObserver = async ({
         }
       },
     });
+    return {
+      pageUid,
+      observer,
+    };
   }
   return {
     pageUid,

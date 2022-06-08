@@ -1,6 +1,15 @@
 import axios from "axios";
 import addStyle from "../dom/addStyle";
 
+type RunReturn = {
+  elements?: HTMLElement[];
+  observers?: MutationObserver[];
+  windowListeners?: {
+    type: keyof WindowEventMap;
+    listener: (this: Window, ev: WindowEventMap[keyof WindowEventMap]) => any;
+  }[];
+};
+
 const runExtension = (
   args:
     | string
@@ -8,7 +17,7 @@ const runExtension = (
         skipAnalytics?: boolean;
         roamMarketplace?: boolean;
         extensionId: string;
-        run?: () => void | Promise<void>;
+        run?: () => void | Promise<void> | RunReturn | Promise<RunReturn>;
         unload?: () => void | Promise<void>;
       },
 
@@ -26,6 +35,7 @@ const runExtension = (
     typeof args === "string" ? options.skipAnalytics : args.skipAnalytics;
   const unload = typeof args === "string" ? () => Promise.resolve : args.unload;
 
+  let loaded: RunReturn | undefined | void = undefined;
   const onload = () => {
     if (window.roamjs?.loaded?.has?.(extensionId)) {
       return;
@@ -34,7 +44,6 @@ const runExtension = (
       loaded: window.roamjs?.loaded || new Set(),
       extension: window.roamjs?.extension || {},
       version: window.roamjs?.version || {},
-      dynamicElements: window.roamjs?.dynamicElements || new Set(),
     };
     window.roamjs.loaded.add(extensionId);
     window.roamjs.version[extensionId] =
@@ -57,15 +66,26 @@ const runExtension = (
     const dispatch = () => {
       document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
     };
-    if (result) {
-      result.then(dispatch);
-    } else {
+    Promise.resolve(result).then((res) => {
       dispatch();
-    }
+      loaded = res;
+    });
   };
 
   const onunload = () => {
     unload?.();
+    (loaded?.elements || []).forEach((e) => e.remove());
+    (loaded?.observers || []).forEach((e) => e.disconnect());
+    (loaded?.windowListeners || []).forEach((e) =>
+      window.removeEventListener(e.type, e.listener)
+    );
+    delete window.roamjs?.version[extensionId];
+    window.roamjs?.loaded.delete(extensionId);
+    if (!window.roamjs?.loaded.size) {
+      document.getElementById("roamjs-default")?.remove();
+      delete window.roamjs;
+    }
+    // how to handle adding RoamJS token command? it's own extension depending on dependency management?
   };
   if (roamMarketplace) {
     return {

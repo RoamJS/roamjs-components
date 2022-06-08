@@ -15,7 +15,7 @@ import {
   Result as QueryBuilderResult,
   ExportTypes,
 } from "./query-builder";
-import { RegisterCommand } from "./smartblocks";
+import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 export * from "./native";
 
 type json =
@@ -243,6 +243,7 @@ declare global {
         };
         smartblocks?: {
           registerCommand: RegisterCommand;
+          unregisterCommand: UnregisterCommand;
           triggerSmartblock: (args: {
             srcName?: string;
             srcUid?: string;
@@ -254,8 +255,6 @@ declare global {
         [id: string]: Record<string, unknown> | undefined;
       };
       version: { [id: string]: string };
-      // DEPRECATED remove in 2.0
-      dynamicElements: Set<HTMLElement>;
     };
   }
 }

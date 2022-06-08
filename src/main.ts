@@ -11,7 +11,6 @@ import * as writes from "./writes";
 
 window.roamjs = window.roamjs || {
   extension: {},
-  dynamicElements: new Set(),
   version: {},
   loaded: new Set(["components"]),
 };

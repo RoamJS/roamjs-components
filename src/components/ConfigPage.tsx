@@ -45,7 +45,6 @@ import axios, { AxiosError } from "axios";
 import Color from "color";
 import getAuthorizationHeader from "../util/getAuthorizationHeader";
 import { addTokenDialogCommand, checkRoamJSTokenWarning } from "./TokenDialog";
-import useExperimentalMode from "../hooks/useExperimentalMode";
 
 type TextField = {
   type: "text";
@@ -1174,8 +1173,8 @@ const ConfigPage = ({
   );
   const tree = getBasicTreeByParentUid(pageUid);
   const [currentVersion, setCurrentVersion] = useState("");
-  const { experimentalMode, listener } = useExperimentalMode();
   const titleRef = useRef<HTMLDivElement>(null);
+  const experimentalMode = useMemo(() => localStorageGet("experimental"), []);
   useEffect(() => {
     if (config.versioning) {
       addOldRoamJSDependency("versioning");
@@ -1186,10 +1185,7 @@ const ConfigPage = ({
         setCurrentVersion("Version Not Found");
       }
     }
-    if (userTabs.some((t) => t.development)) {
-      titleRef.current?.addEventListener("keydown", listener);
-    }
-  }, [config.versioning, id, setCurrentVersion, userTabs, titleRef, listener]);
+  }, [config.versioning, id, setCurrentVersion, userTabs, titleRef]);
   const brandColor = tryColor(config.brand);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>

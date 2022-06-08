@@ -1,9 +1,11 @@
 name: Publish package
 on:
+  workflow_dispatch:
   push:
     branches: main
     paths:
       - "package.json"
+      - ".github/workflows/main.yaml"
 
 jobs:
   deploy:

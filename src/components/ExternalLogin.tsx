@@ -3,7 +3,7 @@ import React, { useState, useCallback } from "react";
 import createBlock from "../writes/createBlock";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import idToTitle from "../util/idToTitle";
-import randomstring from "randomstring";
+import nanoid from "nanoid";
 import axios from "axios";
 import AES from "crypto-js/aes";
 import encutf8 from "crypto-js/enc-utf8";
@@ -37,8 +37,8 @@ const ExternalLogin = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const onClick = useCallback(() => {
-    const otp = randomstring.generate(8);
-    const key = randomstring.generate(16);
+    const otp = nanoid().replace(/_/g, "-");
+    const key = nanoid().replace(/_/g, "-");
     const state = `${service}_${otp}_${key}`;
     setLoading(true);
     getPopoutUrl(state)

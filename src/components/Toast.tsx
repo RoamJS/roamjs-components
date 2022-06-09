@@ -1,6 +1,6 @@
 import React from "react";
 import { Intent, Toaster, ToasterPosition } from "@blueprintjs/core";
-import Markdown from "markdown-to-jsx";
+import Markdown from "marked-react";
 
 type ToastProps = {
   id: string;

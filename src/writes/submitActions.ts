@@ -1,10 +1,10 @@
 import { differenceInMilliseconds } from "date-fns";
 import type { ActionParams } from "../types";
 import { render as renderProgressDialog } from "../components/ProgressDialog";
-import { v4 } from "uuid";
+import nanoid from "nanoid";
 
 const actionQueue: {
-  uuid: string;
+  id: string;
   params: ActionParams;
   type:
     | "createBlock"
@@ -35,20 +35,20 @@ const log = (detail: {
 };
 
 const submitActions = (
-  actions: Omit<typeof actionQueue[number], "uuid">[]
+  actions: Omit<typeof actionQueue[number], "id">[]
 ): Promise<void> => {
-  actionQueue.push(...actions.map((a) => ({ ...a, uuid: v4() })));
+  actionQueue.push(...actions.map((a) => ({ ...a, id: nanoid() })));
   let close: (() => void) | undefined = undefined;
   const processActions = async () => {
     const capacity = ROAM_LIMIT - Object.keys(submittedActions).length;
     actionQueue
       .slice(0, capacity)
-      .forEach(({ uuid }) => (submittedActions[uuid] = undefined));
+      .forEach(({ id }) => (submittedActions[id] = undefined));
     if (capacity > 0) {
       const submitNow = actionQueue.splice(0, capacity);
       await Promise.all(
         submitNow.map((action) => {
-          const { params, type, uuid } = action;
+          const { params, type, id } = action;
           return window.roamAlphaAPI[type](params)
             .catch((e) => {
               console.error(`Failed action of type ${type} with params:`);
@@ -57,7 +57,7 @@ const submitActions = (
               console.error(e);
             })
             .then(() => {
-              submittedActions[uuid] = { action, date: new Date() };
+              submittedActions[id] = { action, date: new Date() };
             });
         })
       );

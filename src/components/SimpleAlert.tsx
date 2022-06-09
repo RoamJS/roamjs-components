@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Alert, Checkbox, Classes } from "@blueprintjs/core";
 import createOverlayRender from "../util/createOverlayRender";
-import Markdown from "markdown-to-jsx";
+import Markdown from "marked-react";
 import createBlock from "../writes/createBlock";
 
 type Props = {
@@ -59,18 +59,17 @@ const SimpleAlert = ({
         style={{ whiteSpace: "pre-wrap" }}
       >
         <Markdown
-          options={{
-            overrides: {
-              a: {
-                props: externalLink
-                  ? {
-                      target: "_blank",
-                      rel: "nooperner",
-                    }
-                  : {},
-              },
-            },
-          }}
+          renderer={
+            externalLink
+              ? {
+                  link: (href, text) => (
+                    <a href={href} rel={"noreferrer"} target={"_blank"}>
+                      {text}
+                    </a>
+                  ),
+                }
+              : {}
+          }
         >
           {content}
         </Markdown>

@@ -1,14 +1,16 @@
 import React from "react";
 import { Intent, Toaster, ToasterPosition } from "@blueprintjs/core";
-import Markdown from "marked-react";
 
-type ToastProps = {
-  id: string;
+type ToastBaseProps = {
   content?: string;
   timeout?: number;
   intent?: Intent;
-  position?: ToasterPosition;
 };
+
+type ToastProps = {
+  id: string;
+  position?: ToasterPosition;
+} & ToastBaseProps;
 
 export const render = ({
   position = "top",
@@ -28,33 +30,42 @@ export const render = ({
       position,
       className,
     });
-    toaster.show(
-      {
-        message: <Markdown>{props.content || "RoamJS Notification"}</Markdown>,
-        intent: props.intent || Intent.PRIMARY,
-        timeout: props.timeout || 5000,
-      },
-      props.id
-    );
-    setTimeout(() => {
-      const toasterRoot = document.querySelector<HTMLDivElement>(
-        `.bp3-toast-container.${className}`
-      );
-      if (toasterRoot)
-        toasterRoot.addEventListener("roamjs-toast", ((e: CustomEvent) => {
-          const props = e.detail;
-          toaster.show(
-            {
-              message: (
-                <Markdown>{props.content || "RoamJS Notification"}</Markdown>
-              ),
-              intent: props.intent || Intent.PRIMARY,
-              timeout: props.timeout || 5000,
-            },
-            props.id
-          );
-        }) as EventListener);
-    }, 1);
+
+    // `import(marked-react)` is returning `window.RoamLazy.MarkedReact` instead of the module itself
+    (window.RoamLazy
+      ? window.RoamLazy.MarkedReact()
+      : import("marked-react").then((r) => r.default)
+    ).then((Markdown) => {
+      const Toast = ({
+        content = "RoamJS Notification",
+        intent = Intent.PRIMARY,
+        timeout = 5000,
+      }: ToastBaseProps) => {
+        return {
+          message: (
+            <>
+              <style>{`.${className} p { margin-bottom: 0; }`}</style>
+              <Markdown>{content}</Markdown>
+            </>
+          ),
+          intent,
+          timeout,
+        };
+      };
+      toaster.show(Toast(props), props.id);
+      setTimeout(() => {
+        const toasterRoot = document.querySelector<HTMLDivElement>(
+          `.bp3-toast-container.${className}`
+        );
+        if (toasterRoot)
+          toasterRoot.addEventListener("roamjs-toast", ((e: CustomEvent) => {
+            const {
+              detail: { id, ...props },
+            } = e;
+            toaster.show(Toast(props), id);
+          }) as EventListener);
+      }, 1);
+    });
     return () => toaster.dismiss(props.id);
   }
 };

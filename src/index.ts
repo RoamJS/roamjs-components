@@ -1,11 +1,5 @@
-export * from "./backend";
-export * from "./components";
-export * from "./date";
-export * from "./dom";
-export * from "./events";
-export * from "./hooks";
-export * from "./marked";
-export * from "./queries";
-export * from "./types";
-export * from "./util";
-export * from "./writes";
+throw new Error(
+  `Do not import from roamjs-components directly. Instead import the *method* you need directly. For example: 
+  
+import runExtension from "roamjs-components/util/runExtension;"`
+);

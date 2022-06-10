@@ -1,4 +1,3 @@
-import marked, { Lexer } from "marked";
 import XRegExp from "xregexp";
 import refractor from "refractor";
 import markdown from "refractor/lang/markdown";
@@ -12,6 +11,7 @@ import csharp from "refractor/lang/csharp";
 import clojure from "refractor/lang/clojure";
 import hcl from "refractor/lang/hcl";
 import toHtml from "hast-util-to-html";
+import type marked from "marked";
 
 refractor.register(markdown);
 refractor.register(yaml);
@@ -29,13 +29,15 @@ const RENDERED_TODO =
 const RENDERED_DONE =
   '<span><label class="check-container"><input type="checkbox" checked="" disabled=""><span class="checkmark"></span></label></span>';
 
-const URL_REGEX = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=$]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=$,]*)/;
+const URL_REGEX =
+  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=$]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=$,]*)/;
 const TODO_REGEX = /^{{(?:\[\[)?TODO(?:\]\])?}}/;
 const DONE_REGEX = /^{{(?:\[\[)?DONE(?:\]\])?}}/;
 const IFRAME_REGEX = new RegExp(
   `^{{(?:\\[\\[)?iframe(?:\\]\\])?:\\s*(${URL_REGEX.source})}}`
 );
-const BUTTON_REGEX = /^{{(?:\[\[)?((?:(?!}}[^}])[\w\s-/])*)(?:\]\])?(?::(.*))?}}/;
+const BUTTON_REGEX =
+  /^{{(?:\[\[)?((?:(?!}}[^}])[\w\s-/])*)(?:\]\])?(?::(.*))?}}/;
 const TAG_REGEX = /^#?\[\[(.*?)\]\]/;
 const BLOCK_REF_REGEX = /^\(\((.*?)\)\)/;
 const toAlias = (r: RegExp) =>
@@ -47,7 +49,8 @@ const ATTRIBUTE_REGEX = /^(.*?)::/;
 const BOLD_REGEX = /^\*\*(.*?)\*\*/;
 const ITALICS_REGEX = /^__(.*?)__/;
 const HIGHLIGHT_REGEX = /^\^\^([^^]*)\^\^/;
-const INLINE_STOP_REGEX = /({{|\*\*([^*]+?)\*\*|__([^_]+?)__|\^\^([^^]+?)\^\^|#?\[\[(.*?)\]\]|#[^\s]|\(\(.*?\)\)|\[(.*?)\]\((.*?)\))/;
+const INLINE_STOP_REGEX =
+  /({{|\*\*([^*]+?)\*\*|__([^_]+?)__|\^\^([^^]+?)\^\^|#?\[\[(.*?)\]\]|#[^\s]|\(\(.*?\)\)|\[(.*?)\]\((.*?)\))/;
 const HR_REGEX = /^---$/;
 const BQ_REGEX = /^(?:>|\[\[>\]\]) (.*)$/s;
 const TWEET_STATUS_REGEX = /\/status\/(.*?)(?:\?s=\d*)?$/;
@@ -543,34 +546,39 @@ if (!(twttr && twttr.ready)) {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore should accept boolean return value
-marked.use(opts);
-
 export type RoamContext = {
   pagesToHrefs?: (page: string, uid?: string) => string;
   components?: (c: string, ac?: string) => string | false;
   blockReferences?: (ref: string) => { text: string; page: string };
 };
-const contextualize = <T>(method: (text: string) => T) => (
-  text: string,
-  context?: RoamContext
-): T => {
-  opts.tokenizer.context = () => ({
-    ...context,
-  });
-  opts.renderer.context = () => ({
-    ...context,
-  });
-  lastSrc = "";
-  return method(text);
-};
 
-export const inlineLexer = contextualize((s) =>
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore types are out of date
-  Lexer.lexInline(s)
-);
-export const lexer = contextualize(marked.lexer);
-export const parseInline = contextualize(marked.parseInline);
-export default contextualize<string>(marked);
+const contextualize =
+  <T>(
+    getMethod: (
+      m: typeof marked
+    ) => (text: string, options: marked.MarkedOptions) => T
+  ) =>
+  (text: string, context?: RoamContext): Promise<T> => {
+    opts.tokenizer.context = () => ({
+      ...context,
+    });
+    opts.renderer.context = () => ({
+      ...context,
+    });
+    lastSrc = "";
+    return (
+      (
+        window.RoamLazy
+          ? window.RoamLazy.Marked()
+          : import("marked").then((r) => r.default)
+      )
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore marked types need to be fixed
+        .then((m) => getMethod(m)(text, opts))
+    );
+  };
+
+export const inlineLexer = contextualize((m) => m.Lexer.lexInline);
+export const lexer = contextualize((m) => m.lexer);
+export const parseInline = contextualize((m) => m.parseInline);
+export default contextualize((m) => m.parse);

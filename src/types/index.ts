@@ -16,6 +16,8 @@ import {
   ExportTypes,
 } from "./query-builder";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
+import type marked from "marked";
+import type Markdown from "marked-react";
 export * from "./native";
 
 type json =
@@ -29,6 +31,13 @@ type json =
 
 declare global {
   interface Window {
+    // TODO remove
+    RoamLazy?: {
+      Marked: () => Promise<typeof marked>;
+      MarkedReact: () => Promise<typeof Markdown>;
+    };
+    // END TODO remove
+
     roamAlphaAPI: {
       q: (
         query: string,

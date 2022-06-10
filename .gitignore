@@ -21,3 +21,7 @@ build
 /main.js
 /main.js.map
 /debug.json
+
+# testing
+components.d.ts
+extension.js

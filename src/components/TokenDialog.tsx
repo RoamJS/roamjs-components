@@ -123,7 +123,7 @@ export const checkRoamJSTokenWarning = () => {
   const token = getToken();
   if (!token) {
     return new Promise<string>((resolve) =>
-      apiGet<{exists: boolean}>({
+      apiGet<{ exists: boolean }>({
         path: `users?email=${encodeURIComponent(getCurrentUserEmail())}`,
         anonymous: true,
       }).then((r) => {

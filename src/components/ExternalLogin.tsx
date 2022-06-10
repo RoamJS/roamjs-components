@@ -113,7 +113,7 @@ const ExternalLogin = ({
           }
         };
         const authInterval = () => {
-          apiPost<{auth: string}>(
+          apiPost<{ auth: string }>(
             `auth`,
             {
               service,

@@ -41,10 +41,10 @@ import idToTitle from "../util/idToTitle";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import format from "date-fns/format";
-import axios, { AxiosError } from "axios";
 import Color from "color";
-import getAuthorizationHeader from "../util/getAuthorizationHeader";
 import { addTokenDialogCommand, checkRoamJSTokenWarning } from "./TokenDialog";
+import apiGet from "../util/apiGet";
+import apiPost from "../util/apiPost";
 
 type TextField = {
   type: "text";
@@ -802,18 +802,16 @@ const ToggleablePanel = ({
   );
   const [isOpen, setIsOpen] = useState(false);
   const intervalListener = useRef(0);
-  const catchError = useCallback(
-    (e: AxiosError) =>
-      setError(e.response?.data?.message || e.response?.data || e.message),
-    [setError]
-  );
+  const catchError = useCallback((e: Error) => setError(e.message), [setError]);
   useEffect(() => {
     if (isPremium) {
-      axios
-        .get(`https://lambda.roamjs.com/price?extensionId=${extensionId}${dev}`)
+      apiGet<{ description: string }>({
+        path: `price?extensionId=${extensionId}${dev}`,
+        anonymous: true,
+      })
         .then((r) => {
           setProductDescription(
-            r.data.description || "No extension specific description found."
+            r.description || "No extension specific description found."
           );
         })
         .catch(catchError);
@@ -825,22 +823,17 @@ const ToggleablePanel = ({
       setError("");
       setEnabled(false);
       (token
-        ? axios
-            .get(
-              `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
-              {
-                headers: { Authorization: getAuthorizationHeader() },
-              }
-            )
-            .then((r) => {
-              if (!r.data.success && uidRef.current) {
-                enableCallback(false, uidRef.current);
-              } else if (r.data.success && !uidRef.current) {
-                enableCallback(true, uidRef.current);
-              } else {
-                setEnabled(r.data.success);
-              }
-            })
+        ? apiGet<{ success: boolean }>(
+            `check?extensionId=${extensionId}${dev}`
+          ).then((r) => {
+            if (!r.success && uidRef.current) {
+              enableCallback(false, uidRef.current);
+            } else if (r.success && !uidRef.current) {
+              enableCallback(true, uidRef.current);
+            } else {
+              setEnabled(r.success);
+            }
+          })
         : Promise.reject(
             new Error(
               `Must set a RoamJS token in order to use these features. To set your RoamJS token, open the Roam command palette and enter "Set RoamJS Token"`
@@ -908,15 +901,10 @@ const ToggleablePanel = ({
           setAlertLoading(true);
           setError("");
           if (enabled) {
-            axios
-              .post(
-                `https://lambda.roamjs.com/unsubscribe`,
-                {
-                  extensionId,
-                  dev: !!dev,
-                },
-                { headers: { Authorization: getAuthorizationHeader() } }
-              )
+            apiPost(`unsubscribe`, {
+              extensionId,
+              dev: !!dev,
+            })
               .then(() => {
                 enableCallback(false, uid);
               })
@@ -926,35 +914,28 @@ const ToggleablePanel = ({
                 setIsOpen(false);
               });
           } else {
-            axios
-              .post(
-                `https://lambda.roamjs.com/subscribe`,
-                {
-                  extensionId,
-                  dev: !!dev,
-                },
-                { headers: { Authorization: getAuthorizationHeader() } }
-              )
+            apiPost<{ url: string; success: boolean }>(`subscribe`, {
+              extensionId,
+              dev: !!dev,
+            })
               .then((r) => {
-                if (r.data.url) {
+                if (r.url) {
                   const width = 600;
                   const height = 525;
                   const left = window.screenX + (window.innerWidth - width) / 2;
                   const top =
                     window.screenY + (window.innerHeight - height) / 2;
                   window.open(
-                    r.data.url,
+                    r.url,
                     `roamjs:roamjs:stripe`,
                     `left=${left},top=${top},width=${width},height=${height},status=1`
                   );
                   const authInterval = () => {
-                    axios
-                      .get(
-                        `https://lambda.roamjs.com/check?extensionId=${extensionId}${dev}`,
-                        { headers: { Authorization: getAuthorizationHeader() } }
-                      )
+                    apiGet<{ success: boolean }>(
+                      `check?extensionId=${extensionId}${dev}`
+                    )
                       .then((r) => {
-                        if (r.data.success) {
+                        if (r.success) {
                           enableCallback(true, uid);
                           setAlertLoading(false);
                           setIsOpen(false);
@@ -972,7 +953,7 @@ const ToggleablePanel = ({
                       });
                   };
                   authInterval();
-                } else if (r.data.success) {
+                } else if (r.success) {
                   enableCallback(true, uid);
                   setAlertLoading(false);
                   setIsOpen(false);

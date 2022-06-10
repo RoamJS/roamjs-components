@@ -1,4 +1,4 @@
-import axios from "axios";
+import https from "https";
 
 const meterRoamJSUser = (
   user: string,
@@ -7,27 +7,47 @@ const meterRoamJSUser = (
   email = process.env.ROAMJS_EMAIL,
   dev = process.env.NODE_ENV === "development"
 ) =>
-  axios
-    .post(
-      `https://lambda.roamjs.com/meter`,
-      {
+  new Promise<{ id: string }>((resolve, reject) => {
+    const req = https
+      .request(
+        `https://lambda.roamjs.com/meter`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${Buffer.from(
+              `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`
+            ).toString("base64")}`,
+            "x-roamjs-extension": extensionId,
+            ...(dev
+              ? {
+                  "x-roamjs-dev": "true",
+                }
+              : {}),
+          },
+        },
+        (res) => {
+          res.setEncoding("utf8");
+          let body = "";
+          res.on("data", (data) => {
+            body += data;
+          });
+          res.on("end", () => {
+            if (!res.statusCode) reject("Missing Status Code");
+            else if (res.statusCode >= 200 && res.statusCode < 400)
+              resolve(JSON.parse(body) as { id: string });
+            else reject(new Error(body));
+          });
+          res.on("error", reject);
+        }
+      )
+      .on("error", reject);
+    req.write(
+      JSON.stringify({
         ...(user.startsWith("user_") ? { id: user } : { email: user }),
         quantity,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${Buffer.from(
-            `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`
-          ).toString("base64")}`,
-          "x-roamjs-extension": extensionId,
-          ...(dev
-            ? {
-                "x-roamjs-dev": "true",
-              }
-            : {}),
-        },
-      }
-    )
-    .then((r) => r.data as { id: string });
+      })
+    );
+    req.end();
+  });
 
 export default meterRoamJSUser;

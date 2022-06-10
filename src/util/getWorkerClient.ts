@@ -1,5 +1,3 @@
-import axios from "axios";
-
 const getWorkerClient = ({
   name,
   onLoad,
@@ -19,10 +17,10 @@ const getWorkerClient = ({
 
   const listeners: { [name: string]: (a: unknown) => void } = {};
   const initializeWorker = () =>
-    axios
-      .get(workerUrl, { responseType: "blob" })
+    fetch(workerUrl)
+      .then((r) => r.blob())
       .then((r) => {
-        worker.current = new Worker(window.URL.createObjectURL(r.data));
+        worker.current = new Worker(window.URL.createObjectURL(r));
         worker.current.onmessage = (e) => {
           const { method, ...data } = e.data;
           listeners[method]?.(data);

@@ -5,11 +5,10 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "prebuild": "npm t",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm t",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push origin main && git push --tags",
@@ -17,6 +16,7 @@
     "jest": "jest --config jestconfig.json",
     "test": "npm run jest"
   },
+  "sideEffects": false,
   "license": "MIT",
   "files": [
     "/backend",
@@ -45,7 +45,6 @@
   },
   "dependencies": {
     "aws-sdk-plus": "^0.5.3",
-    "axios": "^0.21.4",
     "color": "^4.0.1",
     "date-fns": "^2.27.0",
     "fuzzy": "^0.1.3",
@@ -71,8 +70,8 @@
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.6",
     "@types/refractor": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.5.0",
-    "@typescript-eslint/parser": "^5.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
     "@vercel/ncc": "^0.28.6",
     "esbuild": "^0.14.27",
     "eslint": "^8.4.0",

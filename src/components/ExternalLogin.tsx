@@ -4,11 +4,11 @@ import createBlock from "../writes/createBlock";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import idToTitle from "../util/idToTitle";
 import nanoid from "nanoid";
-import axios from "axios";
 import AES from "crypto-js/aes";
 import encutf8 from "crypto-js/enc-utf8";
 import localStorageGet from "../util/localStorageGet";
 import localStorageSet from "../util/localStorageSet";
+import apiPost from "../util/apiPost";
 
 export type ExternalLoginOptions = {
   service: string;
@@ -113,14 +113,17 @@ const ExternalLogin = ({
           }
         };
         const authInterval = () => {
-          axios
-            .post(`https://lambda.roamjs.com/auth`, {
+          apiPost<{auth: string}>(
+            `auth`,
+            {
               service,
               otp,
-            })
+            },
+            { anonymous: true }
+          )
             .then((r) => {
-              if (r.data.auth) {
-                const auth = AES.decrypt(r.data.auth, key).toString(encutf8);
+              if (r.auth) {
+                const auth = AES.decrypt(r.auth, key).toString(encutf8);
                 processAuthData(auth);
               } else {
                 intervalListener = window.setTimeout(authInterval, 1000);

@@ -11,7 +11,6 @@ import {
   PanelStack2,
   ProgressBar,
 } from "@blueprintjs/core";
-import axios, { AxiosResponse } from "axios";
 import React, {
   useCallback,
   useContext,
@@ -33,7 +32,6 @@ import localStorageRemove from "../util/localStorageRemove";
 import localStorageSet from "../util/localStorageSet";
 import { createPage } from "../writes";
 import type { RoamBasicNode, TreeNode } from "../types";
-import getAuthorizationHeader from "../util/getAuthorizationHeader";
 
 declare global {
   interface Window {
@@ -77,60 +75,6 @@ export const useFieldVals = (field: string): string[] => {
       toFlexRegex(field).test(t.text)
     )?.children || []
   ).map((t) => t.text);
-};
-
-export const useAuthenticatedAxiosGet = (): ((
-  path: string
-) => Promise<AxiosResponse>) => {
-  const service = useService();
-  return useCallback(
-    (path: string) =>
-      axios.get(`${process.env.API_URL}/${path}`, {
-        headers: { Authorization: getAuthorizationHeader(service) },
-      }),
-    [service]
-  );
-};
-
-export const useAuthenticatedAxiosPost = (): ((
-  path: string,
-  data?: Record<string, unknown>
-) => Promise<AxiosResponse>) => {
-  const service = useService();
-  return useCallback(
-    (path: string, data?: Record<string, unknown>) =>
-      axios.post(`${process.env.API_URL}/${path}`, data || {}, {
-        headers: { Authorization: getAuthorizationHeader(service) },
-      }),
-    []
-  );
-};
-
-export const useAuthenticatedAxiosPut = (): ((
-  path: string,
-  data?: Record<string, unknown>
-) => Promise<AxiosResponse>) => {
-  const service = useService();
-  return useCallback(
-    (path: string, data?: Record<string, unknown>) =>
-      axios.put(`${process.env.API_URL}/${path}`, data || {}, {
-        headers: { Authorization: getAuthorizationHeader(service) },
-      }),
-    []
-  );
-};
-
-export const useAuthenticatedAxiosDelete = (): ((
-  path: string
-) => Promise<AxiosResponse>) => {
-  const service = useService();
-  return useCallback(
-    (path: string) =>
-      axios.delete(`${process.env.API_URL}/${path}`, {
-        headers: { Authorization: getAuthorizationHeader(service) },
-      }),
-    []
-  );
 };
 
 export const runService = ({

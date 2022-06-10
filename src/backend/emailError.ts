@@ -1,13 +1,11 @@
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
-import type { AxiosError } from "axios";
 import React from "react";
 
 const emailError = (
   subject: string,
-  e: AxiosError | Error,
+  e: Error,
   moreBody?: React.ReactNode
 ): Promise<string> => {
-  const asAxios = e as AxiosError;
   return sendEmail({
     to: process.env.ROAMJS_EMAIL,
     from: "support@roamjs.com",
@@ -51,12 +49,7 @@ const emailError = (
         React.createElement(
           "p",
           {},
-          `${e.name}: ${
-            typeof asAxios.response?.data === "object"
-              ? asAxios.response.data.message ||
-                JSON.stringify(asAxios.response.data)
-              : asAxios.response?.data || e.message
-          }`
+          `${e.name}: ${e.message}`
         ),
         React.createElement("p", {}, e.stack),
         ...(moreBody ? [React.createElement("div", {}, moreBody)] : [])

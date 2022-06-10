@@ -1,4 +1,6 @@
-import axios from "axios";
+import https from "https";
+import http from "http";
+import { URL } from "url";
 import { APIGatewayProxyResult, APIGatewayProxyHandler } from "aws-lambda";
 import headers from "./headers";
 
@@ -17,33 +19,46 @@ const getRoamJSUser = ({
   dev?: boolean;
   params?: Record<string, string>;
 }) => {
-  const url = new URL(`https://lambda.roamjs.com/user`);
+  const url = new URL(
+    `${process.env.API_URL || "https://lambda.roamjs.com"}/user`
+  );
+  const mod = url.protocol === "http:" ? http : https;
   Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
-  return axios
-    .get<RoamJSUser>(url.toString(), {
-      headers: {
-        Authorization: `Bearer ${Buffer.from(
-          `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`
-        ).toString("base64")}`,
-        "x-roamjs-token": token,
-        "x-roamjs-extension": extensionId,
-        ...(dev
-          ? {
-              "x-roamjs-dev": "true",
-            }
-          : {}),
-      },
-    })
-    .then((r) => r.data)
-    .catch((e) =>
-      Promise.reject(
-        new Error(
-          typeof e.response?.data === "object"
-            ? e.response.data.message || JSON.stringify(e.response.data)
-            : e.response?.data || e.message
-        )
+  return new Promise<RoamJSUser>((resolve, reject) =>
+    mod
+      .get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${Buffer.from(
+              `${email}:${process.env.ROAMJS_DEVELOPER_TOKEN}`
+            ).toString("base64")}`,
+            "x-roamjs-token": token,
+            "x-roamjs-extension": extensionId,
+            ...(dev
+              ? {
+                  "x-roamjs-dev": "true",
+                }
+              : {}),
+          },
+        },
+        (res) => {
+          res.setEncoding("utf8");
+          let body = "";
+          res.on("data", (data) => {
+            body += data;
+          });
+          res.on("end", () => {
+            if (!res.statusCode) reject("Missing Status Code");
+            else if (res.statusCode >= 200 && res.statusCode < 400)
+              resolve(JSON.parse(body) as RoamJSUser);
+            else reject(new Error(body));
+          });
+          res.on("error", reject);
+        }
       )
-    );
+      .on("error", reject)
+  );
 };
 
 export const awsGetRoamJSUser =

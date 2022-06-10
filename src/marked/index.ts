@@ -80,7 +80,6 @@ const defaultComponents = (component: string, afterColon?: string) => {
   }
 };
 
-let lastSrc = "";
 // https://github.com/markedjs/marked/blob/d2347e9b9ae517d02138fa6a9844bd8d586acfeb/src/Tokenizer.js#L33-L59
 function indentCodeCompensation(raw: string, text: string) {
   const matchIndentToCode = raw.match(/^(\s+)(?:```)/);
@@ -110,7 +109,16 @@ function indentCodeCompensation(raw: string, text: string) {
     .join("\n");
 }
 
-const opts = {
+const context: RoamContext = {
+  marked: {
+    parseInline: (s) => s,
+    lastSrc: "",
+    used: false,
+    lexInline: () => [],
+  },
+};
+
+const opts: marked.marked.MarkedOptions = {
   tokenizer: {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore should accept boolean return value
@@ -140,6 +148,8 @@ const opts = {
       }
       return false;
     },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore should accept boolean return value
     emStrong(src: string) {
       const match = BOLD_REGEX.exec(src);
       if (match && match[1]?.length) {
@@ -147,6 +157,7 @@ const opts = {
           type: "strong",
           raw: match[0],
           text: match[1],
+          tokens: context.marked.lexInline(match[1]),
         };
       }
       const emMatch = ITALICS_REGEX.exec(src);
@@ -155,6 +166,7 @@ const opts = {
           type: "em",
           raw: emMatch[0],
           text: emMatch[1],
+          tokens: context.marked.lexInline(emMatch[1]),
         };
       }
       return false;
@@ -185,12 +197,10 @@ const opts = {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore should accept boolean return value
     inlineText(src) {
-      if (src === lastSrc) {
-        throw new Error(
-          `Infinite loop on byte: ${src.charCodeAt(0)} of string ${src}`
-        );
+      if (src === context.marked.lastSrc) {
+        throw new Error(`Infinite loop on string ${src}`);
       }
-      lastSrc = src;
+      context.marked.lastSrc = src;
       const match = INLINE_STOP_REGEX.exec(src);
       if (match) {
         const raw = src.substring(0, match.index);
@@ -211,7 +221,7 @@ const opts = {
         const numberOfTicks = (raw.match(/([^`]`|`[^`])/g) || []).length;
         if (numberOfTicks % 2 === 0) {
           const page = attribute[1];
-          const href = this.context().pagesToHrefs?.(page);
+          const href = context.pagesToHrefs?.(page);
           const text = `${page}:`;
           if (href) {
             return {
@@ -281,11 +291,11 @@ const opts = {
             raw: match[0],
             text: match[1],
             title,
+            tokens: context.marked.lexInline(match[1]),
           };
         }
       }
 
-      const context = this.context();
       if (TAG_REGEX.test(src)) {
         const match = XRegExp.matchRecursive(src, "#?\\[\\[", "\\]\\]", "i", {
           valueNames: ["between", "left", "match", "right"],
@@ -301,6 +311,7 @@ const opts = {
               href,
               text,
               title: `tag:${text}`,
+              tokens: context.marked.lexInline(text),
             };
           } else {
             return {
@@ -331,6 +342,7 @@ const opts = {
               href,
               text,
               title: `tag:${text}`,
+              tokens: context.marked.lexInline(text),
             };
           } else {
             return {
@@ -361,6 +373,7 @@ const opts = {
               href,
               text,
               title: "alias",
+              tokens: context.marked.lexInline(text),
             };
           } else {
             return {
@@ -394,6 +407,7 @@ const opts = {
             href,
             text,
             title: "alias",
+            tokens: context.marked.lexInline(text),
           };
         } else {
           return {
@@ -405,21 +419,21 @@ const opts = {
       }
       return false;
     },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore should acce
-    context: () => ({} as RoamContext),
   },
+
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore should be optional
   renderer: {
-    link(href: string, title?: string, text?: string): string | false {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore should allow false
+    link(href: string, title?: string | null, text?: string): string | false {
       if (title === "alias") {
-        const html = this.link(href, undefined, text);
+        const html = (this as marked.Renderer).link(href, null, text || "");
         if (html) {
           return html.replace("href=", 'class="rm-alias" href=');
         }
       } else if (title?.startsWith("tag:")) {
-        const html = this.link(href, undefined, text);
+        const html = (this as marked.Renderer).link(href, null, text || "");
         if (html) {
           return html.replace(
             "href=",
@@ -485,6 +499,8 @@ if (!(twttr && twttr.ready)) {
       }
       return false;
     },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore should allow false
     codespan(code: string) {
       const match = CODESPAN_REGEX.exec(code);
       if (match) {
@@ -515,7 +531,7 @@ if (!(twttr && twttr.ready)) {
       } else if (BUTTON_REGEX.test(text)) {
         const match = BUTTON_REGEX.exec(text)?.[1] || "";
         const afterColon = BUTTON_REGEX.exec(text)?.[2];
-        const context = this.context();
+
         return (
           context.components?.(match, afterColon) ||
           defaultComponents(match, afterColon) ||
@@ -523,13 +539,14 @@ if (!(twttr && twttr.ready)) {
         );
       } else if (BLOCK_REF_REGEX.test(text)) {
         const match = BLOCK_REF_REGEX.exec(text)?.[1] || "";
-        const context = this.context();
+
         const blockRefInfo = context.blockReferences?.(match);
         if (!blockRefInfo) {
           return text;
         }
         const page = blockRefInfo.page || "";
-        const blockText = parseInline(blockRefInfo.text || "", context);
+        const blockText =
+          context.marked.parseInline(blockRefInfo.text || "") || "";
         if (!page) return blockText;
         const href = context.pagesToHrefs?.(page, match);
         return `<a class="rm-block-ref" href="${href}">${blockText}</a>`;
@@ -540,9 +557,6 @@ if (!(twttr && twttr.ready)) {
         return text;
       }
     },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore should acce
-    context: () => ({} as RoamContext),
   },
 };
 
@@ -550,35 +564,35 @@ export type RoamContext = {
   pagesToHrefs?: (page: string, uid?: string) => string;
   components?: (c: string, ac?: string) => string | false;
   blockReferences?: (ref: string) => { text: string; page: string };
+  marked: {
+    parseInline: (s: string) => string;
+    lastSrc: string;
+    used: boolean;
+    lexInline: typeof marked.marked.Lexer.lexInline;
+  };
 };
 
 const contextualize =
-  <T>(
-    getMethod: (
-      m: typeof marked
-    ) => (text: string, options: marked.MarkedOptions) => T
-  ) =>
-  (text: string, context?: RoamContext): Promise<T> => {
-    opts.tokenizer.context = () => ({
-      ...context,
-    });
-    opts.renderer.context = () => ({
-      ...context,
-    });
-    lastSrc = "";
-    return (
-      (
-        window.RoamLazy
-          ? window.RoamLazy.Marked()
-          : import("marked").then((r) => r.default)
-      )
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore marked types need to be fixed
-        .then((m) => getMethod(m)(text, opts))
+  <T>(getMethod: (m: typeof marked) => (text: string) => T) =>
+  (text: string, ctxt?: Omit<RoamContext, "marked">): Promise<T> => {
+    return (window.RoamLazy ? window.RoamLazy.Marked() : import("marked")).then(
+      (m) => {
+        context.blockReferences = ctxt?.blockReferences;
+        context.pagesToHrefs = ctxt?.pagesToHrefs;
+        context.components = ctxt?.components;
+        context.marked.parseInline = m.marked.parseInline;
+        context.marked.lexInline = m.marked.Lexer.lexInline;
+        context.marked.lastSrc = "";
+        if (!context.marked.used) {
+          m.marked.use(opts);
+          context.marked.used = true;
+        }
+        return getMethod(m)(text);
+      }
     );
   };
 
-export const inlineLexer = contextualize((m) => m.Lexer.lexInline);
-export const lexer = contextualize((m) => m.lexer);
-export const parseInline = contextualize((m) => m.parseInline);
-export default contextualize((m) => m.parse);
+export const inlineLexer = contextualize((m) => m.marked.Lexer.lexInline);
+export const lexer = contextualize((m) => m.marked.lexer);
+export const parseInline = contextualize((m) => m.marked.parseInline);
+export default contextualize((m) => m.marked.parse);

@@ -65,7 +65,7 @@
     "@types/crypto-js": "^4.0.2",
     "@types/cryptr": "^4.0.1",
     "@types/jest": "^26.0.23",
-    "@types/marked": "^2.0.3",
+    "@types/marked": "^4.0.3",
     "@types/nanoid": "^2.0.0",
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.6",

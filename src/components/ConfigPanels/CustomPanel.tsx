@@ -1,9 +1,9 @@
 import { Label } from "@blueprintjs/core";
 import React, { useMemo } from "react";
-import { idToTitle } from "../../util";
-import { createBlock } from "../../writes";
+import idToTitle from "../../util/idToTitle";
+import createBlock from "../../writes/createBlock";
 import Description from "../Description";
-import { FieldPanel, CustomField } from "./types";
+import type { FieldPanel, CustomField } from "./types";
 
 const CustomPanel: FieldPanel<CustomField> = ({
   description,

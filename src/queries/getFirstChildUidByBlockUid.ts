@@ -1,4 +1,4 @@
-import { getNthChildUidByBlockUid } from ".";
+import getNthChildUidByBlockUid from "./getNthChildUidByBlockUid";
 
 const getFirstChildUidByBlockUid = (blockUid: string): string =>
   getNthChildUidByBlockUid({ blockUid, order: 0 });

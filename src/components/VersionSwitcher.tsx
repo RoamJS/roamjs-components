@@ -43,7 +43,7 @@ const VersionSwitcher = ({
   const [useLatest, setUseLatest] = useState(currentVersion === "latest");
   useEffect(() => {
     setLoading(true);
-    apiGet<{versions: string[], isEnd: boolean}>({
+    apiGet<{ versions: string[]; isEnd: boolean }>({
       path: `versions?limit=${5}&id=${id}&page=${page}`,
       anonymous: true,
     })

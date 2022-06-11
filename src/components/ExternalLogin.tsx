@@ -4,8 +4,7 @@ import createBlock from "../writes/createBlock";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import idToTitle from "../util/idToTitle";
 import nanoid from "nanoid";
-import AES from "crypto-js/aes";
-import encutf8 from "crypto-js/enc-utf8";
+import { AES, enc } from "crypto-js";
 import localStorageGet from "../util/localStorageGet";
 import localStorageSet from "../util/localStorageSet";
 import apiPost from "../util/apiPost";
@@ -123,7 +122,7 @@ const ExternalLogin = ({
           )
             .then((r) => {
               if (r.auth) {
-                const auth = AES.decrypt(r.auth, key).toString(encutf8);
+                const auth = AES.decrypt(r.auth, key).toString(enc.Utf8);
                 processAuthData(auth);
               } else {
                 intervalListener = window.setTimeout(authInterval, 1000);

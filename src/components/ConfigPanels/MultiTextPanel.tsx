@@ -14,6 +14,6 @@ const MultiTextPanel: FieldPanel<MultiTextField> = (props) => {
   );
 };
 
-MultiTextPanel.type = 'multitext';
+MultiTextPanel.type = "multitext";
 
 export default MultiTextPanel;

@@ -555,7 +555,7 @@ const fieldsToChildren = (t: ConfigTab) =>
         f.Panel.type === "flag"
           ? []
           : f.Panel.type === "custom"
-          ? f.defaultValue as InputTextNode[] || []
+          ? (f.defaultValue as InputTextNode[]) || []
           : f.Panel.type === "pages" || f.Panel.type === "multitext"
           ? (f.defaultValue as string[])?.map((v) => ({ text: v }))
           : f.Panel.type === "block"

@@ -1,4 +1,5 @@
-import { getShallowTreeByParentUid, getPageUidByPageTitle } from "../queries";
+import getShallowTreeByParentUid from "../queries/getShallowTreeByParentUid";
+import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import localStorageGet from "./localStorageGet";
 import toConfigPageName from "./toConfigPageName";
 import toFlexRegex from "./toFlexRegex";

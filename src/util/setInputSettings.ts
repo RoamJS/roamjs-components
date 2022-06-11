@@ -1,5 +1,6 @@
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
-import { deleteBlock, createBlock } from "../writes";
+import deleteBlock from "../writes/deleteBlock";
+import createBlock from "../writes/createBlock";
 import toFlexRegex from "./toFlexRegex";
 
 export const setInputSettings = ({

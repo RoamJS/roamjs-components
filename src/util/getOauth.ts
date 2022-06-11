@@ -1,4 +1,6 @@
-import { getShallowTreeByParentUid, getPageUidByPageTitle, getEditTimeByBlockUid } from "../queries";
+import getEditTimeByBlockUid from "../queries/getEditTimeByBlockUid";
+import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
+import getShallowTreeByParentUid from "../queries/getShallowTreeByParentUid";
 import localStorageGet from "./localStorageGet";
 import toConfigPageName from "./toConfigPageName";
 import toFlexRegex from "./toFlexRegex";

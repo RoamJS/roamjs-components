@@ -1,4 +1,4 @@
-import { getBasicTreeByParentUid } from "../queries";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import type { InputTextNode } from "../types";
 import toFlexRegex from "./toFlexRegex";
 

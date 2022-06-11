@@ -8,8 +8,8 @@ import React, {
 } from "react";
 import ReactDOM from "react-dom";
 import fuzzy from "fuzzy";
-import { getUids } from "../dom";
-import { updateBlock } from "../writes";
+import getUids from "../dom/getUids";
+import updateBlock from "../writes/updateBlock";
 
 // inspired by https://github.com/zurb/tribute/blob/master/src/TributeRange.js#L446-L556
 export const getCoordsFromTextarea = (

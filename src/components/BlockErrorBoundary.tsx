@@ -1,5 +1,5 @@
 import React from "react";
-import { createBlock } from "../writes";
+import createBlock from "../writes/createBlock";
 
 type BlockErrorBoundaryProps = { blockUid: string; message: string };
 type BlockErrorBoundaryState = { hasError: boolean };

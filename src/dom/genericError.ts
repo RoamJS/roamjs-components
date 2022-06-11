@@ -1,5 +1,5 @@
 import type { RoamError } from "../types";
-import { updateActiveBlock } from "../writes";
+import updateActiveBlock from "../writes/updateActiveBlock";
 
 const genericError = (e: Partial<Error & RoamError>): string => {
   const message = e.message || e.raw || "Unknown Error Occurred";

@@ -6,7 +6,7 @@ import {
   InputGroup,
 } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { getAllBlockUidsAndTexts } from "../queries";
+import getAllBlockUidsAndTexts from "../queries/getAllBlockUidsAndTexts";
 import useArrowKeyDown from "../hooks/useArrowKeyDown";
 
 const searchBlocksByString = (

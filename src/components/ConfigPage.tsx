@@ -21,15 +21,16 @@ import React, {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
-import { addOldRoamJSDependency, createHTMLObserver } from "../dom";
-import { createBlock, createPage, deleteBlock } from "../writes";
-import {
-  getBasicTreeByParentUid,
-  getFirstChildUidByBlockUid,
-  getPageUidByPageTitle,
-  getShallowTreeByParentUid,
-  getTextByBlockUid,
-} from "../queries";
+import addOldRoamJSDependency from "../dom/addOldRoamJSDependency"
+import createHTMLObserver from "../dom/createHTMLObserver";
+import createBlock from "../writes/createBlock"; 
+import createPage from "../writes/createPage"; 
+import deleteBlock from "../writes/deleteBlock";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
+import getFirstChildUidByBlockUid from "../queries/getFirstChildUidByBlockUid";
+import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
+import getShallowTreeByParentUid from "../queries/getShallowTreeByParentUid";
+import getTextByBlockUid from "../queries/getTextByBlockUid";
 import type { InputTextNode } from "../types";
 import localStorageGet from "../util/localStorageGet";
 import localStorageRemove from "../util/localStorageRemove";

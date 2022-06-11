@@ -1,6 +1,6 @@
-import { getBasicTreeByParentUid } from "../queries";
-import { RoamBasicNode } from "../types";
-import { createBlock } from "../writes";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
+import type { RoamBasicNode } from "../types/native";
+import createBlock from "../writes/createBlock";
 import toFlexRegex from "./toFlexRegex";
 
 const getSubTree = ({

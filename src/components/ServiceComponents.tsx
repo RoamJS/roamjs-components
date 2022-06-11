@@ -24,13 +24,13 @@ import idToTitle from "../util/idToTitle";
 import toFlexRegex from "../util/toFlexRegex";
 import setInputSetting from "../util/setInputSetting";
 import getToken from "../util/getToken";
-import { createPageTitleObserver } from "../dom";
+import createPageTitleObserver from "../dom/createPageTitleObserver";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import localStorageGet from "../util/localStorageGet";
 import localStorageRemove from "../util/localStorageRemove";
 import localStorageSet from "../util/localStorageSet";
-import { createPage } from "../writes";
+import createPage from "../writes/createPage";
 import type { RoamBasicNode, TreeNode } from "../types";
 
 declare global {

@@ -21,10 +21,10 @@ import React, {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
-import addOldRoamJSDependency from "../dom/addOldRoamJSDependency"
+import addOldRoamJSDependency from "../dom/addOldRoamJSDependency";
 import createHTMLObserver from "../dom/createHTMLObserver";
-import createBlock from "../writes/createBlock"; 
-import createPage from "../writes/createPage"; 
+import createBlock from "../writes/createBlock";
+import createPage from "../writes/createPage";
 import deleteBlock from "../writes/deleteBlock";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import getFirstChildUidByBlockUid from "../queries/getFirstChildUidByBlockUid";

@@ -16,7 +16,14 @@ export type ExternalLoginOptions = {
   ServiceIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
 };
 
-const targetOrigin = process.env.CUSTOM_ROAMJS_ORIGIN || "https://roamjs.com";
+const getTargetOrigin = () => {
+  try {
+    // Do I still even use this? In any case, since we removed process plugin, need this to be caught when unspecified
+    return process.env.CUSTOM_ROAMJS_ORIGIN;
+  } catch {
+    return "https://roamjs.com";
+  }
+};
 
 const ExternalLogin = ({
   onSuccess,
@@ -33,6 +40,7 @@ const ExternalLogin = ({
   useLocal?: boolean;
   loggedIn?: boolean;
 } & ExternalLoginOptions): React.ReactElement => {
+  const targetOrigin = getTargetOrigin();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const onClick = useCallback(() => {

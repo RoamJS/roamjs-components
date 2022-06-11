@@ -31,13 +31,9 @@ import getFirstChildUidByBlockUid from "../queries/getFirstChildUidByBlockUid";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getShallowTreeByParentUid from "../queries/getShallowTreeByParentUid";
 import getTextByBlockUid from "../queries/getTextByBlockUid";
-import type { InputTextNode } from "../types";
 import localStorageGet from "../util/localStorageGet";
-import localStorageRemove from "../util/localStorageRemove";
-import localStorageSet from "../util/localStorageSet";
 import startOfDay from "date-fns/startOfDay";
 import Description from "./Description";
-import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";
 import idToTitle from "../util/idToTitle";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
@@ -46,101 +42,22 @@ import Color from "color";
 import { addTokenDialogCommand, checkRoamJSTokenWarning } from "./TokenDialog";
 import apiGet from "../util/apiGet";
 import apiPost from "../util/apiPost";
-
-type TextField = {
-  type: "text";
-  defaultValue?: string;
-};
-
-type TimeField = {
-  type: "time";
-  defaultValue?: Date;
-};
-
-type NumberField = {
-  type: "number";
-  defaultValue?: number;
-};
-
-type FlagField = {
-  type: "flag";
-  defaultValue?: boolean;
-  options?: {
-    onChange?: (f: boolean) => void;
-  };
-};
-
-type MultiTextField = {
-  type: "multitext";
-  defaultValue?: string[];
-};
-
-type PagesField = {
-  type: "pages";
-  defaultValue?: string[];
-};
-
-type OauthField = {
-  type: "oauth";
-  defaultValue?: [];
-  options: ExternalLoginOptions;
-};
-
-type SelectField = {
-  type: "select";
-  defaultValue?: string;
-  options: {
-    items: string[] | (() => string[]);
-  };
-};
-
-type BlockField = {
-  type: "block";
-  defaultValue?: InputTextNode;
-};
-
-type BlocksField = {
-  type: "blocks";
-  defaultValue?: InputTextNode[];
-};
-
-type CustomField = {
-  type: "custom";
-  defaultValue?: InputTextNode[];
-  options: {
-    component: React.FC<{
-      parentUid: string;
-      uid: string;
-      defaultValue: InputTextNode[];
-      title: string;
-    }>;
-  };
-};
-
-type ArrayField = PagesField | MultiTextField | CustomField | BlocksField;
-type UnionField =
-  | ArrayField
-  | TextField
-  | TimeField
-  | NumberField
-  | OauthField
-  | FlagField
-  | SelectField
-  | BlockField;
-
-type Field<T extends UnionField> = T & {
-  title: string;
-  description: string;
-};
-
-type FieldPanel<T extends UnionField, U = Record<string, unknown>> = (
-  props: {
-    order: number;
-    uid?: string;
-    parentUid: string;
-  } & Omit<Field<T>, "type"> &
-    U
-) => React.ReactElement;
+import type {
+  ArrayField,
+  BlockField,
+  BlocksField,
+  CustomField,
+  Field,
+  FieldPanel,
+  FlagField,
+  MultiTextField,
+  NumberField,
+  PagesField,
+  SelectField,
+  TextField,
+  TimeField,
+  UnionField,
+} from "./ConfigPanels/types";
 
 const useSingleChildValue = <T extends string | number | Date>({
   defaultValue,
@@ -469,118 +386,6 @@ const PagesPanel: FieldPanel<PagesField> = (props) => {
         <PageInput extra={["{all}"]} {...inputProps} />
       )}
     />
-  );
-};
-
-const OauthPanel: FieldPanel<OauthField> = ({ uid, parentUid, options }) => {
-  const key = `oauth-${options.service}`;
-  const [useLocal, setUseLocal] = useState(!!localStorageGet(key));
-  const [accounts, setAccounts] = useState<
-    { text: string; uid: string; data: string }[]
-  >(() =>
-    useLocal
-      ? JSON.parse(localStorageGet(key) as string)
-      : uid
-      ? getBasicTreeByParentUid(uid).map((v) => ({
-          text: v.children[0]?.text ? v.text : "Default Account",
-          uid: v.uid,
-          data: v.children[0]?.text || v.text,
-        }))
-      : []
-  );
-  const onCheck = useCallback(
-    (e) => {
-      const checked = (e.target as HTMLInputElement).checked;
-      setUseLocal(checked);
-      if (checked) {
-        if (uid) {
-          getShallowTreeByParentUid(uid).forEach(({ uid: u }) =>
-            deleteBlock(u)
-          );
-        }
-        localStorageSet(key, JSON.stringify(accounts));
-      } else {
-        localStorageRemove(key);
-        if (uid) {
-          accounts.forEach(({ text, uid: u, data }, order) => {
-            window.roamAlphaAPI.createBlock({
-              location: { "parent-uid": uid, order },
-              block: { string: text, uid: u },
-            });
-            window.roamAlphaAPI.createBlock({
-              location: { "parent-uid": u, order: 0 },
-              block: { string: data },
-            });
-          });
-        }
-      }
-    },
-    [setUseLocal, accounts, uid, key]
-  );
-  return (
-    <>
-      <Checkbox
-        labelElement={
-          <>
-            Store Locally
-            <Description
-              description={
-                "If checked, sensitive authentication data will be stored locally on your machine and will require re-logging in per device. If unchecked, sensitive authentication data will be stored in your Roam Graph."
-              }
-            />
-          </>
-        }
-        checked={useLocal}
-        onChange={onCheck}
-      />
-      <ExternalLogin
-        useLocal={useLocal}
-        onSuccess={(acc) => setAccounts([...accounts, acc])}
-        parentUid={parentUid}
-        loggedIn={!!accounts.length}
-        {...options}
-      />
-      {!!accounts.length && (
-        <>
-          <h5 style={{ marginTop: 8 }}>Accounts</h5>
-          <hr />
-          <ul style={{ marginTop: 8, padding: 0 }}>
-            {accounts.map((act) => (
-              <li
-                key={act.uid}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: 8,
-                }}
-              >
-                <span style={{ minWidth: 192 }}>{act.text}</span>
-                <Button
-                  text={"Log Out"}
-                  onClick={() => {
-                    if (useLocal) {
-                      const accts = JSON.parse(
-                        localStorageGet(key) as string
-                      ) as {
-                        uid: string;
-                      }[];
-                      localStorageSet(
-                        key,
-                        JSON.stringify(accts.filter((a) => act.uid !== a.uid))
-                      );
-                    } else {
-                      deleteBlock(act.uid);
-                    }
-                    setAccounts(accounts.filter((a) => act.uid !== a.uid));
-                  }}
-                />
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </>
   );
 };
 
@@ -997,7 +802,6 @@ const Panels = {
   number: NumberPanel,
   flag: FlagPanel,
   pages: PagesPanel,
-  oauth: OauthPanel,
   multitext: MultiTextPanel,
   select: SelectPanel,
   block: BlockPanel,
@@ -1376,6 +1180,19 @@ export const createConfigObserver = async ({
             );
         },
       });
+
+    // Lazy load panels that we need
+    // The Oauth Panel was the biggest offender of bundle size, so start with
+    // that one before genericizing for the rest of the panels
+    if (
+      !Panels["oauth"] &&
+      config.tabs.some((t) => t.fields.some((f) => f.type === "oauth"))
+    ) {
+      await import("./ConfigPanels/OauthPanel").then((oauth) => {
+        Panels["oauth"] = oauth.default;
+      });
+    }
+
     const observer = createHTMLObserver({
       className: "rm-title-display",
       tag: "H1",

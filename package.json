@@ -5,14 +5,14 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
+    "prebuild": "npm run lint",
+    "build": "tsc",
     "prepublishOnly": "npm t",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push origin main && git push --tags",
-    "pretest": "npm run lint",
     "jest": "jest --config jestconfig.json",
     "test": "npm run jest"
   },
@@ -40,11 +40,13 @@
     "chrono-node": "2.3.0",
     "crypto-js": "3.1.9-1",
     "file-saver": "2.0.2",
+    "jszip": "3.2.2",
     "marked": "4.0.16",
     "marked-react": "1.1.2",
     "nanoid": "2.0.4",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "tslib": "2.2.0"
   },
   "dependencies": {
     "aws-sdk-plus": "^0.5.3",

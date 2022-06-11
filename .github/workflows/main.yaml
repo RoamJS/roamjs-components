@@ -7,6 +7,10 @@ on:
       - "package.json"
       - ".github/workflows/main.yaml"
 
+env:
+  ROAMJS_DEVELOPER_TOKEN: ${{ secrets.ROAMJS_DEVELOPER_TOKEN }}
+  ROAMJS_TEST_DEVELOPER_TOKEN: ${{ secrets.ROAMJS_DEVELOPER_TOKEN }}
+
 jobs:
   deploy:
     runs-on: ubuntu-20.04

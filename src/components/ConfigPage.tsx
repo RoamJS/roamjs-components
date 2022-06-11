@@ -474,13 +474,13 @@ ${
           <span style={{ color: "#cccccc", fontSize: 8 }}>
             v{currentVersion}
           </span>
-          {config.versioning && (
+          {typeof config.versioning === "function" && (
             <Button
               icon={"git-branch"}
               minimal
               onClick={() =>
-                window.roamjs?.extension.versioning &&
-                window.roamjs?.extension.versioning.switch({
+                typeof config.versioning === "function" &&
+                config.versioning({
                   id,
                   currentVersion,
                 })

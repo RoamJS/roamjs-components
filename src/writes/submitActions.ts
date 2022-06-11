@@ -1,4 +1,4 @@
-import { differenceInMilliseconds } from "date-fns";
+import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
 import type { ActionParams } from "../types";
 import { render as renderProgressDialog } from "../components/ProgressDialog";
 import nanoid from "nanoid";

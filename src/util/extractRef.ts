@@ -1,4 +1,4 @@
-import { BLOCK_REF_REGEX } from "../dom";
+import { BLOCK_REF_REGEX } from "../dom/constants";
 
 const extractRef = (ref: string): string =>
   new RegExp(

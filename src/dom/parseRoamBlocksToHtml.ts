@@ -1,4 +1,4 @@
-import { parseInline, RoamContext } from "../marked";
+import { getParseInline, RoamContext } from "../marked";
 import type { TreeNode, ViewType } from "../types";
 
 const VIEW_CONTAINER = {
@@ -8,7 +8,7 @@ const VIEW_CONTAINER = {
 };
 const HEADINGS = ["p", "h1", "h2", "h3"];
 
-const parseRoamBlocksToHtml = ({
+const parseRoamBlocksToHtml = async ({
   content,
   viewType,
   level,
@@ -18,13 +18,17 @@ const parseRoamBlocksToHtml = ({
   context: Required<RoamContext>;
   content: TreeNode[];
   viewType: ViewType;
-}): string => {
+}): Promise<string> => {
   if (content.length === 0) {
     return "";
   }
-  const items = content.map((t) => {
+  const parseInline = await getParseInline();
+  const items = content.map(async (t) => {
     let skipChildren = false;
-    const componentsWithChildren = (s: string, ac?: string): string | false => {
+    const componentsWithChildren = (
+      s: string,
+      ac?: string
+    ): string | false => {
       const parent = context.components(s, ac);
       if (parent) {
         return parent;
@@ -42,7 +46,7 @@ const parseRoamBlocksToHtml = ({
               `<td>${parseInline(td.text, {
                 ...context,
                 components: componentsWithChildren,
-              })}</td>`
+              })}</td`
           )
         );
         const columns = Math.max(...rows.map((row) => row.length), 0);
@@ -72,7 +76,7 @@ const parseRoamBlocksToHtml = ({
       classlist.push(className);
       return "";
     });
-    const inlineMarked = parseInline(textToParse, {
+    const inlineMarked = await parseInline(textToParse, {
       ...context,
       components: componentsWithChildren,
     });

@@ -573,26 +573,45 @@ export type RoamContext = {
 };
 
 const contextualize =
+  (m: typeof marked) =>
   <T>(getMethod: (m: typeof marked) => (text: string) => T) =>
-  (text: string, ctxt?: Omit<RoamContext, "marked">): Promise<T> => {
+  (text: string, ctxt?: Omit<RoamContext, "marked">): T => {
+    context.blockReferences = ctxt?.blockReferences;
+    context.pagesToHrefs = ctxt?.pagesToHrefs;
+    context.components = ctxt?.components;
+    context.marked.parseInline = m.marked.parseInline;
+    context.marked.lexInline = m.marked.Lexer.lexInline;
+    context.marked.lastSrc = "";
+    if (!context.marked.used) {
+      m.marked.use(opts);
+      context.marked.used = true;
+    }
+    return getMethod(m)(text);
+  };
+
+const wrapOnce =
+  <T>(getMethod: (m: typeof marked) => (text: string) => T) => ():
+  Promise<(text: string, ctxt?: Omit<RoamContext, "marked">) => T> => {
     return (window.RoamLazy ? window.RoamLazy.Marked() : import("marked")).then(
-      (m) => {
-        context.blockReferences = ctxt?.blockReferences;
-        context.pagesToHrefs = ctxt?.pagesToHrefs;
-        context.components = ctxt?.components;
-        context.marked.parseInline = m.marked.parseInline;
-        context.marked.lexInline = m.marked.Lexer.lexInline;
-        context.marked.lastSrc = "";
-        if (!context.marked.used) {
-          m.marked.use(opts);
-          context.marked.used = true;
-        }
-        return getMethod(m)(text);
-      }
+      (m) => contextualize(m)(getMethod)
     );
   };
 
-export const inlineLexer = contextualize((m) => m.marked.Lexer.lexInline);
-export const lexer = contextualize((m) => m.marked.lexer);
-export const parseInline = contextualize((m) => m.marked.parseInline);
-export default contextualize((m) => m.marked.parse);
+export const getInlineLexer = wrapOnce((m) => m.marked.Lexer.lexInline);
+export const getLexer = wrapOnce((m) => m.marked.lexer);
+export const getParseInline = wrapOnce((m) => m.marked.parseInline);
+export const getParse = wrapOnce((m) => m.marked.parse);
+
+const wrapEach =
+  <T>(getMethod: (m: typeof marked) => (text: string) => T) =>
+  (text: string, ctxt?: Omit<RoamContext, "marked">): Promise<T> => {
+    return (window.RoamLazy ? window.RoamLazy.Marked() : import("marked")).then(
+      (m) => contextualize(m)(getMethod)(text, ctxt)
+    );
+  };
+
+export const inlineLexer = wrapEach((m) => m.marked.Lexer.lexInline);
+export const lexer = wrapEach((m) => m.marked.lexer);
+export const parseInline = wrapEach((m) => m.marked.parseInline);
+export const parse = wrapEach((m) => m.marked.parse);
+export default wrapEach((m) => m.marked.parse);

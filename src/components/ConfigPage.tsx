@@ -427,14 +427,9 @@ const ConfigPage = ({
     [setSelectedTabId]
   );
   const tree = getBasicTreeByParentUid(pageUid);
-  const [currentVersion, setCurrentVersion] = useState("");
+  const currentVersion = window.roamjs?.version?.[id] || "ersion not set"
   const titleRef = useRef<HTMLDivElement>(null);
   const experimentalMode = useMemo(() => localStorageGet("experimental"), []);
-  useEffect(() => {
-    if (config.versioning) {
-      setCurrentVersion(window.roamjs?.version?.[id] || "ersion not set");
-    }
-  }, [config.versioning, id, setCurrentVersion]);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
       <style>

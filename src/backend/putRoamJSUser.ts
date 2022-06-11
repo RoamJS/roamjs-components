@@ -66,9 +66,9 @@ export const awsPutRoamJSUser = (
       body: JSON.stringify(data),
       headers,
     }))
-    .catch((e) => ({
+    .catch((e: Error) => ({
       statusCode: 401,
-      body: e.response?.data,
+      body: e.message,
       headers,
     }));
 

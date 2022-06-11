@@ -7,14 +7,14 @@ export type OauthField = {
   options: ExternalLoginOptions;
 };
 
-export type FieldPanel<T extends UnionField, U = Record<string, unknown>> = (
+export type FieldPanel<T extends UnionField, U = Record<string, unknown>> = ((
   props: {
     order: number;
     uid?: string;
     parentUid: string;
-  } & Omit<Field<T>, "type"> &
+  } & Omit<Field<T>, "Panel"> &
     U
-) => React.ReactElement;
+) => React.ReactElement) & { type: T["type"] };
 
 export type TextField = {
   type: "text";
@@ -95,7 +95,8 @@ export type UnionField =
   | SelectField
   | BlockField;
 
-export type Field<T extends UnionField> = T & {
+export type Field<T extends UnionField> = Omit<T, 'type'> & {
   title: string;
   description: string;
+  Panel: FieldPanel<T>;
 };

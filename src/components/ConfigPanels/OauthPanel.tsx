@@ -122,4 +122,6 @@ const OauthPanel: FieldPanel<OauthField> = ({ uid, parentUid, options }) => {
   );
 };
 
+OauthPanel.type = "oauth";
+
 export default OauthPanel;

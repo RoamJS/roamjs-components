@@ -2,17 +2,12 @@ import {
   Alert,
   Button,
   Card,
-  Checkbox,
-  InputGroup,
   Intent,
-  Label,
-  NumericInput,
   Spinner,
   Switch,
   Tab,
   Tabs,
 } from "@blueprintjs/core";
-import { TimePicker } from "@blueprintjs/datetime";
 import React, {
   useCallback,
   useEffect,
@@ -27,519 +22,16 @@ import createBlock from "../writes/createBlock";
 import createPage from "../writes/createPage";
 import deleteBlock from "../writes/deleteBlock";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
-import getFirstChildUidByBlockUid from "../queries/getFirstChildUidByBlockUid";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getShallowTreeByParentUid from "../queries/getShallowTreeByParentUid";
-import getTextByBlockUid from "../queries/getTextByBlockUid";
 import localStorageGet from "../util/localStorageGet";
-import startOfDay from "date-fns/startOfDay";
-import Description from "./Description";
 import idToTitle from "../util/idToTitle";
-import MenuItemSelect from "./MenuItemSelect";
-import PageInput from "./PageInput";
-import format from "date-fns/format";
-import Color from "color";
 import { addTokenDialogCommand, checkRoamJSTokenWarning } from "./TokenDialog";
 import apiGet from "../util/apiGet";
 import apiPost from "../util/apiPost";
-import type {
-  ArrayField,
-  BlockField,
-  BlocksField,
-  CustomField,
-  Field,
-  FieldPanel,
-  FlagField,
-  MultiTextField,
-  NumberField,
-  PagesField,
-  SelectField,
-  TextField,
-  TimeField,
-  UnionField,
-} from "./ConfigPanels/types";
-
-const useSingleChildValue = <T extends string | number | Date>({
-  defaultValue,
-  uid: initialUid,
-  title,
-  parentUid,
-  order,
-  transform,
-  toStr,
-}: {
-  title: string;
-  parentUid: string;
-  order: number;
-  uid?: string;
-  defaultValue: T;
-  transform: (s: string) => T;
-  toStr: (t: T) => string;
-}): { value: T; onChange: (v: T) => void } => {
-  const [uid, setUid] = useState(initialUid);
-  const [valueUid, setValueUid] = useState(
-    uid && getFirstChildUidByBlockUid(uid)
-  );
-  const [value, setValue] = useState(
-    (valueUid && transform(getTextByBlockUid(valueUid))) || defaultValue
-  );
-  const onChange = useCallback(
-    (v: T) => {
-      setValue(v);
-      if (valueUid) {
-        window.roamAlphaAPI.updateBlock({
-          block: { string: toStr(v), uid: valueUid },
-        });
-      } else if (uid) {
-        const newValueUid = window.roamAlphaAPI.util.generateUID();
-        window.roamAlphaAPI.createBlock({
-          block: { string: toStr(v), uid: newValueUid },
-          location: { order: 0, "parent-uid": uid },
-        });
-        setValueUid(newValueUid);
-      } else {
-        const newUid = window.roamAlphaAPI.util.generateUID();
-        window.roamAlphaAPI.createBlock({
-          block: { string: title, uid: newUid },
-          location: { order, "parent-uid": parentUid },
-        });
-        setTimeout(() => setUid(newUid));
-        const newValueUid = window.roamAlphaAPI.util.generateUID();
-        window.roamAlphaAPI.createBlock({
-          block: { string: toStr(v), uid: newValueUid },
-          location: { order: 0, "parent-uid": newUid },
-        });
-        setValueUid(newValueUid);
-      }
-    },
-    [setValue, setValueUid, title, parentUid, order, uid, valueUid, setUid]
-  );
-  return { value, onChange };
-};
-
-const MultiChildPanel: FieldPanel<
-  ArrayField,
-  {
-    InputComponent: (props: {
-      value: string;
-      setValue: (s: string) => void;
-    }) => React.ReactElement;
-  }
-> = ({
-  uid: initialUid,
-  title,
-  description,
-  order,
-  parentUid,
-  InputComponent,
-}) => {
-  const [uid, setUid] = useState(initialUid);
-  const [texts, setTexts] = useState(() =>
-    uid ? getShallowTreeByParentUid(uid) : []
-  );
-  const [value, setValue] = useState("");
-  return (
-    <>
-      <Label>
-        {idToTitle(title)}
-        <Description description={description} />
-        <div style={{ display: "flex" }}>
-          <InputComponent value={value} setValue={setValue} />
-          <Button
-            icon={"plus"}
-            minimal
-            disabled={!value}
-            onClick={() => {
-              const valueUid = window.roamAlphaAPI.util.generateUID();
-              if (uid) {
-                window.roamAlphaAPI.createBlock({
-                  location: { "parent-uid": uid, order: texts.length },
-                  block: { string: value, uid: valueUid },
-                });
-              } else {
-                const newUid = window.roamAlphaAPI.util.generateUID();
-                window.roamAlphaAPI.createBlock({
-                  block: { string: title, uid: newUid },
-                  location: { order, "parent-uid": parentUid },
-                });
-                setTimeout(() => setUid(newUid));
-                window.roamAlphaAPI.createBlock({
-                  block: { string: value, uid: valueUid },
-                  location: { order: 0, "parent-uid": newUid },
-                });
-              }
-              setTexts([...texts, { text: value, uid: valueUid }]);
-              setValue("");
-            }}
-          />
-        </div>
-      </Label>
-      {texts.map((p) => (
-        <div
-          key={p.uid}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <span
-            style={{
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-            }}
-          >
-            {p.text}
-          </span>
-          <Button
-            icon={"trash"}
-            minimal
-            onClick={() => {
-              window.roamAlphaAPI.deleteBlock({ block: { uid: p.uid } });
-              setTexts(texts.filter((f) => f.uid !== p.uid));
-            }}
-          />
-        </div>
-      ))}
-    </>
-  );
-};
-
-const TextPanel: FieldPanel<TextField> = ({
-  title,
-  uid,
-  parentUid,
-  order,
-  description,
-  defaultValue = "",
-}) => {
-  const { value, onChange } = useSingleChildValue({
-    defaultValue,
-    title,
-    uid,
-    parentUid,
-    order,
-    transform: (s) => s,
-    toStr: (s) => s,
-  });
-  return (
-    <Label>
-      {idToTitle(title)}
-      <Description description={description} />
-      <InputGroup
-        value={value}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange(e.target.value)
-        }
-      />
-    </Label>
-  );
-};
-
-const TimePanel: FieldPanel<TimeField> = ({
-  title,
-  uid,
-  parentUid,
-  order,
-  description,
-  defaultValue = startOfDay(new Date()),
-}) => {
-  const { value, onChange } = useSingleChildValue({
-    defaultValue,
-    title,
-    uid,
-    parentUid,
-    order,
-    transform: (s) => {
-      const d = new Date();
-      const [hours, minutes] = s.split(":");
-      d.setHours(Number(hours));
-      d.setMinutes(Number(minutes));
-      return d;
-    },
-    toStr: (v) => format(v, "HH:mm"),
-  });
-  return (
-    <Label>
-      {idToTitle(title)}
-      <Description description={description} />
-      <TimePicker value={value} onChange={onChange} showArrowButtons />
-    </Label>
-  );
-};
-
-const NumberPanel: FieldPanel<NumberField> = ({
-  title,
-  uid,
-  parentUid,
-  order,
-  description,
-  defaultValue = 0,
-}) => {
-  const { value, onChange } = useSingleChildValue({
-    defaultValue,
-    title,
-    uid,
-    parentUid,
-    order,
-    transform: parseInt,
-    toStr: (v) => `${v}`,
-  });
-  return (
-    <Label>
-      {idToTitle(title)}
-      <Description description={description} />
-      <NumericInput value={value} onValueChange={onChange} />
-    </Label>
-  );
-};
-
-const SelectPanel: FieldPanel<SelectField> = ({
-  title,
-  uid,
-  parentUid,
-  order,
-  description,
-  defaultValue = "",
-  options: { items },
-}) => {
-  const optionItems = useMemo(
-    () => (typeof items === "function" ? items() : items),
-    [items]
-  );
-  const { value, onChange } = useSingleChildValue({
-    defaultValue: defaultValue || optionItems[0],
-    title,
-    uid,
-    parentUid,
-    order,
-    transform: (s) => s,
-    toStr: (s) => s,
-  });
-  return (
-    <Label>
-      {idToTitle(title)}
-      <Description description={description} />
-      <MenuItemSelect
-        activeItem={value}
-        onItemSelect={(e) => onChange(e)}
-        items={optionItems}
-      />
-    </Label>
-  );
-};
-
-const FlagPanel: FieldPanel<FlagField> = ({
-  title,
-  uid: initialUid,
-  parentUid,
-  order,
-  description,
-  options = {},
-}) => {
-  const [uid, setUid] = useState(initialUid);
-  return (
-    <Checkbox
-      checked={!!uid}
-      onChange={(e) => {
-        const { checked } = e.target as HTMLInputElement;
-        if (checked) {
-          const newUid = window.roamAlphaAPI.util.generateUID();
-          window.roamAlphaAPI.createBlock({
-            block: { string: title, uid: newUid },
-            location: { order, "parent-uid": parentUid },
-          });
-          setTimeout(() => setUid(newUid), 1);
-        } else {
-          window.roamAlphaAPI.deleteBlock({ block: { uid } });
-          setUid("");
-        }
-        options.onChange?.(checked);
-      }}
-      labelElement={
-        <>
-          {idToTitle(title)}
-          <Description description={description} />
-        </>
-      }
-    />
-  );
-};
-
-const MultiTextPanel: FieldPanel<MultiTextField> = (props) => {
-  return (
-    <MultiChildPanel
-      {...props}
-      InputComponent={({ value, setValue }) => (
-        <InputGroup value={value} onChange={(e) => setValue(e.target.value)} />
-      )}
-    />
-  );
-};
-
-const PagesPanel: FieldPanel<PagesField> = (props) => {
-  return (
-    <MultiChildPanel
-      {...props}
-      InputComponent={(inputProps) => (
-        <PageInput extra={["{all}"]} {...inputProps} />
-      )}
-    />
-  );
-};
-
-const BlockPanel: FieldPanel<BlockField> = ({
-  uid: initialUid,
-  parentUid,
-  title,
-  defaultValue,
-  description,
-}) => {
-  const containerRef = useRef(null);
-  useEffect(() => {
-    if (containerRef.current) {
-      const el = containerRef.current;
-      (initialUid
-        ? Promise.resolve(initialUid)
-        : createBlock({ node: { text: title, children: [] }, parentUid })
-      )
-        .then(
-          (formatUid) =>
-            getFirstChildUidByBlockUid(formatUid) ||
-            createBlock({
-              node: defaultValue || { text: " " },
-              parentUid: formatUid,
-            })
-        )
-        .then((uid) => {
-          window.roamAlphaAPI.ui.components.renderBlock({
-            uid,
-            el,
-          });
-        });
-    }
-  }, [containerRef, defaultValue]);
-  return (
-    <>
-      <Label>
-        {idToTitle(title)}
-        <Description description={description} />
-      </Label>
-      <div
-        ref={containerRef}
-        style={{
-          border: "1px solid #33333333",
-          padding: "8px 0",
-          borderRadius: 4,
-        }}
-      ></div>
-    </>
-  );
-};
-
-const BlocksPanel: FieldPanel<BlocksField> = ({
-  uid: initialUid,
-  parentUid,
-  title,
-  defaultValue,
-  description,
-}) => {
-  const containerRef = useRef(null);
-  useEffect(() => {
-    if (containerRef.current) {
-      const el = containerRef.current;
-      (initialUid
-        ? Promise.resolve(initialUid)
-        : createBlock({ node: { text: title, children: [] }, parentUid })
-      )
-        .then((formatUid) =>
-          getFirstChildUidByBlockUid(formatUid)
-            ? formatUid
-            : (defaultValue?.length
-                ? Promise.all(
-                    defaultValue.map((node, order) =>
-                      createBlock({
-                        node,
-                        parentUid: formatUid,
-                        order,
-                      })
-                    )
-                  )
-                : createBlock({
-                    node: { text: " " },
-                    parentUid: formatUid,
-                  })
-              ).then(() => formatUid)
-        )
-        .then((uid) => {
-          window.roamAlphaAPI.ui.components.renderBlock({
-            uid,
-            el,
-          });
-        });
-    }
-  }, [containerRef, defaultValue]);
-  return (
-    <>
-      <Label>
-        {idToTitle(title)}
-        <Description description={description} />
-      </Label>
-      <style>{`.roamjs-config-blocks > div > .rm-block-main {
-  display: none;
-}
-
-.roamjs-config-blocks > div > .rm-block-children > .rm-multibar {
-  display: none;
-}
-
-.roamjs-config-blocks > div > .rm-block-children {
-  margin-left: -4px;
-}`}</style>
-      <div
-        ref={containerRef}
-        style={{
-          border: "1px solid #33333333",
-          padding: "8px 0",
-          borderRadius: 4,
-        }}
-        className={"roamjs-config-blocks"}
-      ></div>
-    </>
-  );
-};
-
-const CustomPanel: FieldPanel<CustomField> = ({
-  description,
-  title,
-  uid: inputUid,
-  options: { component: Component },
-  parentUid,
-  defaultValue = [],
-  order,
-}) => {
-  const uid = useMemo(() => {
-    if (inputUid) return inputUid;
-    const newUid = window.roamAlphaAPI.util.generateUID();
-    createBlock({ node: { text: title, uid: newUid }, parentUid, order });
-    return newUid;
-  }, [inputUid]);
-  return (
-    <>
-      <Label>
-        {idToTitle(title)}
-        <Description description={description} />
-      </Label>
-      <Component
-        uid={uid}
-        parentUid={parentUid}
-        title={title}
-        defaultValue={defaultValue}
-      />
-    </>
-  );
-};
+import type { Field, UnionField } from "./ConfigPanels/types";
+import { Brand } from "./ConfigPanels/getBrandColors";
+import { InputTextNode } from "../types";
 
 const ToggleablePanel = ({
   enabled,
@@ -796,19 +288,6 @@ const ToggleablePanel = ({
   );
 };
 
-const Panels = {
-  text: TextPanel,
-  time: TimePanel,
-  number: NumberPanel,
-  flag: FlagPanel,
-  pages: PagesPanel,
-  multitext: MultiTextPanel,
-  select: SelectPanel,
-  block: BlockPanel,
-  blocks: BlocksPanel,
-  custom: CustomPanel,
-} as { [UField in UnionField as UField["type"]]: FieldPanel<UField> };
-
 type ConfigTab = {
   id: string;
   toggleable?: boolean | "premium";
@@ -821,16 +300,7 @@ type ConfigTab = {
 type Config = {
   tabs: ConfigTab[];
   versioning?: boolean;
-  brand?: string;
-};
-
-const tryColor = (s?: string) => {
-  if (!s) return undefined;
-  try {
-    return Color(s);
-  } catch (e) {
-    return undefined;
-  }
+  brand?: Brand;
 };
 
 const FieldTabs = ({
@@ -916,8 +386,7 @@ const FieldTabs = ({
         />
       )}
       {fields.map((field, i) => {
-        const { type, title, defaultValue } = field;
-        const Panel = Panels[type];
+        const { Panel, title, defaultValue } = field;
         return (
           <Tab
             id={title}
@@ -972,7 +441,6 @@ const ConfigPage = ({
       }
     }
   }, [config.versioning, id, setCurrentVersion, userTabs, titleRef]);
-  const brandColor = tryColor(config.brand);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
       <style>
@@ -984,26 +452,21 @@ const ConfigPage = ({
   margin-bottom: 16px;
 }
 ${
-  brandColor &&
+  config.brand &&
   `div.bp3-tab[aria-selected="true"], div.bp3-tab:not([aria-disabled="true"]):hover {
-  color: ${brandColor.toString()};
+  color: ${config.brand.base};
 }
 
 .bp3-tab-indicator-wrapper div.bp3-tab-indicator, .bp3-control:hover input:checked ~ span.bp3-control-indicator {
-  background-color: ${brandColor.toString()};
+  background-color: ${config.brand.base};
 }
 
 .bp3-tabs.bp3-vertical>.bp3-tab-list .bp3-tab-indicator-wrapper div.bp3-tab-indicator {
-  background-color: ${brandColor
-    .alpha(0.2)
-    .lightness(brandColor.lightness() + 5)
-    .toString()};
+  background-color: ${config.brand.faded};
 }
 
 .bp3-control input:checked ~ span.bp3-control-indicator {
-  background-color: ${brandColor
-    .lightness(brandColor.lightness() + 5)
-    .toString()}
+  background-color: ${config.brand.bright}
 }`
 }`}
       </style>
@@ -1082,21 +545,22 @@ ${
   );
 };
 
+// TODO: better nested type discrimination here
 const fieldsToChildren = (t: ConfigTab) =>
   t.fields
     .filter((f) => !!f.defaultValue)
     .map((f) => ({
       text: f.title,
       children:
-        f.type === "flag"
+        f.Panel.type === "flag"
           ? []
-          : f.type === "custom"
-          ? f.defaultValue || []
-          : f.type === "pages" || f.type === "multitext"
-          ? f.defaultValue?.map((v) => ({ text: v }))
-          : f.type === "block"
+          : f.Panel.type === "custom"
+          ? f.defaultValue as InputTextNode[] || []
+          : f.Panel.type === "pages" || f.Panel.type === "multitext"
+          ? (f.defaultValue as string[])?.map((v) => ({ text: v }))
+          : f.Panel.type === "block"
           ? f.defaultValue
-            ? [f.defaultValue]
+            ? [f.defaultValue as InputTextNode]
             : []
           : [{ text: `${f.defaultValue}` }],
     }));
@@ -1180,18 +644,6 @@ export const createConfigObserver = async ({
             );
         },
       });
-
-    // Lazy load panels that we need
-    // The Oauth Panel was the biggest offender of bundle size, so start with
-    // that one before genericizing for the rest of the panels
-    if (
-      !Panels["oauth"] &&
-      config.tabs.some((t) => t.fields.some((f) => f.type === "oauth"))
-    ) {
-      await import("./ConfigPanels/OauthPanel").then((oauth) => {
-        Panels["oauth"] = oauth.default;
-      });
-    }
 
     const observer = createHTMLObserver({
       className: "rm-title-display",

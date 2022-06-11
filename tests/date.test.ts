@@ -17,9 +17,13 @@ test("toRoamDateUid", () => {
 
 test("parseRoamDate", () => {
   const roamDate = parseRoamDate("June 11th, 2022");
-  expect(roamDate.valueOf()).toBe(new Date(2022, 5, 11).valueOf());
+  expect(roamDate.getMonth()).toBe(5);
+  expect(roamDate.getDate()).toBe(11);
+  expect(roamDate.getFullYear()).toBe(2022);
 });
 test("toRoamDate", () => {
     const roamDate = parseRoamDateUid("06-11-2022");
-    expect(roamDate.valueOf()).toBe(new Date(2022, 5, 11).valueOf());
+    expect(roamDate.getMonth()).toBe(5);
+    expect(roamDate.getDate()).toBe(11);
+    expect(roamDate.getFullYear()).toBe(2022);
 });

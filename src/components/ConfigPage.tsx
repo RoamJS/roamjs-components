@@ -16,7 +16,6 @@ import React, {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
-import addOldRoamJSDependency from "../dom/addOldRoamJSDependency";
 import createHTMLObserver from "../dom/createHTMLObserver";
 import createBlock from "../writes/createBlock";
 import createPage from "../writes/createPage";
@@ -32,6 +31,7 @@ import apiPost from "../util/apiPost";
 import type { Field, UnionField } from "./ConfigPanels/types";
 import { Brand } from "./ConfigPanels/getBrandColors";
 import { InputTextNode } from "../types";
+import { VersionSwitcherProps } from "./VersionSwitcher";
 
 const ToggleablePanel = ({
   enabled,
@@ -299,7 +299,7 @@ type ConfigTab = {
 
 type Config = {
   tabs: ConfigTab[];
-  versioning?: boolean;
+  versioning?: boolean | ((props: VersionSwitcherProps) => void);
   brand?: Brand;
 };
 
@@ -432,15 +432,9 @@ const ConfigPage = ({
   const experimentalMode = useMemo(() => localStorageGet("experimental"), []);
   useEffect(() => {
     if (config.versioning) {
-      addOldRoamJSDependency("versioning");
-      const scriptVersionMatch = window.roamjs?.version?.[id];
-      if (scriptVersionMatch) {
-        setCurrentVersion(scriptVersionMatch);
-      } else {
-        setCurrentVersion("Version Not Found");
-      }
+      setCurrentVersion(window.roamjs?.version?.[id] || "ersion not set");
     }
-  }, [config.versioning, id, setCurrentVersion, userTabs, titleRef]);
+  }, [config.versioning, id, setCurrentVersion]);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
       <style>
@@ -476,11 +470,11 @@ ${
         tabIndex={-1}
       >
         <h4 style={{ padding: 4 }}>{idToTitle(id)} Configuration</h4>
-        {currentVersion && (
-          <span>
-            <span style={{ color: "#cccccc", fontSize: 8 }}>
-              v{currentVersion}
-            </span>
+        <span>
+          <span style={{ color: "#cccccc", fontSize: 8 }}>
+            v{currentVersion}
+          </span>
+          {config.versioning && (
             <Button
               icon={"git-branch"}
               minimal
@@ -493,8 +487,8 @@ ${
               }
               style={{ marginLeft: 4 }}
             />
-          </span>
-        )}
+          )}
+        </span>
       </div>
       <style>{`.roamjs-config-tabs {\npadding: 4px;\n}`}</style>
       <Tabs

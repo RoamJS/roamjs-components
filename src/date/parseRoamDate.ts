@@ -1,6 +1,8 @@
-import parse from "date-fns/parse";
+import { MONTHS } from "./constants";
 
-const parseRoamDate = (s: string): Date =>
-  parse(s, "MMMM do, yyyy", new Date());
+const parseRoamDate = (s: string): Date => {
+  const [month, date, year] = s.split(/(?:(?:st|nd|rd|th),)?\s/)
+  return new Date(Number(year), MONTHS.indexOf(month), Number(date));
+};
 
 export default parseRoamDate;

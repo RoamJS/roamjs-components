@@ -9,12 +9,14 @@ const handleBodyFetch =
       | {
           path: string;
           data?: Record<string, unknown>;
-          authorization: string;
-          anonymous: boolean;
+          authorization?: string;
+          anonymous?: boolean;
         },
-    data?: Record<string, unknown>
+    _data?: Record<string, unknown>
   ) => {
     const path = typeof args === "string" ? args : args.path;
+    const data = typeof args === "string" ? _data : args.data;
+
     const body =
       process.env.NODE_ENV === "development"
         ? JSON.stringify({ dev: true, ...data })
@@ -28,6 +30,7 @@ const handleBodyFetch =
           ? args.authorization
           : getAuthorizationHeader();
     }
+    
     return handleFetch<T>(
       fetch(`${process.env.API_URL || "https://lambda.roamjs.com"}/${path}`, {
         method,

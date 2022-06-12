@@ -120,14 +120,14 @@ const ExternalLogin = ({
           }
         };
         const authInterval = () => {
-          apiPost<{ auth: string }>(
-            `auth`,
-            {
+          apiPost<{ auth: string }>({
+            path: "auth",
+            data: {
               service,
               otp,
             },
-            { anonymous: true }
-          )
+            anonymous: true,
+          })
             .then((r) => {
               if (r.auth) {
                 const auth = AES.decrypt(r.auth, key).toString(enc.Utf8);

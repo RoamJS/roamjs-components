@@ -13,7 +13,7 @@ const apiPut = <T extends Record<string, unknown> = Record<string, never>>(
     },
   }).then((r) => {
     if (!r.ok) {
-      return r.text().then(Promise.reject);
+      return r.text().then((e) => Promise.reject(new Error(e)));
     }
     return r.json().then((r) => r as T);
   });

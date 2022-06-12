@@ -46,11 +46,11 @@ const compileDatalog = (
     case "or-clause":
       return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }or ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")})`;
+      }or ${d.clauses.map((a) => compileDatalog(a, level + 1)).join("\n")})`;
     case "and-clause":
-      return `(and ${d.clauses
+      return `${"".padStart(level * 2, " ")}(and\n${d.clauses
         .map((c) => compileDatalog(c, level + 1))
-        .join("\n")})`;
+        .join("\n")}\n${"".padStart(level * 2, " ")})`;
     case "not-join-clause":
       return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
@@ -66,7 +66,7 @@ const compileDatalog = (
         .map((v) => compileDatalog(v, level))
         .join(" ")}]\n${d.clauses
         .map((a) => compileDatalog(a, level + 1))
-        .join(" ")})`;
+        .join("\n")})`;
     case "bind-scalar":
       return compileDatalog(d.variable, level);
     default:

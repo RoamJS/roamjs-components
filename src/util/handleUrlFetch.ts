@@ -32,7 +32,7 @@ const handleUrlFetch =
     return handleFetch<T>(
       fetch(url, {
         method,
-        headers: anonymous ? { Authorization } : {},
+        headers: anonymous ? {} : { Authorization },
       })
     );
   };

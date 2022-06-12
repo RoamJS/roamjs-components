@@ -77,7 +77,7 @@
     "eslint": "^8.4.0",
     "jest": "^26.6.3",
     "prettier": "^2.3.1",
-    "roamjs-scripts": "^0.18.5",
+    "roamjs-scripts": "^0.18.15",
     "ts-jest": "^26.5.6",
     "tslint-config-prettier": "^1.18.0",
     "tslint-react-hooks": "^2.2.2",

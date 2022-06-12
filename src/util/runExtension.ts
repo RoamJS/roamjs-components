@@ -39,6 +39,7 @@ const runExtension = (
       loaded: window.roamjs?.loaded || new Set(),
       extension: window.roamjs?.extension || {},
       version: window.roamjs?.version || {},
+      actions: {},
     };
     window.roamjs.loaded.add(extensionId);
     window.roamjs.version[extensionId] =
@@ -74,7 +75,6 @@ const runExtension = (
     window.roamjs?.loaded.delete(extensionId);
     if (!window.roamjs?.loaded.size) {
       document.getElementById("roamjs-default")?.remove();
-      delete window.roamjs;
     }
     // how to handle adding RoamJS token command? it's own extension depending on dependency management?
   };

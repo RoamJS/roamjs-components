@@ -15,6 +15,7 @@ export default {
       extension: {},
       version: {},
       loaded: new Set(["components"]),
+      actions: {},
     };
 
     window.roamjs.extension.components = {

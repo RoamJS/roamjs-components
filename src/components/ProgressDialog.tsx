@@ -1,37 +1,40 @@
 import { Dialog } from "@blueprintjs/core";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import createOverlayRender from "../util/createOverlayRender";
 
 type Props = {
-  actionQueueLength?: number;
-  timeout?: number;
+  id: string;
+  timeout: number;
 };
 
+export const ID = "roamjs-progress-dialog-root";
+
 const ProgressDialog = ({
-  actionQueueLength: defaultActionQueueLength,
-  timeout: defaultTimeout,
   onClose,
+  ...props
 }: {
   onClose: () => void;
 } & Props) => {
-  const [actionQueueLength, setActionQueueLength] = useState(
-    defaultActionQueueLength || 0
+  const [maxTimeout, setMaxtimeout] = useState(props.timeout);
+  const [now, setNow] = useState(new Date());
+  const onId = useCallback(
+    (props: Props) => {
+      window.roamjs.actions[props.id] = props.timeout;
+      setMaxtimeout(props.timeout);
+    },
+    [setMaxtimeout]
   );
-  const [timeout, setTimeout] = useState(defaultTimeout || 60);
   useEffect(() => {
-    const element = document.getElementById(`roamjs-progress-dialog-root`);
+    const element = document.getElementById(ID);
     if (element) {
       element.addEventListener("log", ((e: CustomEvent) => {
-        if (typeof e.detail.actionQueueLength !== "undefined")
-          setActionQueueLength(e.detail.actionQueueLength);
-        if (typeof e.detail.timeout !== "undefined")
-          setTimeout(e.detail.timeout);
+        onId(e.detail as Props);
       }) as EventListener);
-    } else {
-      console.log(document.body);
-      throw new Error(`Couldn't find roamjs-progress-dialog-root`);
+      onId(props);
     }
-  }, [setActionQueueLength, setTimeout]);
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, [onId, setTimeout, props]);
   return (
     <>
       <style>{`.roamjs-progress-dialog {
@@ -58,11 +61,11 @@ const ProgressDialog = ({
         enforceFocus={false}
       >
         <div style={{ padding: 16 }}>
-          <h4>Performing Write actions to Roam...</h4>
-          <p>Roam only allows 300 writes per minute, waiting to finish.</p>
+          <h4>Performing Writes to Roam...</h4>
           <p>
-            Still have <b>{actionQueueLength}</b> actions to write in{" "}
-            <b>{timeout}</b> seconds...
+            Still have <b>{Object.keys(window.roamjs.actions).length}</b>{" "}
+            actions to write. Expected to finish the last one in{" "}
+            {Math.ceil((maxTimeout - now.valueOf()) / 1000)} seconds...
           </p>
         </div>
       </Dialog>

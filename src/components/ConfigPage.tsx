@@ -427,6 +427,8 @@ const ConfigPage = ({
     [setSelectedTabId]
   );
   const tree = getBasicTreeByParentUid(pageUid);
+  
+  // first character trimmed intentionally for the `v` below
   const currentVersion = window.roamjs?.version?.[id] || "ersion not set";
   const titleRef = useRef<HTMLDivElement>(null);
   const experimentalMode = useMemo(() => localStorageGet("experimental"), []);

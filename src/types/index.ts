@@ -1,9 +1,7 @@
 import {
-  ClientParams,
   DatalogClause,
   PullBlock,
   RoamBasicNode,
-  RoamBlock,
   SidebarAction,
   SidebarWindow,
   SidebarWindowInput,
@@ -146,12 +144,18 @@ declare global {
           selection?: { start: number; end?: number };
         }) => Promise<void>;
       };
+      platform: {
+        isDesktop: boolean;
+        isIOS: boolean;
+        isMobile: boolean;
+        isMobileApp: boolean;
+        isPC: boolean;
+        isTouchDevice: boolean;
+      };
     };
-    roamDatomicAlphaAPI?: (
-      params: ClientParams
-    ) => Promise<RoamBlock & { success?: boolean }>;
+    
     // roamjs namespace should only be used for methods that must be accessed across extension scripts
-    roamjs?: {
+    roamjs: {
       loaded: Set<string>;
       extension: {
         multiplayer?: {
@@ -264,6 +268,7 @@ declare global {
         [id: string]: Record<string, unknown> | undefined;
       };
       version: { [id: string]: string };
+      actions: Record<string, number>;
     };
   }
 }

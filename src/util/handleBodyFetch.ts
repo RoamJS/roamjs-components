@@ -8,6 +8,7 @@ const handleBodyFetch =
       | string
       | {
           path: string;
+          domain?: string;
           data?: Record<string, unknown>;
           authorization?: string;
           anonymous?: boolean;
@@ -16,6 +17,7 @@ const handleBodyFetch =
   ) => {
     const path = typeof args === "string" ? args : args.path;
     const data = typeof args === "string" ? _data : args.data;
+    const domain = typeof args !== "string" && args.domain;
 
     const body =
       process.env.NODE_ENV === "development"
@@ -32,7 +34,7 @@ const handleBodyFetch =
     }
     
     return handleFetch<T>(
-      fetch(`${process.env.API_URL || "https://lambda.roamjs.com"}/${path}`, {
+      fetch(`${domain || process.env.API_URL || "https://lambda.roamjs.com"}/${path}`, {
         method,
         body,
         headers,

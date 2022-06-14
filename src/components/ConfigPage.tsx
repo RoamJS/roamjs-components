@@ -104,6 +104,7 @@ const ToggleablePanel = ({
   useEffect(() => {
     if (isPremium) {
       apiGet<{ description: string }>({
+        domain: "https://lambda.roamjs.com",
         path: `price?extensionId=${extensionId}${dev}`,
         anonymous: true,
       })
@@ -121,9 +122,10 @@ const ToggleablePanel = ({
       setError("");
       setEnabled(false);
       (token
-        ? apiGet<{ success: boolean }>(
-            `check?extensionId=${extensionId}${dev}`
-          ).then((r) => {
+        ? apiGet<{ success: boolean }>({
+            domain: "https://lambda.roamjs.com",
+            path: `check?extensionId=${extensionId}${dev}`,
+          }).then((r) => {
             if (!r.success && uidRef.current) {
               enableCallback(false, uidRef.current);
             } else if (r.success && !uidRef.current) {
@@ -199,9 +201,13 @@ const ToggleablePanel = ({
           setAlertLoading(true);
           setError("");
           if (enabled) {
-            apiPost(`unsubscribe`, {
-              extensionId,
-              dev: !!dev,
+            apiPost({
+              domain: "https://lambda.roamjs.com",
+              path: `unsubscribe`,
+              data: {
+                extensionId,
+                dev: !!dev,
+              },
             })
               .then(() => {
                 enableCallback(false, uid);
@@ -212,9 +218,13 @@ const ToggleablePanel = ({
                 setIsOpen(false);
               });
           } else {
-            apiPost<{ url: string; success: boolean }>(`subscribe`, {
-              extensionId,
-              dev: !!dev,
+            apiPost<{ url: string; success: boolean }>({
+              domain: "https://lambda.roamjs.com",
+              path: `subscribe`,
+              data: {
+                extensionId,
+                dev: !!dev,
+              },
             })
               .then((r) => {
                 if (r.url) {
@@ -229,9 +239,10 @@ const ToggleablePanel = ({
                     `left=${left},top=${top},width=${width},height=${height},status=1`
                   );
                   const authInterval = () => {
-                    apiGet<{ success: boolean }>(
-                      `check?extensionId=${extensionId}${dev}`
-                    )
+                    apiGet<{ success: boolean }>({
+                      path: `check?extensionId=${extensionId}${dev}`,
+                      domain: "https://lambda.roamjs.com",
+                    })
                       .then((r) => {
                         if (r.success) {
                           enableCallback(true, uid);

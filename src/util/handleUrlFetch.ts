@@ -8,6 +8,7 @@ const handleUrlFetch =
       | string
       | {
           path: string;
+          domain?: string;
           anonymous?: boolean;
           authorization?: string;
           data?: Record<string, string>;
@@ -20,9 +21,10 @@ const handleUrlFetch =
         ? args.authorization
         : getAuthorizationHeader();
     const params = typeof args !== "string" && args.data ? args.data : {};
+    const domain = typeof args !== "string" && args.domain;
 
     const url = new URL(
-      `${process.env.API_URL || "https://lambda.roamjs.com"}/${path}`
+      `${domain || process.env.API_URL || "https://lambda.roamjs.com"}/${path}`
     );
     if (process.env.NODE_ENV === "development") {
       url.searchParams.set("dev", "true");

@@ -26,6 +26,5 @@ export { default as getRoamUrlByPage } from "./getRoamUrlByPage";
 export { default as getUids } from "./getUids";
 export { default as getUidsFromButton } from "./getUidsFromButton";
 export { default as getUidsFromId } from "./getUidsFromId";
-export { default as openBlock } from "./openBlock";
 export { default as parseRoamBlocksToHtml } from "./parseRoamBlocksToHtml";
 export { default as resolveRefs } from "./resolveRefs";

@@ -1,16 +1,12 @@
-const getUidsFromId = (id: string): { blockUid: string; parentUid: string } => {
+const getUidsFromId = (id?: string): { blockUid: string; windowId: string } => {
+  if (!id) return { blockUid: "", windowId: "" };
   const blockUid = id.substring(id.length - 9, id.length);
-  const restOfHTMLId = id.substring(0, id.length - 9);
-  const potentialDateUid = restOfHTMLId.substring(
-    restOfHTMLId.length - 11,
-    restOfHTMLId.length - 1
-  );
-  const parentUid = isNaN(new Date(potentialDateUid).valueOf())
-    ? potentialDateUid.substring(1)
-    : potentialDateUid;
+  const restOfHTMLId = id.substring(0, id.length - 10);
+  const windowId =
+    restOfHTMLId.match(/^block-input-([a-zA-Z0-9_-]+)$/)?.[1] || "";
   return {
     blockUid,
-    parentUid,
+    windowId,
   };
 };
 

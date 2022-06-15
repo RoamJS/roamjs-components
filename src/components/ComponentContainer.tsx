@@ -1,8 +1,8 @@
 import { Button } from "@blueprintjs/core";
 import React, { useCallback, useState } from "react";
 import ReactDOM from "react-dom";
+import getUidsFromId from "../dom/getUidsFromId";
 import getBlockUidFromTarget from "../dom/getBlockUidFromTarget";
-import openBlock from "../dom/openBlock";
 
 const ComponentContainer: React.FunctionComponent<{
   blockId?: string;
@@ -12,6 +12,7 @@ const ComponentContainer: React.FunctionComponent<{
   const appear = useCallback(() => setShowIcons(true), [setShowIcons]);
   const disappear = useCallback(() => setShowIcons(false), [setShowIcons]);
 
+  const { blockUid, windowId } = getUidsFromId(blockId);
   return (
     <div
       className={className}
@@ -22,7 +23,15 @@ const ComponentContainer: React.FunctionComponent<{
       {showIcons && (
         <div style={{ position: "absolute", top: 8, right: 8, zIndex: 1000 }}>
           {blockId && (
-            <Button icon="edit" minimal onClick={() => openBlock(blockId)} />
+            <Button
+              icon="edit"
+              minimal
+              onClick={() =>
+                window.roamAlphaAPI.ui.setBlockFocusAndSelection({
+                  location: { "block-uid": blockUid, "window-id": windowId },
+                })
+              }
+            />
           )}
         </div>
       )}

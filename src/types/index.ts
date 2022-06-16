@@ -140,7 +140,7 @@ declare global {
           openPage: (p: {
             page: { uid: string } | { title: string };
           }) => Promise<void>;
-          getOpenPageOrBlockUid: () => string;
+          getOpenPageOrBlockUid: () => Promise<string | null>;
           openDailyNotes: () => Promise<void>;
         };
         setBlockFocusAndSelection: (a: {

@@ -52,6 +52,10 @@ declare global {
       deletePage: WriteAction;
       util: {
         generateUID: () => string;
+        dateToPageTitle: (date: Date) => string;
+        dateToPageUid: (date: Date) => string;
+        pageTitleToDate: (title: string) => Date;
+        uploadFile: (title: string) => Date;
       };
       data: {
         addPullWatch: (
@@ -152,6 +156,11 @@ declare global {
         isPC: boolean;
         isTouchDevice: boolean;
       };
+      graph: {
+        name: string;
+        type: "hosted" | "offline";
+        isEncrypted: boolean;
+      }
     };
     
     // roamjs namespace should only be used for methods that must be accessed across extension scripts

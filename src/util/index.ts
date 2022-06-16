@@ -8,7 +8,6 @@ export { default as createTagRegex } from "./createTagRegex";
 export { default as extractRef } from "./extractRef";
 export { default as extractTag } from "./extractTag";
 export { default as extensionDeprecatedWarning } from "./extensionDeprecatedWarning";
-export { default as getGraph } from "./getGraph";
 export { default as getOauth } from "./getOauth";
 export { default as getOauthAccounts } from "./getOauthAccounts";
 export { default as getRenderRoot } from "./getRenderRoot";

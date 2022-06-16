@@ -231,7 +231,7 @@ customDateNlp.refiners.unshift({
   },
 });
 
-const parseRoamDate = (s: string, ref?: Date): Date =>
+const parseNlpDate = (s: string, ref?: Date): Date =>
   customDateNlp.parseDate(s, ref) || new Date();
 
-export default parseRoamDate;
+export default parseNlpDate;

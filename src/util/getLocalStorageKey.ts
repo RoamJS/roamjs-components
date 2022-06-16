@@ -1,6 +1,4 @@
-import getGraph from "./getGraph";
-
 const getLocalStorageKey = (key: string, skipGraph?: true): string =>
-  `roamjs:${key}${skipGraph ? "" : `:${getGraph()}`}`;
+  `roamjs:${key}${skipGraph ? "" : `:${window.roamAlphaAPI.graph.name}`}`;
 
 export default getLocalStorageKey;

@@ -1,15 +1,15 @@
 import { gatherActions } from "./createBlock";
 import { DAILY_NOTE_PAGE_TITLE_REGEX } from "../date";
 import type { InputTextNode } from "../types";
-import toRoamDateUid from "../date/toRoamDateUid";
-import parseRoamDate from "../date/parseRoamDate";
 import submitActions from "./submitActions";
 
 const createPage = ({
   title,
   tree = [],
   uid = DAILY_NOTE_PAGE_TITLE_REGEX.test(title)
-    ? toRoamDateUid(parseRoamDate(title))
+    ? window.roamAlphaAPI.util.dateToPageUid(
+        window.roamAlphaAPI.util.pageTitleToDate(title)
+      )
     : window.roamAlphaAPI.util.generateUID(),
 }: {
   title: string;

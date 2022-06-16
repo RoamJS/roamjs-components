@@ -136,6 +136,7 @@ declare global {
           renderBlock: (args: { uid: string; el: HTMLElement }) => null;
         };
         mainWindow: {
+          focusFirstBlock: () => Promise<void>;
           openBlock: (p: { block: { uid: string } }) => Promise<void>;
           openPage: (p: {
             page: { uid: string } | { title: string };
@@ -160,9 +161,9 @@ declare global {
         name: string;
         type: "hosted" | "offline";
         isEncrypted: boolean;
-      }
+      };
     };
-    
+
     // roamjs namespace should only be used for methods that must be accessed across extension scripts
     roamjs: {
       loaded: Set<string>;

@@ -54,7 +54,7 @@ declare global {
         generateUID: () => string;
         dateToPageTitle: (date: Date) => string;
         dateToPageUid: (date: Date) => string;
-        pageTitleToDate: (title: string) => Date;
+        pageTitleToDate: (title: string) => Date | null;
         uploadFile: (title: string) => Date;
       };
       data: {

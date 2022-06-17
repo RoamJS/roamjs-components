@@ -2,7 +2,7 @@ import { Tooltip, Position, Popover, Button } from "@blueprintjs/core";
 import React, { useCallback, useRef, useState } from "react";
 import fuzzy from "fuzzy";
 
-type Filters = {
+export type Filters = {
   includes: Record<string, Set<string>>;
   excludes: Record<string, Set<string>>;
 };

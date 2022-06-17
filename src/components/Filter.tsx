@@ -24,13 +24,6 @@ const Filter = ({
   excludeHelpMessage?: string;
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const openFilter = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setIsFilterOpen(true);
-    },
-    [setIsFilterOpen]
-  );
   const closeFilter = useCallback(() => {
     setIsFilterOpen(false);
   }, [setIsFilterOpen]);
@@ -60,7 +53,10 @@ const Filter = ({
         target={
           <Button
             icon={"filter"}
-            onClick={openFilter}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFilterOpen(!isFilterOpen);
+            }}
             className="roamjs-filter"
             minimal
             style={

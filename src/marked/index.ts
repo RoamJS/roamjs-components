@@ -201,20 +201,6 @@ const opts: marked.marked.MarkedOptions = {
         throw new Error(`Infinite loop on string ${src}`);
       }
       context.marked.lastSrc = src;
-      const match = INLINE_STOP_REGEX.exec(src);
-      if (match) {
-        const raw = src.substring(0, match.index);
-        const tickMatch = raw.match(/([^`]`|`[^`])/g);
-        const numberOfTicks = (tickMatch || []).length;
-        if (numberOfTicks % 2 === 0) {
-          const index = numberOfTicks > 0 ? /`/.exec(raw)?.index : match.index;
-          return {
-            type: "text",
-            raw: src.substring(0, index),
-            text: src.substring(0, index),
-          };
-        }
-      }
       const attribute = ATTRIBUTE_REGEX.exec(src);
       if (attribute) {
         const raw = attribute[0];
@@ -258,6 +244,20 @@ const opts: marked.marked.MarkedOptions = {
               ],
             };
           }
+        }
+      }
+      const match = INLINE_STOP_REGEX.exec(src);
+      if (match) {
+        const raw = src.substring(0, match.index);
+        const tickMatch = raw.match(/([^`]`|`[^`])/g);
+        const numberOfTicks = (tickMatch || []).length;
+        if (numberOfTicks % 2 === 0) {
+          const index = numberOfTicks > 0 ? /`/.exec(raw)?.index : match.index;
+          return {
+            type: "text",
+            raw: src.substring(0, index),
+            text: src.substring(0, index),
+          };
         }
       }
       return false;

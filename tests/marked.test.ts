@@ -450,3 +450,18 @@ test(
     `I have three links <a href="https://en.wikipedia.org/wiki/Distributed_computing">distributed systems</a>, <a href="https://en.wikipedia.org/wiki/Decentralized_finance">decentralized finance</a>, and [algorithmic trading]([[algorithmic trading]]). And another link <a href="https://martin.ai/">Martin</a> and a final link [[Go]].`
   )
 );
+
+test(
+  "Attributes with links don't link",
+  runTest(
+    "- Foo:: test\n- Foo:: [[bar]]",
+    `<ul>
+<li><span class="rm-bold"><a href="/Foo">Foo:</a></span> test</li>
+<li><span class="rm-bold"><a href="/Foo">Foo:</a></span> <a class="rm-page-ref" data-tag="bar" href="/bar">bar</a></li>
+</ul>
+`,
+    {
+      pagesToHrefs: (t: string) => `/${t}`,
+    }
+  )
+);

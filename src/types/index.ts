@@ -16,6 +16,7 @@ import {
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
 import type Markdown from "marked-react";
+import type JSZip from "jszip";
 export * from "./native";
 
 type json =
@@ -31,6 +32,7 @@ declare global {
   interface Window {
     // TODO remove
     RoamLazy?: {
+      JSZip: () => Promise<typeof JSZip>;
       Marked: () => Promise<typeof marked>;
       MarkedReact: () => Promise<typeof Markdown>;
     };

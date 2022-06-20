@@ -590,11 +590,13 @@ const contextualize =
   };
 
 const wrapOnce =
-  <T>(getMethod: (m: typeof marked) => (text: string) => T) => ():
-  Promise<(text: string, ctxt?: Omit<RoamContext, "marked">) => T> => {
-    return (window.RoamLazy ? window.RoamLazy.Marked() : import("marked")).then(
-      (m) => contextualize(m)(getMethod)
-    );
+  <T>(getMethod: (m: typeof marked) => (text: string) => T) =>
+  (): Promise<(text: string, ctxt?: Omit<RoamContext, "marked">) => T> => {
+    return (
+      typeof window !== "undefined" && window.RoamLazy
+        ? window.RoamLazy.Marked()
+        : import("marked")
+    ).then((m) => contextualize(m)(getMethod));
   };
 
 export const getInlineLexer = wrapOnce((m) => m.marked.Lexer.lexInline);

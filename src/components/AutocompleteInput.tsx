@@ -55,6 +55,8 @@ const AutocompleteInput = ({
         setIsTyping(false);
       } else if (onConfirm) {
         onConfirm();
+      } else {
+        setIsOpen(true);
       }
     },
     [setValue, close, onConfirm, isOpen]
@@ -116,6 +118,7 @@ const AutocompleteInput = ({
               onKeyDown(e);
             }
           }}
+          onClick={() => setIsTyping(true)}
           onBlur={(e) => {
             if (
               e.relatedTarget &&

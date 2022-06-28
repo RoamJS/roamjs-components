@@ -44,7 +44,10 @@ declare global {
         ...params: unknown[]
       ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
       any[][];
-      pull: (selector: string, id: number | string) => PullBlock;
+      pull: (
+        selector: string,
+        id: number | string | [string, string]
+      ) => PullBlock;
       createBlock: WriteAction;
       updateBlock: WriteAction;
       createPage: WriteAction;
@@ -79,7 +82,7 @@ declare global {
           update: WriteAction;
           delete: WriteAction;
         };
-        pull: (selector: string, id: number) => PullBlock;
+        pull: (selector: string, id: number | string | [string, string]) => PullBlock;
         pull_many: (pattern: string, eid: string[][]) => PullBlock[];
         q: (query: string, ...params: unknown[]) => unknown[][];
         removePullWatch: (

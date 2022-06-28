@@ -78,6 +78,7 @@ const TokenDialog = ({ onClose, onEnter }: { onClose: () => void } & Props) => {
         isCloseButtonShown
         canOutsideClickClose
         canEscapeKeyClose
+        autoFocus={false}
       >
         <div
           className={Classes.DIALOG_BODY}

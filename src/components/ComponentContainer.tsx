@@ -1,8 +1,8 @@
 import { Button } from "@blueprintjs/core";
 import React, { useCallback, useState } from "react";
-import ReactDOM from "react-dom";
 import getUidsFromId from "../dom/getUidsFromId";
 import getBlockUidFromTarget from "../dom/getBlockUidFromTarget";
+import renderWithUnmount from "../util/renderWithUnmount";
 
 const ComponentContainer: React.FunctionComponent<{
   blockId?: string;
@@ -38,20 +38,6 @@ const ComponentContainer: React.FunctionComponent<{
       {children}
     </div>
   );
-};
-
-const renderWithUnmount = (el: React.ReactElement, p: HTMLElement): void => {
-  ReactDOM.render(el, p);
-  const unmountObserver = new MutationObserver((ms) => {
-    const parentRemoved = ms
-      .flatMap((m) => Array.from(m.removedNodes))
-      .some((n) => n === p || n.contains(p));
-    if (parentRemoved) {
-      unmountObserver.disconnect();
-      ReactDOM.unmountComponentAtNode(p);
-    }
-  });
-  unmountObserver.observe(document.body, { childList: true, subtree: true });
 };
 
 export const createComponentRender =

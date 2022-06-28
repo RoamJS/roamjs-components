@@ -35,7 +35,11 @@ const meterRoamJSUser = (
             if (!res.statusCode) reject("Missing Status Code");
             else if (res.statusCode >= 200 && res.statusCode < 400)
               resolve(JSON.parse(body) as { id: string });
-            else reject(new Error(body));
+            else {
+              const err = new Error(body);
+              err.name = `${res.statusCode}`;
+              reject(err);
+            }
           });
           res.on("error", reject);
         }

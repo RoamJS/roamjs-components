@@ -43,7 +43,11 @@ const putRoamJSUser = ({
             if (!res.statusCode) reject("Missing Status Code");
             else if (res.statusCode >= 200 && res.statusCode < 400)
               resolve(JSON.parse(body) as { success: boolean });
-            else reject(new Error(body));
+            else {
+              const err = new Error(body);
+              err.name = `${res.statusCode}`;
+              reject(err);
+            }
           });
           res.on("error", reject);
         }
@@ -67,7 +71,7 @@ export const awsPutRoamJSUser = (
       headers,
     }))
     .catch((e: Error) => ({
-      statusCode: 401,
+      statusCode: Number(e.name) || 500,
       body: e.message,
       headers,
     }));

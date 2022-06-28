@@ -52,7 +52,11 @@ const getRoamJSUser = ({
             if (!res.statusCode) reject("Missing Status Code");
             else if (res.statusCode >= 200 && res.statusCode < 400)
               resolve(JSON.parse(body) as RoamJSUser);
-            else reject(new Error(body));
+            else {
+              const err = new Error(body);
+              err.name = `${res.statusCode}`;
+              reject(err);
+            }
           });
           res.on("error", reject);
         }
@@ -80,7 +84,7 @@ export const awsGetRoamJSUser =
         } as T)
       )
       .catch((e) => ({
-        statusCode: 401,
+        statusCode: Number(e.name) || 500,
         body: e.message,
         headers,
       }));

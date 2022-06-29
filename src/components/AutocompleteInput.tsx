@@ -44,7 +44,7 @@ const AutocompleteInput = ({
             .filter(value, options)
             .slice(0, 9)
             .map((e) => e.string)
-        : [],
+        : options,
     [value, options]
   );
   const inputRef = useRef<HTMLInputElement>(null);

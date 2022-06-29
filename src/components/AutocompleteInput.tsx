@@ -94,7 +94,7 @@ const AutocompleteInput = ({
               multiline
               onClick={() => {
                 setIsTyping(false);
-                setValue(items[i]);
+                setValue(t);
                 inputRef.current?.focus();
               }}
             />
@@ -120,14 +120,13 @@ const AutocompleteInput = ({
           }}
           onClick={() => setIsTyping(true)}
           onBlur={(e) => {
-            setIsTyping(false);
             if (
               e.relatedTarget &&
               !(e.relatedTarget as HTMLElement).closest?.(
                 ".roamjs-autocomplete-input"
               )
             ) {
-              close();
+              setIsTyping(false);
             }
             if (onBlur) {
               onBlur(e.target.value);

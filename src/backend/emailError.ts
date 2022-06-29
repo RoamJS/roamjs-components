@@ -43,14 +43,11 @@ const emailError = (
             width: "80%",
             margin: "30px auto",
             fontSize: 16,
+            whiteSpace: "pre-wrap",
           },
         },
         React.createElement("h3", {}, `An error was thrown in a RoamJS Lambda`),
-        React.createElement(
-          "p",
-          {},
-          `${e.name}: ${e.message}`
-        ),
+        React.createElement("p", {}, `${e.name}: ${e.message}`),
         React.createElement("p", {}, e.stack),
         ...(moreBody ? [React.createElement("div", {}, moreBody)] : [])
       ),

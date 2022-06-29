@@ -68,7 +68,7 @@ const AutocompleteInput = ({
   useEffect(() => {
     if (!items.length || !isTyping) close();
     else open();
-  }, [items, close, isTyping]);
+  }, [items, close, open, isTyping]);
   return (
     <Popover
       portalClassName={"roamjs-autocomplete-input"}
@@ -120,6 +120,7 @@ const AutocompleteInput = ({
           }}
           onClick={() => setIsTyping(true)}
           onBlur={(e) => {
+            setIsTyping(false);
             if (
               e.relatedTarget &&
               !(e.relatedTarget as HTMLElement).closest?.(

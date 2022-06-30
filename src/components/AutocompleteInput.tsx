@@ -62,10 +62,10 @@ const AutocompleteInput = ({
     },
     [setValue, close, onConfirm, isOpen]
   );
-  const { activeIndex, onKeyDown, } = useArrowKeyDown({
+  const { activeIndex, onKeyDown } = useArrowKeyDown({
     onEnter,
     results: items,
-    menuRef
+    menuRef,
   });
   useEffect(() => {
     if (!items.length || !isTyping) close();

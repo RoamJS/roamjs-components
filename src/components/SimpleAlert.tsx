@@ -54,6 +54,9 @@ const SimpleAlert =
         onClose={alertOnClose}
         onConfirm={alerOnConfirm}
         confirmButtonText={confirmText}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        autoFocus={false}
         {...cancelProps}
       >
         <div

@@ -85,7 +85,7 @@ const AutocompleteInput = ({
         preventOverflow: { enabled: false },
       }}
       content={
-        <Menu style={{ maxWidth: 400 }}>
+        <Menu className={"max-h-64 overflow-auto max-w-md"}>
           {items.map((t, i) => (
             <MenuItem
               text={t}

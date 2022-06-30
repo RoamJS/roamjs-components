@@ -3,10 +3,34 @@ import addStyle from "../dom/addStyle";
 type RunReturn = {
   elements?: HTMLElement[];
   observers?: MutationObserver[];
-  windowListeners?: {
-    type: keyof WindowEventMap;
-    listener: (this: Window, ev: WindowEventMap[keyof WindowEventMap]) => void;
-  }[];
+  domListeners?: (
+    | {
+        el: Window;
+        type: keyof WindowEventMap;
+        listener: (
+          this: Window,
+          ev: WindowEventMap[keyof WindowEventMap]
+        ) => void;
+      }
+    | {
+        el: Document;
+        type: keyof DocumentEventMap;
+        listener: (
+          this: Document,
+          ev: DocumentEventMap[keyof DocumentEventMap]
+        ) => void;
+      }
+    | {
+        el: HTMLElement;
+        type: keyof HTMLElementEventMap;
+        listener: (
+          this: HTMLElement,
+          ev: HTMLElementEventMap[keyof HTMLElementEventMap]
+        ) => void;
+      }
+  )[];
+  commands?: string[];
+  timeouts?: { timeout: number }[];
 };
 
 const runExtension = (
@@ -67,9 +91,13 @@ const runExtension = (
     if (loaded) {
       (loaded.elements || []).forEach((e) => e.remove());
       (loaded.observers || []).forEach((e) => e.disconnect());
-      (loaded.windowListeners || []).forEach((e) =>
-        window.removeEventListener(e.type, e.listener)
+      (loaded.domListeners || []).forEach((e) =>
+        e.el.removeEventListener(e.type, e.listener)
       );
+      (loaded.commands || []).forEach((label) =>
+        window.roamAlphaAPI.ui.commandPalette.removeCommand({ label })
+      );
+      (loaded.timeouts || []).forEach((e) => window.clearTimeout(e.timeout));
     }
     delete window.roamjs?.version[extensionId];
     window.roamjs?.loaded.delete(extensionId);

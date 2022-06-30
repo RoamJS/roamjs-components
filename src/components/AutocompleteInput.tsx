@@ -47,6 +47,7 @@ const AutocompleteInput = ({
         : options,
     [value, options]
   );
+  const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const onEnter = useCallback(
     (value) => {
@@ -61,9 +62,10 @@ const AutocompleteInput = ({
     },
     [setValue, close, onConfirm, isOpen]
   );
-  const { activeIndex, onKeyDown } = useArrowKeyDown({
+  const { activeIndex, onKeyDown, } = useArrowKeyDown({
     onEnter,
     results: items,
+    menuRef
   });
   useEffect(() => {
     if (!items.length || !isTyping) close();
@@ -85,7 +87,7 @@ const AutocompleteInput = ({
         preventOverflow: { enabled: false },
       }}
       content={
-        <Menu className={"max-h-64 overflow-auto max-w-md"}>
+        <Menu className={"max-h-64 overflow-auto max-w-md"} ulRef={menuRef}>
           {items.map((t, i) => (
             <MenuItem
               text={t}

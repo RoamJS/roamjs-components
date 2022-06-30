@@ -389,3 +389,9 @@ export type SidebarWindow = {
   "pinned?": boolean;
   "window-id": string;
 } & SidebarWindowType;
+
+export type AddPullWatch = (
+  pullPattern: string,
+  entityId: string,
+  callback: (before: PullBlock | null, after: PullBlock | null) => void
+) => boolean

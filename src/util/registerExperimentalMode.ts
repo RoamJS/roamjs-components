@@ -42,8 +42,13 @@ const registerExperimentalMode = ({
         label: `Enable ${label}`,
         callback: () => {
           renderAlert({
-            content:
-              "WARNING! Experimental features are not meant for public use for most users. Enabling has a higher likelihood of unintended consequences affecting your graph.\n\nAre you sure you want to enable the experimental features of RoamJS extensions?",
+            content: `WARNING! Experimental features are not meant for public use for most users. Enabling has a higher likelihood of unintended consequences affecting your graph.
+
+Are you sure you want to enable the experimental ${
+              feature
+                ? `RoamJS feature: ${feature}`
+                : "features of RoamJS extensions"
+            }?`,
             onConfirm: () => {
               localStorageSet(key, "true");
               toggleExperimentalModeFeatures(true);

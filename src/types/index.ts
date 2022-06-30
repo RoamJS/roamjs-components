@@ -1,4 +1,5 @@
 import {
+  AddPullWatch,
   DatalogClause,
   PullBlock,
   RoamBasicNode,
@@ -63,11 +64,7 @@ declare global {
         uploadFile: (title: string) => Date;
       };
       data: {
-        addPullWatch: (
-          pullPattern: string,
-          entityId: string,
-          callback: (before: PullBlock | null, after: PullBlock | null) => void
-        ) => boolean;
+        addPullWatch: AddPullWatch;
         block: {
           create: WriteAction;
           update: WriteAction;

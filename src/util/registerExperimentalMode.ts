@@ -10,8 +10,8 @@ const registerExperimentalMode = ({
   onDisable,
 }: {
   feature?: string;
-  onEnable: () => void;
-  onDisable: () => void;
+  onEnable: (isInitial: boolean) => void;
+  onDisable: (isInitial: boolean) => void;
 }) => {
   const label = feature
     ? `RoamJS Experiment: ${feature}`
@@ -19,14 +19,14 @@ const registerExperimentalMode = ({
   const key = feature
     ? `experimental-${feature.toLowerCase().replace(/ /g, "-")}`
     : "experimental";
-  const toggleExperimentalModeFeatures = (experimentalOverlayMode: boolean) => {
+  const toggleExperimentalModeFeatures = (experimentalOverlayMode: boolean, isInitial: boolean) => {
     if (experimentalOverlayMode) {
-      onEnable();
+      onEnable(isInitial);
       window.roamAlphaAPI.ui.commandPalette.addCommand({
         label: `Disable ${label}`,
         callback: () => {
           localStorageRemove(key);
-          toggleExperimentalModeFeatures(false);
+          toggleExperimentalModeFeatures(false, false);
           renderToast({
             id: "experimental",
             content: `Disabled ${label}`,
@@ -37,7 +37,7 @@ const registerExperimentalMode = ({
         label: `Enable ${label}`,
       });
     } else {
-      onDisable();
+      onDisable(isInitial);
       window.roamAlphaAPI.ui.commandPalette.addCommand({
         label: `Enable ${label}`,
         callback: () => {
@@ -51,7 +51,7 @@ Are you sure you want to enable the experimental ${
             }?`,
             onConfirm: () => {
               localStorageSet(key, "true");
-              toggleExperimentalModeFeatures(true);
+              toggleExperimentalModeFeatures(true, false);
               renderToast({
                 id: "experimental",
                 content: `Enabled ${label}`,
@@ -65,7 +65,7 @@ Are you sure you want to enable the experimental ${
       });
     }
   };
-  toggleExperimentalModeFeatures(localStorageGet(key) === "true");
+  toggleExperimentalModeFeatures(localStorageGet(key) === "true", true);
 };
 
 export default registerExperimentalMode;

@@ -81,8 +81,8 @@ const runExtension = (
       document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
     };
     Promise.resolve(result).then((res) => {
-      dispatch();
       loaded = res;
+      dispatch();
     });
   };
 

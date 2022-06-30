@@ -66,7 +66,7 @@ declare global {
         addPullWatch: (
           pullPattern: string,
           entityId: string,
-          callback: (before: PullBlock, after: PullBlock) => void
+          callback: (before: PullBlock | null, after: PullBlock | null) => void
         ) => boolean;
         block: {
           create: WriteAction;

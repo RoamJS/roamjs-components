@@ -5,54 +5,62 @@ import localStorageSet from "./localStorageSet";
 import localStorageGet from "./localStorageGet";
 
 const registerExperimentalMode = ({
+  feature,
   onEnable,
   onDisable,
 }: {
+  feature?: string;
   onEnable: () => void;
   onDisable: () => void;
 }) => {
+  const label = feature
+    ? `RoamJS Experiment: ${feature}`
+    : "RoamJS Experimental Mode";
+  const key = feature
+    ? `experimental-${feature.toLowerCase().replace(/ /g, "-")}`
+    : "experimental";
   const toggleExperimentalModeFeatures = (experimentalOverlayMode: boolean) => {
     if (experimentalOverlayMode) {
       onEnable();
       window.roamAlphaAPI.ui.commandPalette.addCommand({
-        label: "Disable RoamJS Experimental Mode",
+        label: `Disable ${label}`,
         callback: () => {
-          localStorageRemove("experimental");
+          localStorageRemove(key);
           toggleExperimentalModeFeatures(false);
           renderToast({
             id: "experimental",
-            content: `Disabled RoamJS Experimental Mode`,
+            content: `Disabled ${label}`,
           });
         },
       });
       window.roamAlphaAPI.ui.commandPalette.removeCommand({
-        label: "Enable RoamJS Experimental Mode",
+        label: `Enable ${label}`,
       });
     } else {
       onDisable();
       window.roamAlphaAPI.ui.commandPalette.addCommand({
-        label: "Enable RoamJS Experimental Mode",
+        label: `Enable ${label}`,
         callback: () => {
           renderAlert({
             content:
               "WARNING! Experimental features are not meant for public use for most users. Enabling has a higher likelihood of unintended consequences affecting your graph.\n\nAre you sure you want to enable the experimental features of RoamJS extensions?",
             onConfirm: () => {
-              localStorageSet("experimental", "true");
+              localStorageSet(key, "true");
               toggleExperimentalModeFeatures(true);
               renderToast({
                 id: "experimental",
-                content: `Enabled RoamJS Experimental Mode`,
+                content: `Enabled ${label}`,
               });
             },
           });
         },
       });
       window.roamAlphaAPI.ui.commandPalette.removeCommand({
-        label: "Disable RoamJS Experimental Mode",
+        label: `Disable ${label}`,
       });
     }
   };
-  toggleExperimentalModeFeatures(localStorageGet("experimental") === "true");
+  toggleExperimentalModeFeatures(localStorageGet(key) === "true");
 };
 
 export default registerExperimentalMode;

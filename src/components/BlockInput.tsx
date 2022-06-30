@@ -38,6 +38,7 @@ const BlockInput = ({
     () => (value && isOpen ? searchBlocksByString(value, allBlocks) : []),
     [value, allBlocks]
   );
+  const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { activeIndex, onKeyDown } = useArrowKeyDown({
     onEnter: (value) => {
@@ -49,6 +50,7 @@ const BlockInput = ({
       }
     },
     results: items,
+    menuRef,
   });
   return (
     <Popover
@@ -66,7 +68,7 @@ const BlockInput = ({
         preventOverflow: { enabled: false },
       }}
       content={
-        <Menu style={{ maxWidth: 400 }}>
+        <Menu className={"max-h-64 overflow-auto max-w-md"} ulRef={menuRef}>
           {items.map((t, i) => (
             <MenuItem
               text={t.text}

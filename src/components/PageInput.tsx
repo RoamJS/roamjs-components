@@ -42,6 +42,7 @@ const PageInput = ({
         : [],
     [value, allPages]
   );
+  const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const onEnter = useCallback(
     (value) => {
@@ -57,6 +58,7 @@ const PageInput = ({
   const { activeIndex, onKeyDown } = useArrowKeyDown({
     onEnter,
     results: items,
+    menuRef,
   });
   return (
     <Popover
@@ -74,7 +76,7 @@ const PageInput = ({
         preventOverflow: { enabled: false },
       }}
       content={
-        <Menu style={{ maxWidth: 400 }}>
+        <Menu className={"max-h-64 overflow-auto max-w-md"} ulRef={menuRef}>
           {items.map((t, i) => (
             <MenuItem
               text={t}

@@ -121,7 +121,7 @@ const AutocompleteInput = ({
           onClick={() => setIsTyping(true)}
           onBlur={(e) => {
             if (
-              e.relatedTarget &&
+              e.relatedTarget === null ||
               !(e.relatedTarget as HTMLElement).closest?.(
                 ".roamjs-autocomplete-input"
               )

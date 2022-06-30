@@ -19,7 +19,10 @@ const registerExperimentalMode = ({
   const key = feature
     ? `experimental-${feature.toLowerCase().replace(/ /g, "-")}`
     : "experimental";
-  const toggleExperimentalModeFeatures = (experimentalOverlayMode: boolean, isInitial: boolean) => {
+  const toggleExperimentalModeFeatures = (
+    experimentalOverlayMode: boolean,
+    isInitial: boolean
+  ) => {
     if (experimentalOverlayMode) {
       onEnable(isInitial);
       window.roamAlphaAPI.ui.commandPalette.addCommand({
@@ -57,6 +60,7 @@ Are you sure you want to enable the experimental ${
                 content: `Enabled ${label}`,
               });
             },
+            onCancel: true,
           });
         },
       });

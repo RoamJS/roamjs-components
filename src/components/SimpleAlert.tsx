@@ -8,7 +8,7 @@ type Props = {
   content: string;
   onConfirm?: () => void;
   confirmText?: string;
-  onCancel?: () => void;
+  onCancel?: (() => void) | true;
   externalLink?: boolean;
   dontShowAgain?: string;
 };
@@ -27,7 +27,7 @@ const SimpleAlert =
     const alertOnClose = useCallback(
       (confirmed: boolean) => {
         onClose();
-        if (!confirmed) onCancel?.();
+        if (!confirmed && typeof onCancel === "function") onCancel();
       },
       [onCancel, onClose]
     );

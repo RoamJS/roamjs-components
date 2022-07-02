@@ -14,6 +14,7 @@ import {
   Result as QueryBuilderResult,
   ExportTypes,
   QBResultsView,
+  RegisterSelection,
 } from "./query-builder";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
@@ -233,24 +234,7 @@ declare global {
             targetOptions?: string[] | ((source: string) => string[]);
           }) => void;
           unregisterDatalogTranslator: (args: { key: string }) => void;
-          registerSelection: (args: {
-            test: RegExp;
-            pull: (a: {
-              returnNode: string;
-              match: RegExpExecArray;
-              where: DatalogClause[];
-            }) => string;
-            mapper: (
-              r: PullBlock,
-              key: string
-            ) =>
-              | QueryBuilderResult[string]
-              | Record<string, QueryBuilderResult[string]>
-              | Promise<
-                  | QueryBuilderResult[string]
-                  | Record<string, QueryBuilderResult[string]>
-                >;
-          }) => void;
+          registerSelection: RegisterSelection;
         };
         versioning?: {
           switch: (args: { id: string; currentVersion: string }) => void;

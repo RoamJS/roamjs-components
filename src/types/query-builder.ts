@@ -1,3 +1,5 @@
+import { DatalogClause, PullBlock } from "./native";
+
 type QBBase = { uid: string };
 
 export type QBClauseData = {
@@ -39,6 +41,23 @@ export type ExportTypes = {
     graph: string;
   }) => Promise<{ title: string; content: string }[]>;
 }[];
+
+export type RegisterSelection = (args: {
+  test: RegExp;
+  pull: (a: {
+    returnNode: string;
+    match: RegExpExecArray;
+    where: DatalogClause[];
+  }) => string;
+  mapper: (
+    r: PullBlock,
+    key: string,
+    result: Result,
+  ) =>
+    | Result[string]
+    | Record<string, Result[string]>
+    | Promise<Result[string] | Record<string, Result[string]>>;
+}) => void;
 
 export type QBResultsView = (props: {
   parentUid: string;

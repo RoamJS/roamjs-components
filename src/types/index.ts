@@ -13,6 +13,7 @@ import {
   Selection as QueryBuilderSelection,
   Result as QueryBuilderResult,
   ExportTypes,
+  QBResultsView,
 } from "./query-builder";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
@@ -204,19 +205,7 @@ declare global {
             defaultReturnNode?: string;
             getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
           }) => JSX.Element;
-          ResultsView: (props: {
-            parentUid: string;
-            header?: React.ReactNode;
-            results: QueryBuilderResult[];
-            hideResults?: boolean;
-            resultFilter?: (r: QueryBuilderResult) => boolean;
-            ctrlClick?: (e: QueryBuilderResult) => void;
-            preventSavingSettings?: boolean;
-            preventExport?: boolean;
-            onEdit?: () => void;
-            getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
-            onResultsInViewChange?: (r: QueryBuilderResult[]) => void;
-          }) => JSX.Element;
+          ResultsView: QBResultsView;
           fireQuery: (query: {
             returnNode: string;
             conditions: QueryBuilderCondition[];

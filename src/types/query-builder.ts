@@ -39,3 +39,18 @@ export type ExportTypes = {
     graph: string;
   }) => Promise<{ title: string; content: string }[]>;
 }[];
+
+export type QBResultsView = (props: {
+  parentUid: string;
+  header?: React.ReactNode;
+  results: Result[];
+  hideResults?: boolean;
+  resultFilter?: (r: Result) => boolean;
+  ctrlClick?: (e: Result) => void;
+  preventSavingSettings?: boolean;
+  preventExport?: boolean;
+  onEdit?: () => void;
+  onRefresh?: () => void;
+  getExportTypes?: (r: Result[]) => ExportTypes;
+  onResultsInViewChange?: (r: Result[]) => void;
+}) => JSX.Element;

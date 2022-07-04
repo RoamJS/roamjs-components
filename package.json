@@ -1,7 +1,7 @@
 {
   "name": "roamjs-components",
   "description": "Description for roamjs-components",
-  "version": "0.66.14",
+  "version": "0.67.0",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -86,8 +86,8 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-react-hooks": "^2.2.2"
   },
-  "engines" : { 
-    "npm" : ">=7.0.0",
-    "node" : ">=16.0.0"
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=16.0.0"
   }
 }

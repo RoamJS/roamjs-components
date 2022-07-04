@@ -5,6 +5,7 @@ import {
   PopoverPosition,
   Popover,
   Button,
+  TextArea,
 } from "@blueprintjs/core";
 import React, {
   useState,
@@ -16,6 +17,18 @@ import React, {
 import useArrowKeyDown from "../hooks/useArrowKeyDown";
 import fuzzy from "fuzzy";
 
+export type AutocompleteInputProps = {
+  value: string;
+  setValue: (q: string) => void;
+  showButton?: boolean;
+  onBlur?: (v: string) => void;
+  onConfirm?: () => void;
+  options?: string[];
+  placeholder?: string;
+  autoFocus?: boolean;
+  multiline?: boolean;
+};
+
 const AutocompleteInput = ({
   value,
   setValue,
@@ -24,15 +37,9 @@ const AutocompleteInput = ({
   showButton,
   options = [],
   placeholder = "Enter value",
-}: {
-  value: string;
-  setValue: (q: string) => void;
-  showButton?: boolean;
-  onBlur?: (v: string) => void;
-  onConfirm?: () => void;
-  options?: string[];
-  placeholder?: string;
-}): React.ReactElement => {
+  autoFocus,
+  multiline,
+}: AutocompleteInputProps): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
@@ -44,11 +51,11 @@ const AutocompleteInput = ({
             .filter(value, options)
             .slice(0, 9)
             .map((e) => e.string)
-        : options,
+        : options.slice(0, 9),
     [value, options]
   );
   const menuRef = useRef<HTMLUListElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const onEnter = useCallback(
     (value) => {
       if (isOpen) {
@@ -71,6 +78,7 @@ const AutocompleteInput = ({
     if (!items.length || !isTyping) close();
     else open();
   }, [items, close, open, isTyping]);
+  const Input = useMemo(() => (multiline ? TextArea : InputGroup), [multiline]);
   return (
     <Popover
       portalClassName={"roamjs-autocomplete-input"}
@@ -104,14 +112,14 @@ const AutocompleteInput = ({
         </Menu>
       }
       target={
-        <InputGroup
+        <Input
           value={value || ""}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          onChange={(e) => {
             setIsTyping(true);
             setValue(e.target.value);
           }}
+          autoFocus={autoFocus}
           placeholder={placeholder}
-          autoFocus={true}
           onKeyDown={(e) => {
             if (e.key === "Escape") {
               e.stopPropagation();

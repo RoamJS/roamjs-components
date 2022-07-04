@@ -1,36 +1,8 @@
 # roamjs-components
     
-This is a collection of common UI components used by RoamJS extensions and services made available to make development easier for other Roam developers.
+This is a collection of common UI components used by RoamJS extensions made available to make development easier for other Roam developers.
 
-## Organization
-
-This package takes a modular approach - each function exposed in its own file in an effort to limit the bundle sizes of consumers. It has the following directories:
-- `components` - React components used in Roam
-- `date` - Utilities made to make interacting with Roam dates easier
-- `dom` - Utilities that interact with Roam's DOM structure
-- `events` - Utilities that interact with Roam's event system
-- `hooks` - React hooks commonly used in Roam extensions
-- `marked` - RoamJS' official Roam-flavored markdown to HTML processor
-- `queries` - Helpers that abstract datalog into common, easy-to-invoke, typed queries
-- `types` - Common typescript types used when interacting with these methods 
-- `util` - All other utilities not found in the other directories
-- `writes` - Helpers that abstract Roam's write API into common, easy-to-invoke, typed actions
-
-We recommend using modular imports for using any methods found in these libraries. For example,
-
-```typescript
-import getTextByBlockUid from "roam-client/queries/getTextByBlockUid";
-```
-
-instead of
-
-```typescript
-import { getTextByBlockUid } from "roam-client/queries";
-```
-
-though, the latter is still available for convenience.
-
-The rest of this README is not exhaustive, and will soon live in https://roamjs.com/extensions/developer.
+All documentation lives on https://roamjs.com/extensions/developer.
 
 ## Util
 

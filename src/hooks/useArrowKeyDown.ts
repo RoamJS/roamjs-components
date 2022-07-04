@@ -20,11 +20,13 @@ const useArrowKeyDown = <T>({
   menuRef: React.RefObject<HTMLUListElement>;
 }): {
   activeIndex: number;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
 } => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (results.length > 0) {
         if (e.key === "ArrowDown") {
           const newIndex = (activeIndex + 1) % results.length;

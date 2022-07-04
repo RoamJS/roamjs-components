@@ -99,6 +99,7 @@ const runExtension = (
       );
       (loaded.timeouts || []).forEach((e) => window.clearTimeout(e.timeout));
     }
+    delete window.roamjs?.extension[extensionId];
     delete window.roamjs?.version[extensionId];
     window.roamjs?.loaded.delete(extensionId);
     if (!window.roamjs?.loaded.size) {

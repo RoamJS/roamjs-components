@@ -1,46 +1,5 @@
-export { default as compileDatalog } from "./compileDatalog";
-export { default as getAllBlockUids } from "./getAllBlockUids";
-export { default as getAllBlockUidsAndTexts } from "./getAllBlockUidsAndTexts";
-export { default as getAllPageNames } from "./getAllPageNames";
-export { default as getAttributeValueByBlockAndName } from "./getAttributeValueByBlockAndName";
-export { default as getBasicTreeByParentUid } from "./getBasicTreeByParentUid";
-export { default as getBlockUidAndTextIncludingText } from "./getBlockUidAndTextIncludingText";
-export { default as getBlockUidByTextOnPage } from "./getBlockUidByTextOnPage";
-export { default as getBlockUidsAndTextsReferencingPage } from "./getBlockUidsAndTextsReferencingPage";
-export { default as getBlockUidsByPageTitle } from "./getBlockUidsByPageTitle";
-export { default as getBlockUidsReferencingBlock } from "./getBlockUidsReferencingBlock";
-export { default as getBlockUidsReferencingPage } from "./getBlockUidsReferencingPage";
-export { default as getBlockUidsWithParentUid } from "./getBlockUidsWithParentUid";
-export { default as getChildrenLengthByPageUid } from "./getChildrenLengthByPageUid";
-export { default as getCurrentUserDisplayName } from "./getCurrentUserDisplayName";
-export { default as getCurrentUserEmail } from "./getCurrentUserEmail";
-export { default as getCurrentUserUid } from "./getCurrentUserUid";
-export { default as getFirstChildTextByBlockUid } from "./getFirstChildTextByBlockUid";
-export { default as getFirstChildUidByBlockUid } from "./getFirstChildUidByBlockUid";
-export { default as getCreateTimeByBlockUid } from "./getCreateTimeByBlockUid";
-export { default as getDisplayNameByEmail } from "./getDisplayNameByEmail";
-export { default as getDisplayNameByUid } from "./getDisplayNameByUid";
-export { default as getEditTimeByBlockUid } from "./getEditTimeByBlockUid";
-export { default as getEditedUserEmailByBlockUid } from "./getEditedUserEmailByBlockUid";
-export { default as getFullTreeByParentUid } from "./getFullTreeByParentUid";
-export { default as getLinkedPageTitlesUnderUid } from "./getLinkedPageTitlesUnderUid";
-export { default as getNthChildUidByBlockUid } from "./getNthChildUidByBlockUid";
-export { default as getOrderByBlockUid } from "./getOrderByBlockUid";
-export { default as getPageTitleByBlockUid } from "./getPageTitleByBlockUid";
-export { default as getPageTitlesAndBlockUidsReferencingPage } from "./getPageTitlesAndBlockUidsReferencingPage";
-export { default as getPageTitlesAndUidsDirectlyReferencingPage } from "./getPageTitlesAndUidsDirectlyReferencingPage";
-export { default as getPageTitleReferencesByPageTitle } from "./getPageTitleReferencesByPageTitle";
-export { default as getPageTitlesReferencingBlockUid } from "./getPageTitlesReferencingBlockUid";
-export { default as getPageTitlesStartingWithPrefix } from "./getPageTitlesStartingWithPrefix";
-export { default as getPageTitleByPageUid } from "./getPageTitleByPageUid";
-export { default as getPageUidByPageTitle } from "./getPageUidByPageTitle";
-export { default as getPageViewType } from "./getPageViewType";
-export { default as getParentTextByBlockUid } from "./getParentTextByBlockUid";
-export { default as getParentTextByBlockUidAndTag } from "./getParentTextByBlockUidAndTag";
-export { default as getParentUidByBlockUid } from "./getParentUidByBlockUid";
-export { default as getParentUidsOfBlockUid } from "./getParentUidsOfBlockUid";
-export { default as getSettingsByEmail } from "./getSettingsByEmail";
-export { default as getShallowTreeByParentUid } from "./getShallowTreeByParentUid";
-export { default as getTextByBlockUid } from "./getTextByBlockUid";
-export { default as isTagOnPage } from "./isTagOnPage";
-export { default as normalizePageTitle } from "./normalizePageTitle";
+throw new Error(
+  `Do not import from roamjs-components/queries directly. Instead import the *query* you need directly. For example: 
+    
+  import getTextByBlockUid from "roamjs-components/queries/getTextByBlockUid;"`
+);

@@ -1,5 +1,5 @@
-import { Label } from "@blueprintjs/core";
-import React, { useEffect, useRef } from "react";
+import { Button, Label, Tooltip } from "@blueprintjs/core";
+import React, { useEffect, useRef, useState } from "react";
 import getFirstChildUidByBlockUid from "../../queries/getFirstChildUidByBlockUid";
 import idToTitle from "../../util/idToTitle";
 import createBlock from "../../writes/createBlock";
@@ -14,12 +14,18 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
   description,
 }) => {
   const containerRef = useRef(null);
+  const [navUid, setNavUid] = useState(initialUid || parentUid);
   useEffect(() => {
     if (containerRef.current) {
       const el = containerRef.current;
       (initialUid
         ? Promise.resolve(initialUid)
-        : createBlock({ node: { text: title, children: [] }, parentUid })
+        : createBlock({ node: { text: title, children: [] }, parentUid }).then(
+            (uid) => {
+              setNavUid(uid);
+              return uid;
+            }
+          )
       )
         .then((formatUid) =>
           getFirstChildUidByBlockUid(formatUid)
@@ -47,12 +53,23 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
           });
         });
     }
-  }, [containerRef, defaultValue]);
+  }, [containerRef, defaultValue, setNavUid]);
   return (
     <>
       <Label>
         {idToTitle(title)}
         <Description description={description} />
+        <Tooltip content={"Click here to edit these blocks directly"}>
+          <Button
+            icon={"link"}
+            minimal
+            onClick={() =>
+              window.roamAlphaAPI.ui.mainWindow.openBlock({
+                block: { uid: navUid },
+              })
+            }
+          />
+        </Tooltip>
       </Label>
       <style>{`.roamjs-config-blocks > div > .rm-block-main {
     display: none;

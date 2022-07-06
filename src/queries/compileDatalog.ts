@@ -8,66 +8,76 @@ import type {
 
 const compileDatalog = (
   d:
-    | DatalogClause
-    | DatalogAndClause
-    | DatalogArgument
-    | DatalogFnArg
-    | DatalogBinding,
+    | Partial<DatalogClause>
+    | Partial<DatalogAndClause>
+    | Partial<DatalogArgument>
+    | Partial<DatalogFnArg>
+    | Partial<DatalogBinding>,
   level: number
 ): string => {
   switch (d.type) {
     case "data-pattern":
-      return `[${
-        d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }${d.arguments.map((a) => compileDatalog(a, level)).join(" ")}]`;
+      return `[${d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""}${(
+        d.arguments || []
+      )
+        .map((a) => compileDatalog(a, level))
+        .join(" ")}]`;
     case "src-var":
-      return `$${d.value.replace(/[\s,{}]/g, "")}`;
+      return `$${(d.value || "undefined").replace(/[\s,{}]/g, "")}`;
     case "constant":
     case "underscore":
-      return d.value;
+      return d.value || "_";
     case "variable":
-      return `?${d.value.replace(/[\s,{}]/g, "")}`;
+      return `?${(d.value || "undefined").replace(/[\s,{}]/g, "")}`;
     case "fn-expr":
-      return `[(${d.fn} ${d.arguments
+      if (!d.binding) return "";
+      return `[(${d.fn} ${(d.arguments || [])
         .map((a) => compileDatalog(a, level))
         .join(" ")}) ${compileDatalog(d.binding, level)}]`;
     case "pred-expr":
-      return `[(${d.pred} ${d.arguments
+      return `[(${d.pred} ${(d.arguments || [])
         .map((a) => compileDatalog(a, level))
         .join(" ")})]`;
     case "rule-expr":
-      return `[${
-        d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }${d.arguments.map((a) => compileDatalog(a, level)).join(" ")}]`;
+      return `[${d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""}${(
+        d.arguments || []
+      )
+        .map((a) => compileDatalog(a, level))
+        .join(" ")}]`;
     case "not-clause":
-      return `(${
-        d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }not ${d.clauses.map((a) => compileDatalog(a, level + 1)).join(" ")})`;
+      return `(${d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""}not ${(
+        d.clauses || []
+      )
+        .map((a) => compileDatalog(a, level + 1))
+        .join(" ")})`;
     case "or-clause":
-      return `(${
-        d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }or ${d.clauses.map((a) => compileDatalog(a, level + 1)).join("\n")})`;
+      return `(${d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""}or ${(
+        d.clauses || []
+      )
+        .map((a) => compileDatalog(a, level + 1))
+        .join("\n")})`;
     case "and-clause":
-      return `${"".padStart(level * 2, " ")}(and\n${d.clauses
+      return `${"".padStart(level * 2, " ")}(and\n${(d.clauses || [])
         .map((c) => compileDatalog(c, level + 1))
         .join("\n")}\n${"".padStart(level * 2, " ")})`;
     case "not-join-clause":
       return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }not-join [${d.variables
+      }not-join [${(d.variables || [])
         .map((v) => compileDatalog(v, level))
-        .join(" ")}] ${d.clauses
+        .join(" ")}] ${(d.clauses || [])
         .map((a) => compileDatalog(a, level + 1))
         .join(" ")})`;
     case "or-join-clause":
       return `(${
         d.srcVar ? `${compileDatalog(d.srcVar, level)} ` : ""
-      }or-join [${d.variables
+      }or-join [${(d.variables || [])
         .map((v) => compileDatalog(v, level))
-        .join(" ")}]\n${d.clauses
+        .join(" ")}]\n${(d.clauses || [])
         .map((a) => compileDatalog(a, level + 1))
         .join("\n")})`;
     case "bind-scalar":
+      if (!d.variable) return "";
       return compileDatalog(d.variable, level);
     default:
       return "";

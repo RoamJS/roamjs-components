@@ -1,20 +1,20 @@
 import {
   AddPullWatch,
-  DatalogClause,
   PullBlock,
-  RoamBasicNode,
   SidebarAction,
   SidebarWindow,
   SidebarWindowInput,
   WriteAction,
 } from "./native";
 import {
-  Condition as QueryBuilderCondition,
-  Selection as QueryBuilderSelection,
   Result as QueryBuilderResult,
   ExportTypes,
   QBResultsView,
   RegisterSelection,
+  ParseQuery,
+  FireQuery,
+  ConditionToDatalog,
+  RegisterDatalogTranslator,
 } from "./query-builder";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
@@ -81,7 +81,10 @@ declare global {
           update: WriteAction;
           delete: WriteAction;
         };
-        pull: (selector: string, id: number | string | [string, string]) => PullBlock;
+        pull: (
+          selector: string,
+          id: number | string | [string, string]
+        ) => PullBlock;
         pull_many: (pattern: string, eid: string[][]) => PullBlock[];
         q: (query: string, ...params: unknown[]) => unknown[][];
         removePullWatch: (
@@ -207,32 +210,11 @@ declare global {
             getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
           }) => JSX.Element;
           ResultsView: QBResultsView;
-          fireQuery: (query: {
-            returnNode: string;
-            conditions: QueryBuilderCondition[];
-            selections: QueryBuilderSelection[];
-          }) => Promise<QueryBuilderResult[]>;
-          parseQuery: (q: RoamBasicNode) => {
-            returnNode: string;
-            conditions: QueryBuilderCondition[];
-            selections: QueryBuilderSelection[];
-            returnNodeUid: string;
-            conditionsNodesUid: string;
-            selectionsNodesUid: string;
-          };
-          conditionToDatalog: (
-            condition: QueryBuilderCondition
-          ) => DatalogClause[];
+          fireQuery: FireQuery;
+          parseQuery: ParseQuery;
+          conditionToDatalog: ConditionToDatalog;
           getConditionLabels: () => string[];
-          registerDatalogTranslator: (args: {
-            key: string;
-            callback: (args: {
-              source: string;
-              target: string;
-              uid: string;
-            }) => DatalogClause[];
-            targetOptions?: string[] | ((source: string) => string[]);
-          }) => void;
+          registerDatalogTranslator: RegisterDatalogTranslator;
           unregisterDatalogTranslator: (args: { key: string }) => void;
           registerSelection: RegisterSelection;
         };

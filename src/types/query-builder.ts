@@ -1,4 +1,4 @@
-import { DatalogClause, PullBlock } from "./native";
+import { DatalogClause, PullBlock, RoamBasicNode } from "./native";
 
 type QBBase = { uid: string };
 
@@ -52,7 +52,7 @@ export type RegisterSelection = (args: {
   mapper: (
     r: PullBlock,
     key: string,
-    result: Result,
+    result: Result
   ) =>
     | Result[string]
     | Record<string, Result[string]>
@@ -73,3 +73,30 @@ export type QBResultsView = (props: {
   getExportTypes?: (r: Result[]) => ExportTypes;
   onResultsInViewChange?: (r: Result[]) => void;
 }) => JSX.Element;
+
+export type ParseQuery = (q: RoamBasicNode | string) => {
+  returnNode: string;
+  conditions: Condition[];
+  selections: Selection[];
+  returnNodeUid: string;
+  conditionsNodesUid: string;
+  selectionsNodesUid: string;
+};
+
+export type FireQuery = (query: {
+  returnNode: string;
+  conditions: Condition[];
+  selections: Selection[];
+}) => Promise<Result[]>;
+
+export type ConditionToDatalog = (condition: Condition) => DatalogClause[];
+
+export type RegisterDatalogTranslator = (args: {
+  key: string;
+  callback: (args: {
+    source: string;
+    target: string;
+    uid: string;
+  }) => DatalogClause[];
+  targetOptions?: string[] | ((source: string) => string[]);
+}) => void;

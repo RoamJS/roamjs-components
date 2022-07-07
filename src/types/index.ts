@@ -7,14 +7,15 @@ import {
   WriteAction,
 } from "./native";
 import {
-  Result as QueryBuilderResult,
-  ExportTypes,
-  QBResultsView,
   RegisterSelection,
   ParseQuery,
   FireQuery,
   ConditionToDatalog,
   RegisterDatalogTranslator,
+  ResultsViewComponent,
+  QueryEditorComponent,
+  ExportDialogComponent,
+  QueryPageComponent,
 } from "./query-builder";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
@@ -192,24 +193,10 @@ declare global {
           disable: () => void;
         };
         queryBuilder?: {
-          ExportDialog: (props: {
-            onClose: () => void;
-            isOpen: boolean;
-            exportTypes: ExportTypes;
-            results: QueryBuilderResult[];
-          }) => JSX.Element;
-          QueryEditor: (props: {
-            parentUid: string;
-            onQuery?: () => void;
-            defaultReturnNode?: string;
-          }) => JSX.Element;
-          QueryPage: (props: {
-            pageUid: string;
-            configUid?: string;
-            defaultReturnNode?: string;
-            getExportTypes?: (r: QueryBuilderResult[]) => ExportTypes;
-          }) => JSX.Element;
-          ResultsView: QBResultsView;
+          ExportDialog: ExportDialogComponent;
+          QueryEditor: QueryEditorComponent;
+          QueryPage: QueryPageComponent;
+          ResultsView: ResultsViewComponent;
           fireQuery: FireQuery;
           parseQuery: ParseQuery;
           conditionToDatalog: ConditionToDatalog;

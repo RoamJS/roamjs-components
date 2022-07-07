@@ -1,42 +1,29 @@
-import getAuthorizationHeader from "../util/getAuthorizationHeader";
-import handleFetch from "./handleFetch";
+import handleFetch, { HandleFetchArgs } from "./handleFetch";
 
 const handleUrlFetch =
   (method: "GET" | "DELETE") =>
   <T extends Record<string, unknown> = Record<string, never>>(
-    args:
-      | string
-      | {
-          path: string;
-          domain?: string;
-          anonymous?: boolean;
-          authorization?: string;
-          data?: Record<string, string>;
-        }
+    args: string | HandleFetchArgs,
+    _data?: Record<string, unknown>
   ) => {
-    const path = typeof args === "string" ? args : args.path;
-    const anonymous = typeof args === "string" ? false : args.anonymous;
-    const Authorization =
-      typeof args !== "string" && args.authorization
-        ? args.authorization
-        : getAuthorizationHeader();
-    const params = typeof args !== "string" && args.data ? args.data : {};
-    const domain = typeof args !== "string" && args.domain;
+    const { data = {}, ...fetchArgs } =
+      typeof args === "string" ? { path: args, data: _data } : args;
 
-    const url = new URL(
-      `${domain || process.env.API_URL || "https://lambda.roamjs.com"}/${path}`
-    );
-    if (process.env.NODE_ENV === "development") {
-      url.searchParams.set("dev", "true");
-    }
-    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
-    return handleFetch<T>(
-      fetch(url, {
-        method,
-        headers: anonymous ? {} : { Authorization },
-      })
-    );
+    return handleFetch<T>((url, init) => {
+      if (process.env.NODE_ENV === "development") {
+        url.searchParams.set("dev", "true");
+      }
+      Object.entries(data).forEach(([k, v]) =>
+        url.searchParams.set(k, v as string)
+      );
+      return [
+        url,
+        {
+          ...init,
+          method,
+        },
+      ];
+    }, fetchArgs);
   };
 
 export default handleUrlFetch;

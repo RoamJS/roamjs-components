@@ -59,7 +59,7 @@ export type RegisterSelection = (args: {
     | Promise<Result[string] | Record<string, Result[string]>>;
 }) => void;
 
-export type QBResultsView = (props: {
+export type ResultsViewComponent = (props: {
   parentUid: string;
   header?: React.ReactNode;
   results: Result[];
@@ -72,6 +72,24 @@ export type QBResultsView = (props: {
   onRefresh?: () => void;
   getExportTypes?: (r: Result[]) => ExportTypes;
   onResultsInViewChange?: (r: Result[]) => void;
+}) => JSX.Element;
+
+export type ExportDialogComponent = (props: {
+  onClose: () => void;
+  isOpen: boolean;
+  exportTypes: ExportTypes;
+  results: Result[];
+}) => JSX.Element;
+export type QueryEditorComponent = (props: {
+  parentUid: string;
+  onQuery?: () => void;
+  defaultReturnNode?: string;
+}) => JSX.Element;
+export type QueryPageComponent = (props: {
+  pageUid: string;
+  configUid?: string;
+  defaultReturnNode?: string;
+  getExportTypes?: (r: Result[]) => ExportTypes;
 }) => JSX.Element;
 
 export type ParseQuery = (q: RoamBasicNode | string) => {

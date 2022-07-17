@@ -407,8 +407,6 @@ const FieldTabs = ({
             panel={
               <Panel
                 {...field}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore 4.3.0
                 defaultValue={defaultValue}
                 order={i}
                 parentUid={parentUid}

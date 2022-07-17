@@ -1,4 +1,16 @@
+import React, { ChangeEvent } from "react";
+import { createConfigObserver } from "../components/ConfigPage";
+import CustomPanel from "../components/ConfigPanels/CustomPanel";
+import FlagPanel from "../components/ConfigPanels/FlagPanel";
+import SelectPanel from "../components/ConfigPanels/SelectPanel";
+import TextPanel from "../components/ConfigPanels/TextPanel";
+import { Field, UnionField } from "../components/ConfigPanels/types";
 import addStyle from "../dom/addStyle";
+import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
+import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
+import getSettingValueFromTree from "./getSettingValueFromTree";
+import setInputSetting from "./setInputSetting";
+import toConfigPageName from "./toConfigPageName";
 
 type RunReturn = {
   elements?: HTMLElement[];
@@ -33,19 +45,77 @@ type RunReturn = {
   timeouts?: { timeout: number }[];
 };
 
+type ButtonAction = {
+  type: "button";
+  onClick: (e: MouseEvent) => void;
+  content: string;
+};
+
+type SwitchAction = {
+  type: "switch";
+  onChange: (e: ChangeEvent) => void;
+};
+
+type InputAction = {
+  type: "input";
+  placeholder: string;
+  onChange: (e: ChangeEvent) => void;
+};
+
+type SelectAction = {
+  type: "select";
+  items: string[];
+  onChange: (e: ChangeEvent) => void;
+};
+
+type CustomAction = {
+  type: "reactComponent";
+  component: React.FC;
+};
+
+type PanelConfig = {
+  tabTitle: string;
+  settings: {
+    id: string;
+    name: string;
+    description: string;
+    action:
+      | ButtonAction
+      | SwitchAction
+      | InputAction
+      | SelectAction
+      | CustomAction;
+  }[];
+};
+
+type OnloadArgs = {
+  extensionAPI: {
+    settings: {
+      get: (k: string) => unknown;
+      getAll: () => string[];
+      panel: {
+        create: (c: PanelConfig) => void;
+      };
+      set: (k: string, v: unknown) => void;
+    };
+  };
+};
+
 const runExtension = (
   args:
     | string
     | {
         roamMarketplace?: boolean;
         extensionId: string;
-        run?: () => void | Promise<void> | RunReturn | Promise<RunReturn>;
+        run?: (
+          args: OnloadArgs
+        ) => void | Promise<void> | RunReturn | Promise<RunReturn>;
         unload?: () => void | Promise<void>;
       },
 
   // @deprecated both args
   _run: () => void | Promise<void> = Promise.resolve
-): void | { onload: () => void; onunload: () => void } => {
+): void | { onload: (args: OnloadArgs) => void; onunload: () => void } => {
   const extensionId = typeof args === "string" ? args : args.extensionId;
   const run = typeof args === "string" ? _run : args.run;
   const roamMarketplace =
@@ -55,7 +125,7 @@ const runExtension = (
   const unload = typeof args === "string" ? () => Promise.resolve : args.unload;
 
   let loaded: RunReturn | undefined | void = undefined;
-  const onload = () => {
+  const onload = (args: OnloadArgs) => {
     if (window.roamjs?.loaded?.has?.(extensionId)) {
       return;
     }
@@ -76,7 +146,7 @@ const runExtension = (
       "roamjs-default"
     );
 
-    const result = run?.();
+    const result = run?.(args);
     const dispatch = () => {
       document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
     };
@@ -113,7 +183,83 @@ const runExtension = (
       onunload,
     };
   } else {
-    return onload();
+    const title = toConfigPageName(extensionId);
+    return onload({
+      extensionAPI: {
+        settings: {
+          get: (key) =>
+            getSettingValueFromTree({
+              tree: getBasicTreeByParentUid(getPageUidByPageTitle(title)),
+              key,
+            }),
+          getAll: () =>
+            getBasicTreeByParentUid(getPageUidByPageTitle(title)).map(
+              (t) => t.text
+            ),
+          set: (key, v) =>
+            setInputSetting({
+              blockUid: getPageUidByPageTitle(title),
+              key,
+              value: typeof v === "string" ? v : `${v}`,
+            }),
+          panel: {
+            create: (config) =>
+              createConfigObserver({
+                title,
+                config: {
+                  tabs: [
+                    {
+                      id: config.tabTitle,
+                      fields: config.settings.map((s) => {
+                        if (s.action.type === "button") {
+                          // what is this used for?
+                          return {
+                            title: s.id,
+                            description: s.description,
+                            Panel: FlagPanel,
+                          };
+                        } else if (s.action.type === "input") {
+                          return {
+                            title: s.id,
+                            description: s.description,
+                            Panel: TextPanel,
+                          };
+                        } else if (s.action.type === "select") {
+                          return {
+                            title: s.id,
+                            description: s.description,
+                            Panel: SelectPanel,
+                          };
+                        } else if (s.action.type === "switch") {
+                          return {
+                            title: s.id,
+                            description: s.description,
+                            Panel: FlagPanel,
+                          };
+                        } else if (s.action.type === "reactComponent") {
+                          return {
+                            title: s.id,
+                            description: s.description,
+                            Panel: CustomPanel,
+                            options: {
+                              component: s.action.component,
+                            },
+                          };
+                        } else {
+                          throw new Error(
+                            `unknown config type: ${JSON.stringify(s.action)}`
+                          );
+                        }
+                        // typescript why do I need this here
+                      }) as Field<UnionField>[],
+                    },
+                  ],
+                },
+              }),
+          },
+        },
+      },
+    });
   }
 };
 

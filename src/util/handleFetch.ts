@@ -1,7 +1,7 @@
 import getAuthorizationHeader from "./getAuthorizationHeader";
 
 export type HandleFetchArgs = {
-  path: string;
+  path?: string;
   domain?: string;
   href?: string;
   data?: Record<string, unknown>;

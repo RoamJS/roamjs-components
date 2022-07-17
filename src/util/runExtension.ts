@@ -47,25 +47,25 @@ type RunReturn = {
 
 type ButtonAction = {
   type: "button";
-  onClick: (e: MouseEvent) => void;
+  onClick?: (e: MouseEvent) => void;
   content: string;
 };
 
 type SwitchAction = {
   type: "switch";
-  onChange: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent) => void;
 };
 
 type InputAction = {
   type: "input";
   placeholder: string;
-  onChange: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent) => void;
 };
 
 type SelectAction = {
   type: "select";
   items: string[];
-  onChange: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent) => void;
 };
 
 type CustomAction = {

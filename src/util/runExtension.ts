@@ -11,6 +11,7 @@ import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getSettingValueFromTree from "./getSettingValueFromTree";
 import setInputSetting from "./setInputSetting";
 import toConfigPageName from "./toConfigPageName";
+import { render as renderSimpleAlert } from "../components/SimpleAlert";
 
 type RunReturn = {
   elements?: HTMLElement[];
@@ -105,6 +106,7 @@ const runExtension = (
   args:
     | string
     | {
+        migratedTo?: string;
         roamMarketplace?: boolean;
         extensionId: string;
         run?: (
@@ -123,6 +125,7 @@ const runExtension = (
       ? false
       : args.roamMarketplace || process.env.ROAM_MARKETPLACE === "true";
   const unload = typeof args === "string" ? () => Promise.resolve : args.unload;
+  const migratedTo = typeof args === "string" ? "" : args.migratedTo;
 
   let loaded: RunReturn | undefined | void = undefined;
   const onload = (args: OnloadArgs) => {
@@ -183,6 +186,13 @@ const runExtension = (
       onunload,
     };
   } else {
+    if (migratedTo) {
+      renderSimpleAlert({
+        content: `ATTENTION: This RoamJS extension could now be found in the RoamDepot! It has been migrated to the ${migratedTo} extension from RoamDepot, which you could find by entering the Roam Depot Marketplace from the command palette.
+
+Please remove the \`{{[[roam/js]]}}\` code that installed this extension and refresh before installing from RoamDepot.`,
+      });
+    }
     const title = toConfigPageName(extensionId);
     return onload({
       extensionAPI: {
@@ -206,55 +216,48 @@ const runExtension = (
             create: (config) =>
               createConfigObserver({
                 title,
-                config: {
-                  tabs: [
-                    {
-                      id: config.tabTitle,
-                      fields: config.settings.map((s) => {
-                        if (s.action.type === "button") {
-                          // what is this used for?
-                          return {
-                            title: s.id,
-                            description: s.description,
-                            Panel: FlagPanel,
-                          };
-                        } else if (s.action.type === "input") {
-                          return {
-                            title: s.id,
-                            description: s.description,
-                            Panel: TextPanel,
-                          };
-                        } else if (s.action.type === "select") {
-                          return {
-                            title: s.id,
-                            description: s.description,
-                            Panel: SelectPanel,
-                          };
-                        } else if (s.action.type === "switch") {
-                          return {
-                            title: s.id,
-                            description: s.description,
-                            Panel: FlagPanel,
-                          };
-                        } else if (s.action.type === "reactComponent") {
-                          return {
-                            title: s.id,
-                            description: s.description,
-                            Panel: CustomPanel,
-                            options: {
-                              component: s.action.component,
-                            },
-                          };
-                        } else {
-                          throw new Error(
-                            `unknown config type: ${JSON.stringify(s.action)}`
-                          );
-                        }
-                        // typescript why do I need this here
-                      }) as Field<UnionField>[],
-                    },
-                  ],
-                },
+                config: config.settings.map((s) => {
+                  if (s.action.type === "button") {
+                    // what is this used for?
+                    return {
+                      title: s.id,
+                      description: s.description,
+                      Panel: FlagPanel,
+                    };
+                  } else if (s.action.type === "input") {
+                    return {
+                      title: s.id,
+                      description: s.description,
+                      Panel: TextPanel,
+                    };
+                  } else if (s.action.type === "select") {
+                    return {
+                      title: s.id,
+                      description: s.description,
+                      Panel: SelectPanel,
+                    };
+                  } else if (s.action.type === "switch") {
+                    return {
+                      title: s.id,
+                      description: s.description,
+                      Panel: FlagPanel,
+                    };
+                  } else if (s.action.type === "reactComponent") {
+                    return {
+                      title: s.id,
+                      description: s.description,
+                      Panel: CustomPanel,
+                      options: {
+                        component: s.action.component,
+                      },
+                    };
+                  } else {
+                    throw new Error(
+                      `unknown config type: ${JSON.stringify(s.action)}`
+                    );
+                  }
+                  // typescript why do I need this here
+                }) as Field<UnionField>[],
               }),
           },
         },

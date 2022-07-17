@@ -25,7 +25,7 @@ import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getShallowTreeByParentUid from "../queries/getShallowTreeByParentUid";
 import localStorageGet from "../util/localStorageGet";
 import idToTitle from "../util/idToTitle";
-import { addTokenDialogCommand, checkRoamJSTokenWarning } from "./TokenDialog";
+import { checkRoamJSTokenWarning } from "./TokenDialog";
 import apiGet from "../util/apiGet";
 import apiPost from "../util/apiPost";
 import type { Field, UnionField } from "./ConfigPanels/types";
@@ -308,11 +308,13 @@ type ConfigTab = {
   fields: Field<UnionField>[];
 };
 
-type Config = {
-  tabs: ConfigTab[];
-  versioning?: boolean | ((props: VersionSwitcherProps) => void);
-  brand?: Brand;
-};
+type Config =
+  | {
+      tabs: ConfigTab[];
+      versioning?: boolean | ((props: VersionSwitcherProps) => void);
+      brand?: Brand;
+    }
+  | Field<UnionField>[];
 
 const FieldTabs = ({
   id,
@@ -429,7 +431,10 @@ const ConfigPage = ({
   config: Config;
   pageUid: string;
 }): React.ReactElement => {
-  const userTabs = config.tabs.filter((t) => t.fields.length || t.toggleable);
+  const isLegacy = "tabs" in config;
+  const userTabs = isLegacy
+    ? config.tabs.filter((t) => t.fields.length || t.toggleable)
+    : [{ fields: config, id: "home" }];
   const [selectedTabId, setSelectedTabId] = useState(userTabs[0]?.id);
   const onTabsChange = useCallback(
     (tabId: string) => setSelectedTabId(tabId),
@@ -443,33 +448,6 @@ const ConfigPage = ({
   const experimentalMode = useMemo(() => localStorageGet("experimental"), []);
   return (
     <Card style={{ color: "#202B33" }} className={"roamjs-config-panel"}>
-      <style>
-        {`.roamjs-config-panel .bp3-tab-panel {
-  width: 100%;
-  position: relative;
-}
-.roamjs-external-login {
-  margin-bottom: 16px;
-}
-${
-  config.brand &&
-  `div.bp3-tab[aria-selected="true"], div.bp3-tab:not([aria-disabled="true"]):hover {
-  color: ${config.brand.base};
-}
-
-.bp3-tab-indicator-wrapper div.bp3-tab-indicator, .bp3-control:hover input:checked ~ span.bp3-control-indicator {
-  background-color: ${config.brand.base};
-}
-
-.bp3-tabs.bp3-vertical>.bp3-tab-list .bp3-tab-indicator-wrapper div.bp3-tab-indicator {
-  background-color: ${config.brand.faded};
-}
-
-.bp3-control input:checked ~ span.bp3-control-indicator {
-  background-color: ${config.brand.bright}
-}`
-}`}
-      </style>
       <div
         style={{ display: "flex", justifyContent: "space-between" }}
         ref={titleRef}
@@ -480,7 +458,7 @@ ${
           <span style={{ color: "#cccccc", fontSize: 8 }}>
             v{currentVersion}
           </span>
-          {typeof config.versioning === "function" && (
+          {"versioning" in config && typeof config.versioning === "function" && (
             <Button
               icon={"git-branch"}
               minimal
@@ -497,57 +475,69 @@ ${
         </span>
       </div>
       <style>{`.roamjs-config-tabs {\npadding: 4px;\n}`}</style>
-      <Tabs
-        id={`${id}-config-tabs`}
-        onChange={onTabsChange}
-        selectedTabId={selectedTabId}
-        renderActiveTabPanelOnly
-        className={"roamjs-config-tabs"}
-      >
-        {userTabs.map(
-          (
-            {
-              id: tabId,
-              fields,
-              toggleable,
-              development = false,
-              onEnable,
-              onDisable,
-            },
-            i
-          ) => (
-            <Tab
-              id={tabId}
-              key={tabId}
-              title={idToTitle(tabId)}
-              disabled={development && !experimentalMode}
-              panel={
-                <FieldTabs
-                  id={tabId}
-                  extensionId={id}
-                  fields={fields}
-                  uid={
-                    tree.find((t) => new RegExp(tabId, "i").test(t.text))
-                      ?.uid || ""
-                  }
-                  pageUid={pageUid}
-                  order={i}
-                  toggleable={toggleable}
-                  onEnable={onEnable}
-                  onDisable={onDisable}
-                />
-              }
-            />
-          )
-        )}
-      </Tabs>
+      {isLegacy ? (
+        <Tabs
+          id={`${id}-config-tabs`}
+          onChange={onTabsChange}
+          selectedTabId={selectedTabId}
+          renderActiveTabPanelOnly
+          className={"roamjs-config-tabs"}
+        >
+          {userTabs.map(
+            (
+              {
+                id: tabId,
+                fields,
+                toggleable,
+                development = false,
+                onEnable,
+                onDisable,
+              },
+              i
+            ) => (
+              <Tab
+                id={tabId}
+                key={tabId}
+                title={idToTitle(tabId)}
+                disabled={development && !experimentalMode}
+                panel={
+                  <FieldTabs
+                    id={tabId}
+                    extensionId={id}
+                    fields={fields}
+                    uid={
+                      tree.find((t) => new RegExp(tabId, "i").test(t.text))
+                        ?.uid || ""
+                    }
+                    pageUid={pageUid}
+                    order={i}
+                    toggleable={toggleable}
+                    onEnable={onEnable}
+                    onDisable={onDisable}
+                  />
+                }
+              />
+            )
+          )}
+        </Tabs>
+      ) : (
+        <FieldTabs
+          id={"home"}
+          extensionId={id}
+          fields={config}
+          uid={pageUid}
+          pageUid={pageUid}
+          order={0}
+          toggleable={false}
+        />
+      )}
     </Card>
   );
 };
 
 // TODO: better nested type discrimination here
-const fieldsToChildren = (t: ConfigTab) =>
-  t.fields
+const fieldsToChildren = (fields: Field<UnionField>[]) =>
+  fields
     .filter((f) => !!f.defaultValue)
     .map((f) => ({
       text: f.title,
@@ -572,15 +562,20 @@ const createConfigPage = ({
   title: string;
   config: Config;
 }) => {
-  const homeTab = config.tabs.find((t) => /home/i.test(t.id)) as ConfigTab;
+  const homeTab =
+    "tabs" in config
+      ? config.tabs.find((t) => /home/i.test(t.id))?.fields
+      : config;
   const rawTree = [
     ...(homeTab ? fieldsToChildren(homeTab) : []),
-    ...config.tabs
-      .filter((t) => !/home/i.test(t.id) && !t.toggleable && !t.development)
-      .map((t) => ({
-        text: t.id,
-        children: fieldsToChildren(t),
-      })),
+    ...("tabs" in config
+      ? config.tabs
+          .filter((t) => !/home/i.test(t.id) && !t.toggleable && !t.development)
+          .map((t) => ({
+            text: t.id,
+            children: fieldsToChildren(t.fields),
+          }))
+      : []),
   ];
   return createPage({
     title,
@@ -631,20 +626,7 @@ export const createConfigObserver = async ({
       title,
       config,
     }));
-  if (config.tabs.length) {
-    if (config.tabs.some((t) => t.toggleable === "premium"))
-      addTokenDialogCommand({
-        onEnter: (token) => {
-          const toggleablePanel = document.getElementById(
-            "roamjs-toggleable-container"
-          );
-          if (toggleablePanel)
-            toggleablePanel.dispatchEvent(
-              new CustomEvent("roamjs:token:set", { detail: token })
-            );
-        },
-      });
-
+  if ("tabs" in config ? !!config.tabs.length : !!config.length) {
     const observer = createHTMLObserver({
       className: "rm-title-display",
       tag: "H1",

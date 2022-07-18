@@ -1,4 +1,3 @@
-import React, { ChangeEvent } from "react";
 import { createConfigObserver } from "../components/ConfigPage";
 import CustomPanel from "../components/ConfigPanels/CustomPanel";
 import FlagPanel from "../components/ConfigPanels/FlagPanel";
@@ -12,6 +11,7 @@ import getSettingValueFromTree from "./getSettingValueFromTree";
 import setInputSetting from "./setInputSetting";
 import toConfigPageName from "./toConfigPageName";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
+import { OnloadArgs } from "../types/native";
 
 type RunReturn = {
   elements?: HTMLElement[];
@@ -44,62 +44,6 @@ type RunReturn = {
   )[];
   commands?: string[];
   timeouts?: { timeout: number }[];
-};
-
-type ButtonAction = {
-  type: "button";
-  onClick?: (e: MouseEvent) => void;
-  content: string;
-};
-
-type SwitchAction = {
-  type: "switch";
-  onChange?: (e: ChangeEvent) => void;
-};
-
-type InputAction = {
-  type: "input";
-  placeholder: string;
-  onChange?: (e: ChangeEvent) => void;
-};
-
-type SelectAction = {
-  type: "select";
-  items: string[];
-  onChange?: (e: ChangeEvent) => void;
-};
-
-type CustomAction = {
-  type: "reactComponent";
-  component: React.FC;
-};
-
-type PanelConfig = {
-  tabTitle: string;
-  settings: {
-    id: string;
-    name: string;
-    description: string;
-    action:
-      | ButtonAction
-      | SwitchAction
-      | InputAction
-      | SelectAction
-      | CustomAction;
-  }[];
-};
-
-type OnloadArgs = {
-  extensionAPI: {
-    settings: {
-      get: (k: string) => unknown;
-      getAll: () => string[];
-      panel: {
-        create: (c: PanelConfig) => void;
-      };
-      set: (k: string, v: unknown) => void;
-    };
-  };
 };
 
 const runExtension = (

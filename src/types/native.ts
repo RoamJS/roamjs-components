@@ -1,6 +1,8 @@
 // emulating Datalog Grammar
 // https://docs.datomic.com/cloud/query/query-data-reference.html#or-clauses
 
+import { ChangeEvent } from "react";
+
 export type DatalogFnArg = DatalogSrcVar | DatalogVariable | DatalogConstant;
 
 export type DatalogSrcVar = {
@@ -394,4 +396,60 @@ export type AddPullWatch = (
   pullPattern: string,
   entityId: string,
   callback: (before: PullBlock | null, after: PullBlock | null) => void
-) => boolean
+) => boolean;
+
+type ButtonAction = {
+  type: "button";
+  onClick?: (e: MouseEvent) => void;
+  content: string;
+};
+
+type SwitchAction = {
+  type: "switch";
+  onChange?: (e: ChangeEvent) => void;
+};
+
+type InputAction = {
+  type: "input";
+  placeholder: string;
+  onChange?: (e: ChangeEvent) => void;
+};
+
+type SelectAction = {
+  type: "select";
+  items: string[];
+  onChange?: (e: ChangeEvent) => void;
+};
+
+type CustomAction = {
+  type: "reactComponent";
+  component: React.FC;
+};
+
+type PanelConfig = {
+  tabTitle: string;
+  settings: {
+    id: string;
+    name: string;
+    description: string;
+    action:
+      | ButtonAction
+      | SwitchAction
+      | InputAction
+      | SelectAction
+      | CustomAction;
+  }[];
+};
+
+export type OnloadArgs = {
+  extensionAPI: {
+    settings: {
+      get: (k: string) => unknown;
+      getAll: () => string[];
+      panel: {
+        create: (c: PanelConfig) => void;
+      };
+      set: (k: string, v: unknown) => void;
+    };
+  };
+};

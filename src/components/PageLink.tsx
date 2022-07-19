@@ -7,7 +7,10 @@ const PageLink = ({
   uid,
   onCtrlClick,
   children,
-}: React.PropsWithChildren<{ uid: string, onCtrlClick?: (e: React.MouseEvent) => void }>) => (
+}: React.PropsWithChildren<{
+  uid: string;
+  onCtrlClick?: (e: React.MouseEvent) => void;
+}>) => (
   <a
     className={"rm-page-ref"}
     data-link-title={getPageTitleByPageUid(uid) || ""}

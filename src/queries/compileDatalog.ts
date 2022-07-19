@@ -6,6 +6,8 @@ import type {
   DatalogFnArg,
 } from "../types";
 
+const toVar = (v = "undefined") => v.replace(/[\s,{}/-]/g, "");
+
 const compileDatalog = (
   d:
     | Partial<DatalogClause>
@@ -23,12 +25,12 @@ const compileDatalog = (
         .map((a) => compileDatalog(a, level))
         .join(" ")}]`;
     case "src-var":
-      return `$${(d.value || "undefined").replace(/[\s,{}]/g, "")}`;
+      return `$${toVar(d.value)}`;
     case "constant":
     case "underscore":
       return d.value || "_";
     case "variable":
-      return `?${(d.value || "undefined").replace(/[\s,{}]/g, "")}`;
+      return `?${toVar(d.value)}`;
     case "fn-expr":
       if (!d.binding) return "";
       return `[(${d.fn} ${(d.arguments || [])

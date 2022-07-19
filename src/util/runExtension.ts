@@ -132,7 +132,7 @@ const runExtension = (
   } else {
     if (migratedTo) {
       renderSimpleAlert({
-        content: `ATTENTION: This RoamJS extension could now be found in the RoamDepot! It has been migrated to the ${migratedTo} extension from RoamDepot, which you could find by entering the Roam Depot Marketplace from the command palette.
+        content: `ATTENTION: This RoamJS extension (${extensionId}) could now be found in the RoamDepot! It has been migrated to the ${migratedTo} extension from RoamDepot, which you could find by entering the Roam Depot Marketplace from the command palette.
 
 Please remove the \`{{[[roam/js]]}}\` code that installed this extension and refresh before installing from RoamDepot.`,
       });

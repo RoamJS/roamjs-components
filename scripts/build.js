@@ -17,6 +17,7 @@ esbuild({
   define: {
     "process.env.ROAMJS_VERSION": '"development"',
     "process.env.ROAM_MARKETPLACE": "false",
+    "process.env.ROAM_DEPOT": "false",
     "process.env.CLIENT_SIDE": "true",
     "process.env.BLUEPRINT_NAMESPACE": '"bp3"',
     "process.env.CUSTOM_ROAMJS_ORIGIN": '"https://roamjs.com"',

@@ -75,7 +75,6 @@ const TokenDialog = ({ onClose, onEnter }: { onClose: () => void } & Props) => {
         isOpen={true}
         title={`Add RoamJS Token`}
         onClose={dialogOnClose}
-        isCloseButtonShown
         canOutsideClickClose
         canEscapeKeyClose
         autoFocus={false}

@@ -25,7 +25,12 @@ const migrateLegacySettings = ({
         };
       }
     })
-    .filter((c) => process.env.ROAM_MARKETPLACE === "true" || c.attributeConfig)
+    .filter(
+      (c) =>
+        process.env.ROAM_MARKETPLACE === "true" ||
+        process.env.ROAM_DEPOT === "true" ||
+        c.attributeConfig
+    )
     .forEach((c) =>
       deleteBlock(c.uid).then(() =>
         extensionAPI.settings.set(

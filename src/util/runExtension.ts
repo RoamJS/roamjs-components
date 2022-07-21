@@ -51,7 +51,7 @@ const runExtension = (
     | string
     | {
         migratedTo?: string;
-        roamMarketplace?: boolean;
+        roamDepot?: boolean;
         extensionId: string;
         run?: (
           args: OnloadArgs
@@ -64,10 +64,12 @@ const runExtension = (
 ): void | { onload: (args: OnloadArgs) => void; onunload: () => void } => {
   const extensionId = typeof args === "string" ? args : args.extensionId;
   const run = typeof args === "string" ? _run : args.run;
-  const roamMarketplace =
+  const roamDepot =
     typeof args === "string"
       ? false
-      : args.roamMarketplace || process.env.ROAM_MARKETPLACE === "true";
+      : args.roamDepot ||
+        process.env.ROAM_MARKETPLACE === "true" ||
+        process.env.ROAM_DEPOT === "true";
   const unload = typeof args === "string" ? () => Promise.resolve : args.unload;
   const migratedTo = typeof args === "string" ? "" : args.migratedTo;
 
@@ -124,7 +126,7 @@ const runExtension = (
     }
     // how to handle adding RoamJS token command? it's own extension depending on dependency management?
   };
-  if (roamMarketplace) {
+  if (roamDepot) {
     return {
       onload,
       onunload,

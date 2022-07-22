@@ -6,11 +6,12 @@ import TextPanel from "../components/ConfigPanels/TextPanel";
 import { Field, UnionField } from "../components/ConfigPanels/types";
 import addStyle from "../dom/addStyle";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
-import getSettingValueFromTree from "./getSettingValueFromTree";
 import setInputSetting from "./setInputSetting";
 import toConfigPageName from "./toConfigPageName";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
 import { OnloadArgs } from "../types/native";
+import getSubTree from "./getSubTree";
+import { createBlock, deleteBlock } from "../writes";
 
 type RunReturn = {
   elements?: HTMLElement[];
@@ -145,19 +146,36 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
     return onload({
       extensionAPI: {
         settings: {
-          get: (key) =>
-            getSettingValueFromTree({
-              tree: getBasicTreeByParentUid(configPageUid),
-              key,
-            }),
+          get: (key) => {
+            const tree = getBasicTreeByParentUid(configPageUid);
+            const field = getSubTree({ tree, key });
+            if (field.uid) {
+              if (field.children.length === 0) {
+                return true;
+              }
+              return field.children[0].text;
+            }
+            return "";
+          },
           getAll: () =>
             getBasicTreeByParentUid(configPageUid).map((t) => t.text),
-          set: (key, v) =>
-            setInputSetting({
-              blockUid: configPageUid,
-              key,
-              value: typeof v === "string" ? v : `${v}`,
-            }),
+          set: (key, v) => {
+            if (typeof v === "boolean") {
+              const tree = getBasicTreeByParentUid(configPageUid);
+              const field = getSubTree({ tree, key });
+              if (v && !field.uid) {
+                createBlock({ parentUid: configPageUid, node: { text: key } });
+              } else if (!v && field.uid) {
+                deleteBlock(field.uid);
+              }
+            } else if (typeof v === "string") {
+              setInputSetting({
+                blockUid: configPageUid,
+                key,
+                value: v,
+              });
+            }
+          },
           panel: {
             create: (config) => {
               createConfigObserver({

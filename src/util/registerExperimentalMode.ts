@@ -70,6 +70,7 @@ Are you sure you want to enable the experimental ${
     }
   };
   toggleExperimentalModeFeatures(localStorageGet(key) === "true", true);
+  return label;
 };
 
 export default registerExperimentalMode;

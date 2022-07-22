@@ -19,7 +19,7 @@ const migrateLegacySettings = ({
       } else {
         return {
           key: c.text,
-          value: c.children[0]?.text,
+          value: c.children[0]?.text || true,
           attributeConfig: false,
           uid: c.uid,
         };

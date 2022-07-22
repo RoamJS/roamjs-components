@@ -6,7 +6,6 @@ import TextPanel from "../components/ConfigPanels/TextPanel";
 import { Field, UnionField } from "../components/ConfigPanels/types";
 import addStyle from "../dom/addStyle";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
-import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getSettingValueFromTree from "./getSettingValueFromTree";
 import setInputSetting from "./setInputSetting";
 import toConfigPageName from "./toConfigPageName";
@@ -74,6 +73,8 @@ const runExtension = (
   const migratedTo = typeof args === "string" ? "" : args.migratedTo;
 
   let loaded: RunReturn | undefined | void = undefined;
+  let configObserver: MutationObserver | undefined = undefined;
+  let configPageUid = "";
   const onload = (args: OnloadArgs) => {
     if (window.roamjs?.loaded?.has?.(extensionId)) {
       return;
@@ -108,6 +109,7 @@ const runExtension = (
   const onunload = () => {
     unload?.();
     if (loaded) {
+      configObserver?.disconnect?.();
       (loaded.elements || []).forEach((e) => e.remove());
       (loaded.observers || []).forEach((e) => e.disconnect());
       (loaded.domListeners || []).forEach((e) =>
@@ -145,21 +147,19 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
         settings: {
           get: (key) =>
             getSettingValueFromTree({
-              tree: getBasicTreeByParentUid(getPageUidByPageTitle(title)),
+              tree: getBasicTreeByParentUid(configPageUid),
               key,
             }),
           getAll: () =>
-            getBasicTreeByParentUid(getPageUidByPageTitle(title)).map(
-              (t) => t.text
-            ),
+            getBasicTreeByParentUid(configPageUid).map((t) => t.text),
           set: (key, v) =>
             setInputSetting({
-              blockUid: getPageUidByPageTitle(title),
+              blockUid: configPageUid,
               key,
               value: typeof v === "string" ? v : `${v}`,
             }),
           panel: {
-            create: (config) =>
+            create: (config) => {
               createConfigObserver({
                 title,
                 config: config.settings.map((s) => {
@@ -204,7 +204,11 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
                   }
                   // typescript why do I need this here
                 }) as Field<UnionField>[],
-              }),
+              }).then(({ observer, pageUid }) => {
+                configObserver = observer;
+                configPageUid = pageUid;
+              });
+            },
           },
         },
       },

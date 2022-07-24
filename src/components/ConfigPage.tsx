@@ -1,15 +1,5 @@
-import {
-  Button,
-  Card,
-  Tab,
-  Tabs,
-} from "@blueprintjs/core";
-import React, {
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Button, Card, Tab, Tabs } from "@blueprintjs/core";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import createHTMLObserver from "../dom/createHTMLObserver";
 import createBlock from "../writes/createBlock";

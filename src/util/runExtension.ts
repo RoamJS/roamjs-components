@@ -143,6 +143,45 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
       });
     }
     const title = toConfigPageName(extensionId);
+    const mockSettingSet = (key: string, v: unknown, parentUid: string) => {
+      if (typeof v === "boolean") {
+        const tree = getBasicTreeByParentUid(parentUid);
+        const field = getSubTree({ tree, key });
+        if (v && !field.uid) {
+          createBlock({ parentUid, node: { text: key } });
+        } else if (!v && field.uid) {
+          deleteBlock(field.uid);
+        }
+      } else if (typeof v === "string" || typeof v === "number") {
+        setInputSetting({
+          blockUid: parentUid,
+          key,
+          value: `${v}`,
+        });
+      } else if (Array.isArray(v)) {
+        const tree = getBasicTreeByParentUid(parentUid);
+        const field = getSubTree({ tree, key });
+        const uid = field.uid || window.roamAlphaAPI.util.generateUID();
+        if (!field.uid) {
+          createBlock({ parentUid, node: { text: key, uid } });
+        } else {
+          field.children.map((c) => deleteBlock(c.uid));
+        }
+        v.forEach((c, order) =>
+          createBlock({ parentUid, node: { text: c }, order })
+        );
+      } else if (typeof v === "object" && v !== null) {
+        const tree = getBasicTreeByParentUid(parentUid);
+        const field = getSubTree({ tree, key });
+        const uid = field.uid || window.roamAlphaAPI.util.generateUID();
+        if (!field.uid) {
+          createBlock({ parentUid, node: { text: key, uid } });
+        } else {
+          field.children.map((c) => deleteBlock(c.uid));
+        }
+        Object.entries(v).forEach(([kk, vv]) => mockSettingSet(kk, vv, uid));
+      }
+    };
     return onload({
       extensionAPI: {
         settings: {
@@ -159,23 +198,7 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
           },
           getAll: () =>
             getBasicTreeByParentUid(configPageUid).map((t) => t.text),
-          set: (key, v) => {
-            if (typeof v === "boolean") {
-              const tree = getBasicTreeByParentUid(configPageUid);
-              const field = getSubTree({ tree, key });
-              if (v && !field.uid) {
-                createBlock({ parentUid: configPageUid, node: { text: key } });
-              } else if (!v && field.uid) {
-                deleteBlock(field.uid);
-              }
-            } else if (typeof v === "string") {
-              setInputSetting({
-                blockUid: configPageUid,
-                key,
-                value: v,
-              });
-            }
-          },
+          set: (key, v) => mockSettingSet(key, v, configPageUid),
           panel: {
             create: (config) => {
               createConfigObserver({

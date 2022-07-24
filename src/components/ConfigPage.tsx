@@ -1,16 +1,11 @@
 import {
-  Alert,
   Button,
   Card,
-  Intent,
-  Spinner,
-  Switch,
   Tab,
   Tabs,
 } from "@blueprintjs/core";
 import React, {
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -19,285 +14,15 @@ import ReactDOM from "react-dom";
 import createHTMLObserver from "../dom/createHTMLObserver";
 import createBlock from "../writes/createBlock";
 import createPage from "../writes/createPage";
-import deleteBlock from "../writes/deleteBlock";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getShallowTreeByParentUid from "../queries/getShallowTreeByParentUid";
 import localStorageGet from "../util/localStorageGet";
 import idToTitle from "../util/idToTitle";
-import { checkRoamJSTokenWarning } from "./TokenDialog";
-import apiGet from "../util/apiGet";
-import apiPost from "../util/apiPost";
 import type { Field, UnionField } from "./ConfigPanels/types";
 import { Brand } from "./ConfigPanels/getBrandColors";
 import { InputTextNode } from "../types";
 import { VersionSwitcherProps } from "./VersionSwitcher";
-
-const ToggleablePanel = ({
-  enabled,
-  setEnabled,
-  pageUid,
-  order,
-  id,
-  extensionId,
-  setUid,
-  uid,
-  toggleable,
-  onEnable,
-  onDisable,
-}: {
-  uid: string;
-  id: string;
-  extensionId: string;
-  pageUid: string;
-  order: number;
-  enabled: boolean;
-  toggleable: Exclude<Required<ConfigTab["toggleable"]>, false | undefined>;
-  setEnabled: (b: boolean) => void;
-  setUid: (s: string) => void;
-  onEnable?: () => void;
-  onDisable?: () => void;
-}) => {
-  const uidRef = useRef(uid);
-  const isPremium = useMemo(() => toggleable !== true, [toggleable]);
-  const dev = useMemo(
-    () =>
-      ["dev", "ngrok", "localhost"].some((s) =>
-        (process.env.API_URL || "").includes(s)
-      )
-        ? "&dev=true"
-        : "",
-    []
-  );
-  const [productDescription, setProductDescription] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(isPremium);
-  const [alertLoading, setAlertLoading] = useState(false);
-  const enableCallback = useCallback(
-    (checked: boolean, uid: string) => {
-      setEnabled(checked);
-      if (checked) {
-        createBlock({
-          parentUid: pageUid,
-          order,
-          node: { text: id },
-        })
-          .then((newUid) => {
-            setUid(newUid);
-            uidRef.current = newUid;
-          })
-          .then(() => onEnable?.());
-      } else {
-        deleteBlock(uid)
-          .then(() => {
-            setUid("");
-            uidRef.current = "";
-          })
-          .then(() => onDisable?.());
-      }
-    },
-    [setUid, setEnabled, id, pageUid, order, onEnable, onDisable]
-  );
-  const [isOpen, setIsOpen] = useState(false);
-  const intervalListener = useRef(0);
-  const catchError = useCallback((e: Error) => setError(e.message), [setError]);
-  useEffect(() => {
-    if (isPremium) {
-      apiGet<{ description: string }>({
-        domain: "https://lambda.roamjs.com",
-        path: `price?extensionId=${extensionId}${dev}`,
-        anonymous: true,
-      })
-        .then((r) => {
-          setProductDescription(
-            r.description || "No extension specific description found."
-          );
-        })
-        .catch(catchError);
-    }
-  }, [isPremium, setProductDescription, dev]);
-  const checkSubscription = useCallback(
-    (token: string) => {
-      setLoading(true);
-      setError("");
-      setEnabled(false);
-      (token
-        ? apiGet<{ success: boolean }>({
-            domain: "https://lambda.roamjs.com",
-            path: `check?extensionId=${extensionId}${dev}`,
-          }).then((r) => {
-            if (!r.success && uidRef.current) {
-              enableCallback(false, uidRef.current);
-            } else if (r.success && !uidRef.current) {
-              enableCallback(true, uidRef.current);
-            } else {
-              setEnabled(r.success);
-            }
-          })
-        : Promise.reject(
-            new Error(
-              `Must set a RoamJS token in order to use these features. To set your RoamJS token, open the Roam command palette and enter "Set RoamJS Token"`
-            )
-          )
-      )
-        .catch((e) => {
-          if (uidRef.current) enableCallback(false, uidRef.current);
-          catchError(e);
-        })
-        .finally(() => setLoading(false));
-    },
-    [catchError, extensionId, dev, uidRef, enableCallback, setLoading, setError]
-  );
-  const containerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (isPremium) {
-      checkRoamJSTokenWarning().then(checkSubscription);
-      if (containerRef.current)
-        containerRef.current?.addEventListener("roamjs:token:set", ((
-          e: CustomEvent
-        ) => checkSubscription(e.detail)) as EventListener);
-    }
-    return () => clearTimeout(intervalListener.current);
-  }, [isPremium, checkSubscription]);
-  return (
-    <div id={"roamjs-toggleable-container"} ref={containerRef}>
-      {loading ? (
-        <div
-          style={{
-            whiteSpace: "pre-wrap",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <span style={{ opacity: 0.75 }}>
-            Checking to see if you are subscribed to RoamJS{" "}
-            {idToTitle(extensionId)}...
-          </span>
-          <Spinner size={16} />
-        </div>
-      ) : (
-        <>
-          <Switch
-            labelElement={enabled ? "Enabled" : "Disabled"}
-            checked={enabled}
-            onChange={(e) =>
-              isPremium
-                ? setIsOpen(true)
-                : enableCallback((e.target as HTMLInputElement).checked, uid)
-            }
-          />
-          <p style={{ whiteSpace: "pre-wrap" }}>
-            {isPremium &&
-              (enabled
-                ? `You have sucessfully subscribed!\n\nConfigure this feature with the tabs on the left.`
-                : `This is a premium feature and will require a paid subscription to enable.\n\n${productDescription}`)}
-          </p>
-        </>
-      )}
-      <p style={{ color: "red" }}>{error}</p>
-      <Alert
-        isOpen={isOpen}
-        onConfirm={() => {
-          setAlertLoading(true);
-          setError("");
-          if (enabled) {
-            apiPost({
-              domain: "https://lambda.roamjs.com",
-              path: `unsubscribe`,
-              data: {
-                extensionId,
-                dev: !!dev,
-              },
-            })
-              .then(() => {
-                enableCallback(false, uid);
-              })
-              .catch(catchError)
-              .finally(() => {
-                setAlertLoading(false);
-                setIsOpen(false);
-              });
-          } else {
-            apiPost<{ url: string; success: boolean }>({
-              domain: "https://lambda.roamjs.com",
-              path: `subscribe`,
-              data: {
-                extensionId,
-                dev: !!dev,
-              },
-            })
-              .then((r) => {
-                if (r.url) {
-                  const width = 600;
-                  const height = 525;
-                  const left = window.screenX + (window.innerWidth - width) / 2;
-                  const top =
-                    window.screenY + (window.innerHeight - height) / 2;
-                  window.open(
-                    r.url,
-                    `roamjs:roamjs:stripe`,
-                    `left=${left},top=${top},width=${width},height=${height},status=1`
-                  );
-                  const authInterval = () => {
-                    apiGet<{ success: boolean }>({
-                      path: `check?extensionId=${extensionId}${dev}`,
-                      domain: "https://lambda.roamjs.com",
-                    })
-                      .then((r) => {
-                        if (r.success) {
-                          enableCallback(true, uid);
-                          setAlertLoading(false);
-                          setIsOpen(false);
-                        } else {
-                          intervalListener.current = window.setTimeout(
-                            authInterval,
-                            2000
-                          );
-                        }
-                      })
-                      .catch((e) => {
-                        catchError(e);
-                        setAlertLoading(false);
-                        setIsOpen(false);
-                      });
-                  };
-                  authInterval();
-                } else if (r.success) {
-                  enableCallback(true, uid);
-                  setAlertLoading(false);
-                  setIsOpen(false);
-                } else {
-                  setError(
-                    "Something went wrong with the subscription. Please contact support@roamjs.com for help!"
-                  );
-                  setAlertLoading(false);
-                  setIsOpen(false);
-                }
-              })
-              .catch(catchError)
-              .finally(() => {
-                setAlertLoading(false);
-                setIsOpen(false);
-              });
-          }
-        }}
-        confirmButtonText={"Submit"}
-        cancelButtonText={"Cancel"}
-        intent={Intent.PRIMARY}
-        loading={alertLoading}
-        onCancel={() => setIsOpen(false)}
-      >
-        {enabled
-          ? `By clicking submit below, you will unsubscribe from the premium features of the RoamJS Extension: ${idToTitle(
-              extensionId
-            )}`
-          : `By clicking submit below, you will subscribe to the premium features of the RoamJS Extension: ${idToTitle(
-              extensionId
-            )}.\n\nA window may appear for checkout if this is your first premium extension.`}
-      </Alert>
-    </div>
-  );
-};
 
 type ConfigTab = {
   id: string;
@@ -319,20 +44,16 @@ type Config =
 const FieldTabs = ({
   id,
   fields,
-  uid: initialUid,
+  uid,
   pageUid,
   order,
   toggleable,
-  extensionId,
-  onEnable,
-  onDisable,
 }: {
   uid: string;
   pageUid: string;
   order: number;
   extensionId: string;
 } & ConfigTab) => {
-  const [uid, setUid] = useState(initialUid);
   const parentUid = useMemo(() => {
     if (/home/i.test(id)) {
       return pageUid;
@@ -357,9 +78,8 @@ const FieldTabs = ({
       uid,
     ])
   );
-  const [enabled, setEnabled] = useState(!toggleable || !!parentUid);
   const [selectedTabId, setSelectedTabId] = useState(
-    enabled && fields.length && typeof toggleable !== "string"
+    fields.length && typeof toggleable !== "string"
       ? fields[0].title
       : "enabled"
   );
@@ -375,29 +95,6 @@ const FieldTabs = ({
       selectedTabId={selectedTabId}
       renderActiveTabPanelOnly
     >
-      {toggleable && (
-        <Tab
-          id={"enabled"}
-          title={"enabled"}
-          panel={
-            selectedTabId === "enabled" ? (
-              <ToggleablePanel
-                id={id}
-                uid={uid}
-                pageUid={pageUid}
-                extensionId={extensionId}
-                enabled={enabled}
-                order={order}
-                toggleable={toggleable}
-                setUid={setUid}
-                setEnabled={setEnabled}
-                onEnable={onEnable}
-                onDisable={onDisable}
-              />
-            ) : undefined
-          }
-        />
-      )}
       {fields.map((field, i) => {
         const { Panel, title, defaultValue } = field;
         return (
@@ -405,7 +102,6 @@ const FieldTabs = ({
             id={title}
             key={title}
             title={idToTitle(title)}
-            disabled={!enabled}
             panel={
               <Panel
                 {...field}

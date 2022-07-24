@@ -406,19 +406,19 @@ type ButtonAction = {
 
 type SwitchAction = {
   type: "switch";
-  onChange?: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 type InputAction = {
   type: "input";
   placeholder: string;
-  onChange?: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 type SelectAction = {
   type: "select";
   items: string[];
-  onChange?: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 type CustomAction = {

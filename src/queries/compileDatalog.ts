@@ -6,7 +6,7 @@ import type {
   DatalogFnArg,
 } from "../types";
 
-const toVar = (v = "undefined") => v.replace(/[\s,{}/-]/g, "");
+const toVar = (v = "undefined") => v.replace(/[\s,{}/]/g, "");
 
 const compileDatalog = (
   d:

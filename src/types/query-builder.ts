@@ -1,4 +1,5 @@
 import { DatalogClause, PullBlock, RoamBasicNode } from "./native";
+import type { Filters } from "../components/Filter";
 
 type QBBase = { uid: string };
 
@@ -72,6 +73,8 @@ export type ResultsViewComponent = (props: {
   onRefresh?: () => void;
   getExportTypes?: (r: Result[]) => ExportTypes;
   onResultsInViewChange?: (r: Result[]) => void;
+  globalFiltersData?: Record<string, Filters>;
+  globalPageSize?: number;
 }) => JSX.Element;
 
 export type ExportDialogComponent = (props: {

@@ -445,7 +445,7 @@ export type OnloadArgs = {
   extensionAPI: {
     settings: {
       get: (k: string) => unknown;
-      getAll: () => string[];
+      getAll: () => Record<string, unknown>;
       panel: {
         create: (c: PanelConfig) => void;
       };

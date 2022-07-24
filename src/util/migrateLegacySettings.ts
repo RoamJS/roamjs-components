@@ -1,7 +1,6 @@
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import { OnloadArgs, RoamBasicNode } from "../types/native";
-import deleteBlock from "../writes/deleteBlock";
 import toConfigPageName from "./toConfigPageName";
 
 const migrateLegacySettings = ({
@@ -43,12 +42,7 @@ const migrateLegacySettings = ({
         c.attributeConfig
     )
     .forEach((c) =>
-      deleteBlock(c.uid).then(() =>
-        extensionAPI.settings.set(
-          c.key.replace(/ /, "-").toLowerCase(),
-          c.value
-        )
-      )
+      extensionAPI.settings.set(c.key.replace(/ /, "-").toLowerCase(), c.value)
     );
 };
 

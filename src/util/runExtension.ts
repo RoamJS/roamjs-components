@@ -182,22 +182,36 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
         Object.entries(v).forEach(([kk, vv]) => mockSettingSet(kk, vv, uid));
       }
     };
+    const mockSettingGet = (key: string, parentUid: string): unknown => {
+      const tree = getBasicTreeByParentUid(parentUid);
+      const field = getSubTree({ tree, key });
+      if (field.uid) {
+        if (field.children.length === 0) {
+          return true;
+        } else if (
+          field.children.length === 1 &&
+          field.children[0].children.length === 0
+        ) {
+          return field.children[0].text;
+        } else {
+          return Object.fromEntries(
+            field.children.map((c) => [c.text, mockSettingGet(c.text, c.uid)])
+          );
+        }
+      }
+      return "";
+    };
     return onload({
       extensionAPI: {
         settings: {
-          get: (key) => {
-            const tree = getBasicTreeByParentUid(configPageUid);
-            const field = getSubTree({ tree, key });
-            if (field.uid) {
-              if (field.children.length === 0) {
-                return true;
-              }
-              return field.children[0].text;
-            }
-            return "";
-          },
+          get: (key) => mockSettingGet(key, configPageUid),
           getAll: () =>
-            getBasicTreeByParentUid(configPageUid).map((t) => t.text),
+            Object.fromEntries(
+              getBasicTreeByParentUid(configPageUid).map((t) => [
+                t.text,
+                mockSettingGet(t.text, configPageUid),
+              ])
+            ),
           set: (key, v) => mockSettingSet(key, v, configPageUid),
           panel: {
             create: (config) => {

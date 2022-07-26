@@ -93,6 +93,9 @@ export type QueryPageComponent = (props: {
   configUid?: string;
   defaultReturnNode?: string;
   getExportTypes?: (r: Result[]) => ExportTypes;
+  globalFiltersData?: Record<string, Filters>;
+  globalPageSize?: number;
+  hideMetadata?: boolean;
 }) => JSX.Element;
 
 export type ParseQuery = (q: RoamBasicNode | string) => {

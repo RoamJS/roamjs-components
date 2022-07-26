@@ -17,20 +17,12 @@ import {
   ExportDialogComponent,
   QueryPageComponent,
 } from "./query-builder";
+import { SamePageApi } from "./samepage";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
 import type Markdown from "marked-react";
 import type JSZip from "jszip";
 export * from "./native";
-
-type json =
-  | string
-  | number
-  | boolean
-  | null
-  | { toJSON: () => string }
-  | json[]
-  | { [key: string]: json };
 
 declare global {
   interface Window {
@@ -176,22 +168,8 @@ declare global {
     roamjs: {
       loaded: Set<string>;
       extension: {
-        multiplayer?: {
-          addGraphListener: (args: {
-            operation: string;
-            handler: (e: json, graph: string) => void;
-          }) => void;
-          removeGraphListener: (args: { operation: string }) => void;
-          sendToGraph: (args: {
-            graph: string;
-            operation: string;
-            data?: { [k: string]: json };
-          }) => void;
-          getConnectedGraphs: () => string[];
-          getNetworkedGraphs: () => string[];
-          enable: () => void;
-          disable: () => void;
-        };
+        multiplayer?: SamePageApi;
+        samepage?: SamePageApi;
         queryBuilder?: {
           ExportDialog: ExportDialogComponent;
           QueryEditor: QueryEditorComponent;

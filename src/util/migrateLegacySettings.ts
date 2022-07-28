@@ -18,10 +18,13 @@ const migrateLegacySettings = ({
   const page = toConfigPageName(extensionId);
   const uid = getPageUidByPageTitle(page);
   if (uid) {
+    const label = `Migrate Settings: ${extensionId}`;
     window.roamAlphaAPI.ui.commandPalette.addCommand({
-      label: `Migrate Settings: ${extensionId}`,
+      label,
       callback: () => {
         renderSimpleAlert({
+          onCancel: true,
+          confirmText: "Confirm",
           content: `We detected some settings in your ${page} page. Should we try to migrate these settings to the Roam Depot version of the ${extensionId} extension?`,
           onConfirm: () => {
             const tree = getBasicTreeByParentUid(uid);
@@ -60,9 +63,13 @@ const migrateLegacySettings = ({
                   c.value
                 )
               );
-            window.roamAlphaAPI.updatePage({
-              page: { uid, title: `legacy/${page}` },
-            });
+            window.roamAlphaAPI
+              .updatePage({
+                page: { uid, title: `legacy/${page}` },
+              })
+              .then(() =>
+                window.roamAlphaAPI.ui.commandPalette.removeCommand({ label })
+              );
           },
         });
       },

@@ -47,14 +47,14 @@ export type DatalogNotJoinClause = {
 export type DatalogOrClause = {
   type: "or-clause";
   srcVar?: DatalogSrcVar;
-  clauses: (DatalogClause | DatalogAndClause)[];
+  clauses: DatalogClause[];
 };
 
 export type DatalogOrJoinClause = {
   type: "or-join-clause";
   srcVar?: DatalogSrcVar;
   variables: DatalogVariable[];
-  clauses: (DatalogClause | DatalogAndClause)[];
+  clauses: DatalogClause[];
 };
 
 export type DatalogClause =
@@ -62,7 +62,8 @@ export type DatalogClause =
   | DatalogOrJoinClause
   | DatalogExpressionClause
   | DatalogOrClause
-  | DatalogNotJoinClause;
+  | DatalogNotJoinClause
+  | DatalogAndClause;
 
 export type DatalogDataPattern = {
   type: "data-pattern";

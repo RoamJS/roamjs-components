@@ -3,8 +3,6 @@
 
 import { ChangeEvent } from "react";
 
-export type DatalogFnArg = DatalogSrcVar | DatalogVariable | DatalogConstant;
-
 export type DatalogSrcVar = {
   type: "src-var";
   value: string;
@@ -73,6 +71,7 @@ export type DatalogDataPattern = {
 };
 
 export type DatalogArgument =
+  | DatalogSrcVar
   | DatalogVariable
   | DatalogConstant
   | DatalogUnderscore;
@@ -92,13 +91,13 @@ export type DatalogPredExpr = {
     | "clojure.string/includes?"
     | "clojure.string/ends-with?"
     | "clojure.string/starts-with?";
-  arguments: DatalogFnArg[];
+  arguments: DatalogArgument[];
 };
 
 export type DatalogFnExpr = {
   type: "fn-expr";
   fn: "re-pattern";
-  arguments: DatalogFnArg[];
+  arguments: DatalogArgument[];
   binding: DatalogBinding;
 };
 

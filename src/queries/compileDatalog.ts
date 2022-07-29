@@ -1,19 +1,11 @@
-import type {
-  DatalogAndClause,
-  DatalogArgument,
-  DatalogBinding,
-  DatalogClause,
-  DatalogFnArg,
-} from "../types";
+import type { DatalogArgument, DatalogBinding, DatalogClause } from "../types";
 
 const toVar = (v = "undefined") => v.replace(/[^\w-]/g, "");
 
 const compileDatalog = (
   d:
     | Partial<DatalogClause>
-    | Partial<DatalogAndClause>
     | Partial<DatalogArgument>
-    | Partial<DatalogFnArg>
     | Partial<DatalogBinding>,
   level: number
 ): string => {

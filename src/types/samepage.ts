@@ -18,8 +18,4 @@ export type SamePageApi = {
     operation: string;
     data?: { [k: string]: json };
   }) => void;
-  getConnectedGraphs: () => string[];
-  getNetworkedGraphs: () => string[];
-  enable: () => void;
-  disable: () => void;
 };

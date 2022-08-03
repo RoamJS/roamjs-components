@@ -143,7 +143,8 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
       });
     }
     const title = toConfigPageName(extensionId);
-    const mockSettingSet = (key: string, v: unknown, parentUid: string) => {
+    const mockSettingSet = (_key: string, v: unknown, parentUid: string) => {
+      const key = _key.replace(/-/g, " ");
       if (typeof v === "boolean") {
         const tree = getBasicTreeByParentUid(parentUid);
         const field = getSubTree({ tree, key });
@@ -168,7 +169,7 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
           field.children.map((c) => deleteBlock(c.uid));
         }
         v.forEach((c, order) =>
-          createBlock({ parentUid, node: { text: c }, order })
+          createBlock({ parentUid: uid, node: { text: c }, order })
         );
       } else if (typeof v === "object" && v !== null) {
         const tree = getBasicTreeByParentUid(parentUid);
@@ -182,8 +183,9 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
         Object.entries(v).forEach(([kk, vv]) => mockSettingSet(kk, vv, uid));
       }
     };
-    const mockSettingGet = (key: string, parentUid: string): unknown => {
+    const mockSettingGet = (_key: string, parentUid: string): unknown => {
       const tree = getBasicTreeByParentUid(parentUid);
+      const key = _key.replace(/-/g, " ");
       const field = getSubTree({ tree, key });
       if (field.uid) {
         if (field.children.length === 0) {

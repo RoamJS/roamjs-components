@@ -123,4 +123,6 @@ export type RegisterDatalogTranslator = (args: {
     uid: string;
   }) => DatalogClause[];
   targetOptions?: string[] | ((source: string) => string[]);
+  placeholder?: string;
+  isVariable?: true;
 }) => void;

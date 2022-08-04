@@ -8,7 +8,11 @@ const MultiTextPanel: FieldPanel<MultiTextField> = (props) => {
     <MultiChildPanel
       {...props}
       InputComponent={({ value, setValue }) => (
-        <InputGroup value={value} onChange={(e) => setValue(e.target.value)} />
+        <InputGroup
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={props.options?.placeholder}
+        />
       )}
     />
   );

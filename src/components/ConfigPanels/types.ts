@@ -19,6 +19,9 @@ export type FieldPanel<T extends UnionField, U = Record<string, unknown>> = ((
 export type TextField = {
   type: "text";
   defaultValue?: string;
+  options?: {
+    placeholder?: string;
+  };
 };
 
 export type TimeField = {
@@ -42,6 +45,9 @@ export type FlagField = {
 export type MultiTextField = {
   type: "multitext";
   defaultValue?: string[];
+  options?: {
+    placeholder?: string;
+  };
 };
 
 export type PagesField = {
@@ -95,7 +101,7 @@ export type UnionField =
   | SelectField
   | BlockField;
 
-export type Field<T extends UnionField> = Omit<T, 'type'> & {
+export type Field<T extends UnionField> = Omit<T, "type"> & {
   title: string;
   description: string;
   Panel: FieldPanel<T>;

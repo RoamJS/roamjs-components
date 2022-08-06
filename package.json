@@ -15,8 +15,9 @@
     "postversion": "git push origin main && git push --tags",
     "jest": "jest --config jestconfig.json",
     "test": "npm run jest",
-    "prestart": "node scripts/build.js",
-    "start": "http-server -p 8000 build"
+    "prestart:new": "node scripts/build.js",
+    "start:new": "http-server -p 8000 build",
+    "start": "roamjs-scripts dev --depot"
   },
   "sideEffects": false,
   "license": "MIT",
@@ -81,7 +82,7 @@
     "http-server": "^14.1.1",
     "jest": "^26.6.3",
     "prettier": "^2.3.1",
-    "roamjs-scripts": "^0.18.15",
+    "roamjs-scripts": "^0.21.6",
     "ts-jest": "^26.5.6",
     "tslint-config-prettier": "^1.18.0",
     "tslint-react-hooks": "^2.2.2"

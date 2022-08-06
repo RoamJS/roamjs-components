@@ -1,9 +1,12 @@
 import ReactDOM from "react-dom";
 import React, { useState, useMemo } from "react";
+import { Button } from "@blueprintjs/core";
 
 import AutocompleteInput from "./components/AutocompleteInput";
+import FormDialog from "./components/FormDialog";
 import PageInput from "./components/PageInput";
 import runExtension from "./util/runExtension";
+import { createBlock } from "./writes";
 
 // const blockRender = (Component: React.FC) => {
 //   const block = window.roamAlphaAPI.ui.getFocusedBlock();
@@ -14,7 +17,9 @@ import runExtension from "./util/runExtension";
 // };
 
 const rootRender = (Component: React.FC) => {
-  const parent = document.querySelector(".roam-article");
+  const root = document.querySelector(".roam-article");
+  const parent = document.createElement("div");
+  root?.insertBefore(parent, root.firstElementChild);
   ReactDOM.render(<Component />, parent);
 };
 
@@ -35,6 +40,50 @@ const components = [
         );
       }),
     label: "AutocompleteInput",
+  },
+  {
+    callback: () =>
+      rootRender(() => {
+        const [isOpen, setIsOpen] = useState(false);
+        return (
+          <>
+            <Button onClick={() => setIsOpen(true)} text={"Open Form"} />
+            <FormDialog
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+              onSubmit={(data) =>
+                window.roamAlphaAPI.ui.mainWindow
+                  .getOpenPageOrBlockUid()
+                  .then((parentUid) =>
+                    createBlock({
+                      parentUid: parentUid || "",
+                      node: {
+                        text: "Response",
+                        children: Object.entries(data).map(([k, v]) => ({
+                          text: k,
+                          children: [{ text: `${v}` }],
+                        })),
+                      },
+                    })
+                  )
+              }
+              fields={{
+                text: { type: "text", label: "Text Field" },
+                number: { type: "number", label: "Number Field" },
+                flag: { type: "flag", label: "Flag Field" },
+                page: { type: "page", label: "Page Field" },
+                block: { type: "block", label: "Block Field" },
+                select: {
+                  type: "select",
+                  label: "Select Field",
+                  options: ["apple", "banana", "orange"],
+                },
+              }}
+            />
+          </>
+        );
+      }),
+    label: "FormDialog",
   },
   {
     callback: () =>
@@ -70,6 +119,15 @@ export default runExtension({
         callback,
       });
     });
+    window.roamjs.extension.developer = {
+      components: {
+        AutocompleteInput,
+        PageInput,
+      },
+      util: {
+        runExtension,
+      },
+    };
     return { commands: components.map((k) => k.label) };
   },
 });

@@ -4,6 +4,7 @@ import getRenderRoot from "./getRenderRoot";
 
 export type RoamOverlayProps<T extends Record<string, unknown>> = {
   onClose: () => void;
+  isOpen: boolean;
 } & T;
 
 const createOverlayRender =
@@ -22,6 +23,7 @@ const createOverlayRender =
       ReactDOM.render(
         React.createElement(Overlay, {
           ...props,
+          isOpen: true,
           onClose,
         }),
         parent

@@ -92,7 +92,6 @@ const BlockInput = ({
             setIsOpen(!!e.target.value);
           }}
           placeholder={"Search for a block"}
-          autoFocus={true}
           onKeyDown={onKeyDown}
           onBlur={(e) => {
             if (

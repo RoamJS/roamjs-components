@@ -111,7 +111,7 @@ const TokenDialog = ({ onClose, onEnter }: { onClose: () => void } & Props) => {
   );
 };
 
-export const render = createOverlayRender("token-dialog", TokenDialog);
+export const render = createOverlayRender<Props>("token-dialog", TokenDialog);
 
 export const addTokenDialogCommand = (props: Props = {}) =>
   window.roamAlphaAPI.ui.commandPalette.addCommand({

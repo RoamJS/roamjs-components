@@ -9,17 +9,16 @@ import {
   NumericInput,
 } from "@blueprintjs/core";
 import React, { useCallback, useState } from "react";
-import { RoamOverlayProps } from "../util/createOverlayRender";
+import createOverlayRender, {
+  RoamOverlayProps,
+} from "../util/createOverlayRender";
 import BlockInput from "./BlockInput";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 
-const FormDialog = <T extends Record<string, unknown>>({
-  isOpen,
-  onClose,
-  onSubmit = () => Promise.resolve(),
-  fields = {},
-}: RoamOverlayProps<{
+type Props<T> = {
+  title?: React.ReactNode;
+  content?: React.ReactNode;
   onSubmit?: (data: T) => Promise<unknown> | unknown;
   fields?: Record<
     string,
@@ -51,7 +50,16 @@ const FormDialog = <T extends Record<string, unknown>>({
         }
     ) & { label?: string }
   >;
-}>) => {
+};
+
+const FormDialog = <T extends Record<string, unknown>>({
+  title,
+  content,
+  isOpen,
+  onClose,
+  onSubmit = () => Promise.resolve(),
+  fields = {},
+}: RoamOverlayProps<Props<T>>) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState<T>(
@@ -73,8 +81,9 @@ const FormDialog = <T extends Record<string, unknown>>({
     [data, onClose, setError, setLoading]
   );
   return (
-    <Dialog isOpen={isOpen} onClose={onClose}>
+    <Dialog isOpen={isOpen} onClose={onClose} title={title}>
       <div className={Classes.DIALOG_BODY}>
+        {content}
         {Object.entries(fields).map(([name, meta]) => {
           if (meta.type === "text") {
             return (
@@ -185,5 +194,28 @@ const FormDialog = <T extends Record<string, unknown>>({
     </Dialog>
   );
 };
+
+export const render = createOverlayRender<Props<Record<string, unknown>>>(
+  "form-dialog",
+  FormDialog
+);
+
+export const prompt = ({
+  defaultAnswer,
+  question,
+  title,
+}: {
+  title: string;
+  question: string;
+  defaultAnswer: string;
+}) =>
+  new Promise<string>((resolve) =>
+    render({
+      onSubmit: (data) => resolve(data.value as string),
+      fields: { value: { type: "text", defaultValue: defaultAnswer } },
+      title,
+      content: question,
+    })
+  );
 
 export default FormDialog;

@@ -12,11 +12,13 @@ import { render as renderSimpleAlert } from "../components/SimpleAlert";
 import { OnloadArgs } from "../types/native";
 import getSubTree from "./getSubTree";
 import { createBlock, deleteBlock } from "../writes";
+import ReactDOM from "react-dom";
 
 type RunReturn = {
-  elements?: HTMLElement[];
-  observers?: MutationObserver[];
-  domListeners?: (
+  elements: HTMLElement[];
+  reactRoots: HTMLElement[];
+  observers: MutationObserver[];
+  domListeners: (
     | {
         el: Window;
         type: keyof WindowEventMap;
@@ -35,15 +37,15 @@ type RunReturn = {
       }
     | {
         el: HTMLElement;
-        type: keyof HTMLElementEventMap;
+        type: keyof HTMLElementEventMap | `roamjs:${string}`;
         listener: (
           this: HTMLElement,
           ev: HTMLElementEventMap[keyof HTMLElementEventMap]
         ) => void;
       }
   )[];
-  commands?: string[];
-  timeouts?: { timeout: number }[];
+  commands: string[];
+  timeouts: { timeout: number }[];
 };
 
 const runExtension = (
@@ -52,17 +54,24 @@ const runExtension = (
     | {
         migratedTo?: string;
         roamDepot?: boolean;
-        extensionId: string;
+        extensionId?: string;
         run?: (
           args: OnloadArgs
-        ) => void | Promise<void> | RunReturn | Promise<RunReturn>;
+        ) =>
+          | void
+          | Promise<void>
+          | Partial<RunReturn>
+          | Promise<Partial<RunReturn>>;
         unload?: () => void | Promise<void>;
       },
 
   // @deprecated both args
   _run: () => void | Promise<void> = Promise.resolve
 ): void | { onload: (args: OnloadArgs) => void; onunload: () => void } => {
-  const extensionId = typeof args === "string" ? args : args.extensionId;
+  const extensionId =
+    typeof args === "string"
+      ? args
+      : args.extensionId || process.env.ROAMJS_EXTENSION_ID || "";
   const run = typeof args === "string" ? _run : args.run;
   const roamDepot =
     typeof args === "string"
@@ -73,9 +82,63 @@ const runExtension = (
   const unload = typeof args === "string" ? () => Promise.resolve : args.unload;
   const migratedTo = typeof args === "string" ? "" : args.migratedTo;
 
-  let loaded: RunReturn | undefined | void = undefined;
-  let configObserver: MutationObserver | undefined = undefined;
-  let configPageUid = "";
+  const loaded: RunReturn = {
+    elements: [],
+    reactRoots: [],
+    observers: [],
+    domListeners: [],
+    commands: [],
+    timeouts: [],
+  };
+  const register = (res: Partial<RunReturn>) => {
+    Object.keys(res).forEach((k) => {
+      const key = k as keyof RunReturn;
+      const val = res[key];
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore this is actually safe, but dont know how to coerce
+      loaded[key].push(...val);
+    });
+  };
+  const registerListener = ((e: CustomEvent) => {
+    const res = e.detail as Partial<RunReturn>;
+    register(res);
+  }) as EventListener;
+  document.body.addEventListener(
+    `roamjs:${extensionId}:register`,
+    registerListener
+  );
+  loaded.domListeners.push({
+    listener: registerListener,
+    el: document.body,
+    type: `roamjs:${extensionId}:register`,
+  });
+  const unregisterListener = ((e: CustomEvent) => {
+    const res = e.detail as Partial<RunReturn>;
+    Object.keys(res).forEach((k) => {
+      const key = k as keyof RunReturn;
+      const val = res[key];
+      if (val) {
+        val.forEach((el) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore this is actually safe, but dont know how to coerce
+          const idx = loaded[key].findIndex(el);
+          if (idx > -1) {
+            loaded[key].splice(idx, 1);
+          }
+        });
+      }
+    });
+  }) as EventListener;
+  document.body.addEventListener(
+    `roamjs:${extensionId}:unregister`,
+    unregisterListener
+  );
+  loaded.domListeners.push({
+    listener: unregisterListener,
+    el: document.body,
+    type: `roamjs:${extensionId}:unregister`,
+  });
+
   const onload = (args: OnloadArgs) => {
     if (window.roamjs?.loaded?.has?.(extensionId)) {
       return;
@@ -90,36 +153,38 @@ const runExtension = (
     window.roamjs.version[extensionId] =
       process.env.ROAMJS_VERSION || process.env.NODE_ENV || "";
 
-    addStyle(
-      `.bp3-button:focus {
+    loaded.elements.push(
+      addStyle(
+        `.bp3-button:focus {
     outline-width: 2px;
   }`,
-      "roamjs-default"
+        "roamjs-default"
+      )
     );
 
     const result = run?.(args);
-    const dispatch = () => {
-      document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
-    };
     Promise.resolve(result).then((res) => {
-      loaded = res;
-      dispatch();
+      if (res) register(res);
+      document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
     });
   };
 
   const onunload = () => {
     unload?.();
     if (loaded) {
-      configObserver?.disconnect?.();
-      (loaded.elements || []).forEach((e) => e.remove());
-      (loaded.observers || []).forEach((e) => e.disconnect());
-      (loaded.domListeners || []).forEach((e) =>
+      loaded.elements.forEach((e) => e.remove());
+      loaded.reactRoots.forEach((e) => {
+        ReactDOM.unmountComponentAtNode(e);
+        e.remove();
+      });
+      loaded.observers.forEach((e) => e.disconnect());
+      loaded.domListeners.forEach((e) =>
         e.el.removeEventListener(e.type, e.listener)
       );
-      (loaded.commands || []).forEach((label) =>
+      loaded.commands.forEach((label) =>
         window.roamAlphaAPI.ui.commandPalette.removeCommand({ label })
       );
-      (loaded.timeouts || []).forEach((e) => window.clearTimeout(e.timeout));
+      loaded.timeouts.forEach((e) => window.clearTimeout(e.timeout));
     }
     delete window.roamjs?.extension[extensionId];
     delete window.roamjs?.version[extensionId];
@@ -203,6 +268,7 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
       }
       return "";
     };
+    let configPageUid = "";
     return onload({
       extensionAPI: {
         settings: {
@@ -262,7 +328,7 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
                   // typescript why do I need this here
                 }) as Field<UnionField>[],
               }).then(({ observer, pageUid }) => {
-                configObserver = observer;
+                if (observer) loaded.observers.push(observer);
                 configPageUid = pageUid;
               });
             },

@@ -13,6 +13,8 @@ test("Renders Package", () => {
   window.roamAlphaAPI.util = {
     generateUID: () => "abcdefghi"
   }
+  window.roamAlphaAPI.createPage = () => Promise.resolve()
+  window.roamAlphaAPI.createBlock = () => Promise.resolve()
   render(<div className="roam-body" />);
   createConfigObserver({ title: "roam/js/test", config: { tabs: [] } });
 });

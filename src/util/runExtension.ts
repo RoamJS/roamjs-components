@@ -304,6 +304,9 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
                       title: s.id,
                       description: s.description,
                       Panel: SelectPanel,
+                      options: {
+                        items: s.action.items,
+                      },
                     };
                   } else if (s.action.type === "switch") {
                     return {

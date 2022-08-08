@@ -452,4 +452,7 @@ export type OnloadArgs = {
       set: (k: string, v: unknown) => void;
     };
   };
+  extension: {
+    version: string;
+  };
 };

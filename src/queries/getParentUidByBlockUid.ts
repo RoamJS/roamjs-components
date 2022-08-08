@@ -1,6 +1,10 @@
+import type { PullBlock } from "../types/native";
+
 const getParentUidByBlockUid = (blockUid: string): string =>
-  window.roamAlphaAPI.q(
-    `[:find ?u :where [?p :block/uid ?u] [?p :block/children ?e] [?e :block/uid "${blockUid}"]]`
-  )?.[0]?.[0] as string;
+  (
+    window.roamAlphaAPI.data.fast.q(
+      `[:find (pull ?p [:block/uid]) :where [?e :block/uid "${blockUid}"] [?p :block/children ?e]]`
+    )?.[0]?.[0] as PullBlock
+  )?.[":block/uid"] || "";
 
 export default getParentUidByBlockUid;

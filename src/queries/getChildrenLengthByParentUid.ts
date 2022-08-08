@@ -1,4 +1,3 @@
-// @deprecated - use getChildrenLengthByParentUid instead
 const getChildrenLengthByPageUid = (uid: string): number =>
   window.roamAlphaAPI.pull("[:block/children]", [":block/uid", uid])?.[
     ":block/children"

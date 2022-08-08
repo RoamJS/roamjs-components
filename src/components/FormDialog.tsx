@@ -9,6 +9,7 @@ import {
   NumericInput,
 } from "@blueprintjs/core";
 import React, { useCallback, useState } from "react";
+import getTextByBlockUid from "../queries/getTextByBlockUid";
 import createOverlayRender, {
   RoamOverlayProps,
 } from "../util/createOverlayRender";
@@ -164,11 +165,19 @@ const FormDialog = <T extends Record<string, unknown>>({
               <Label>
                 {meta.label}
                 <BlockInput
-                  value={data[name] as string}
-                  setValue={(e) =>
+                  value={
+                    getTextByBlockUid(data[name] as string) ||
+                    (data[name] as string)
+                  }
+                  setValue={(text, uid) =>
                     setData({
                       ...data,
-                      [name]: e,
+                      [name]: window.roamAlphaAPI.pull("[:db/id]", [
+                        ":block/uid",
+                        uid || "",
+                      ])
+                        ? uid
+                        : text,
                     })
                   }
                 />

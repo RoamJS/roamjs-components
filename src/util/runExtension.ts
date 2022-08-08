@@ -338,6 +338,9 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
           },
         },
       },
+      extension: {
+        version: process.env.ROAMJS_VERSION || "",
+      },
     });
   }
 };

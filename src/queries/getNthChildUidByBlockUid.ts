@@ -8,7 +8,7 @@ const getNthChildUidByBlockUid = ({
   order: number;
 }): string =>
   (
-    window.roamAlphaAPI.q(
+    window.roamAlphaAPI.data.fast.q(
       `[:find (pull ?c [:block/uid]) :where [?p :block/uid "${blockUid}"] [?p :block/children ?c] [?c :block/order ${order}] ]`
     )?.[0]?.[0] as PullBlock
   )?.[":block/uid"] || "";

@@ -82,7 +82,13 @@ const FormDialog = <T extends Record<string, unknown>>({
     [data, onClose, setError, setLoading]
   );
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title={title}>
+    <Dialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      enforceFocus={false}
+      autoFocus={false}
+    >
       <div className={Classes.DIALOG_BODY}>
         {content}
         {Object.entries(fields).map(([name, meta]) => {
@@ -223,7 +229,11 @@ export const prompt = ({
       onSubmit: (data) => resolve(data.value as string),
       fields: { value: { type: "text", defaultValue: defaultAnswer } },
       title,
-      content: question,
+      content: (
+        <div className="whitespace-pre-wrap font-semibold text-lg mb-4">
+          {question}
+        </div>
+      ),
     })
   );
 

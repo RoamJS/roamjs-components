@@ -1,3 +1,5 @@
+import type { PullBlock } from "../types/native";
+
 const getNthChildUidByBlockUid = ({
   blockUid,
   order,
@@ -5,8 +7,10 @@ const getNthChildUidByBlockUid = ({
   blockUid: string;
   order: number;
 }): string =>
-  window.roamAlphaAPI.q(
-    `[:find ?u :where [?c :block/uid ?u] [?c :block/order ${order}] [?p :block/children ?c] [?p :block/uid "${blockUid}"]]`
-  )?.[0]?.[0] as string;
+  (
+    window.roamAlphaAPI.q(
+      `[:find (pull ?u [:block/uid]) :where [?p :block/uid "${blockUid}"] [?p :block/children ?c] [?c :block/order ${order}] ]`
+    )?.[0]?.[0] as PullBlock
+  )?.[":block/uid"] || "";
 
 export default getNthChildUidByBlockUid;

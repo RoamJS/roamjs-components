@@ -5,11 +5,11 @@ import toConfigPageName from "./toConfigPageName";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
 
 const migrateLegacySettings = ({
-  extensionId,
+  extensionId = process.env.ROAMJS_EXTENSION_ID || "",
   extensionAPI,
   specialKeys = {},
 }: Pick<OnloadArgs, "extensionAPI"> & {
-  extensionId: string;
+  extensionId?: string;
   specialKeys?: Record<
     string,
     (n: RoamBasicNode) => { value: unknown; key: string }[]

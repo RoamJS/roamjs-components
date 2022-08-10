@@ -121,7 +121,7 @@ const runExtension = (
         val.forEach((el) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore this is actually safe, but dont know how to coerce
-          const idx = loaded[key].findIndex(el);
+          const idx = loaded[key].indexOf(el);
           if (idx > -1) {
             loaded[key].splice(idx, 1);
           }

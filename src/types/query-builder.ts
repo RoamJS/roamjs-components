@@ -81,7 +81,7 @@ export type ExportDialogComponent = (props: {
   onClose: () => void;
   isOpen: boolean;
   exportTypes: ExportTypes;
-  results: Result[];
+  results: Result[] | (() => Promise<Result[]>);
 }) => JSX.Element;
 export type QueryEditorComponent = (props: {
   parentUid: string;
@@ -102,9 +102,12 @@ export type ParseQuery = (q: RoamBasicNode | string) => {
   returnNode: string;
   conditions: Condition[];
   selections: Selection[];
+  customNode: string;
   returnNodeUid: string;
   conditionsNodesUid: string;
   selectionsNodesUid: string;
+  customNodeUid: string;
+  isCustomEnabled: boolean;
 };
 
 export type FireQuery = (query: {

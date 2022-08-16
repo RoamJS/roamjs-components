@@ -41,7 +41,7 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     return r
       .json()
       .then((r) => r as T)
-      .catch(() => Promise.reject(r.text()));
+      .catch(() => r.text().then((e) => Promise.reject(new Error(e))));
   });
 };
 

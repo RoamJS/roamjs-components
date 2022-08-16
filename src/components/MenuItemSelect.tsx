@@ -5,7 +5,7 @@ import React, { ReactText } from "react";
 const MenuItemSelect = <T extends ReactText>(
   props: Omit<SelectProps<T>, "itemRenderer"> & {
     ButtonProps?: IButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
-  } & { emptyValueText?: string; transformItem?: (s: T) => T }
+  } & { emptyValueText?: string; transformItem?: (s: T) => React.ReactNode }
 ): JSX.Element => {
   const TypeSelect = Select.ofType<T>();
   const { activeItem, ...selectProps } = props;

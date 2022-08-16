@@ -5,24 +5,22 @@ import idToTitle from "../../util/idToTitle";
 import Description from "../Description";
 import type { FieldPanel, ArrayField } from "./types";
 
-const MultiChildPanel = ({
+const MultiChildPanel: FieldPanel<
+  ArrayField,
+  {
+    InputComponent: (props: {
+      value: string;
+      setValue: (s: string) => void;
+    }) => React.ReactElement;
+  }
+> = ({
   uid: initialUid,
   title,
   description,
   order,
   parentUid,
   InputComponent,
-}: Parameters<
-  FieldPanel<
-    ArrayField,
-    {
-      InputComponent: (props: {
-        value: string;
-        setValue: (s: string) => void;
-      }) => React.ReactElement;
-    }
-  >
->[0]) => {
+}) => {
   const [uid, setUid] = useState(initialUid);
   const [texts, setTexts] = useState(() =>
     uid ? getShallowTreeByParentUid(uid) : []
@@ -95,5 +93,7 @@ const MultiChildPanel = ({
     </>
   );
 };
+
+MultiChildPanel.type = "custom";
 
 export default MultiChildPanel;

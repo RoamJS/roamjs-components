@@ -5,7 +5,10 @@ import { Button } from "@blueprintjs/core";
 import AutocompleteInput from "./components/AutocompleteInput";
 import FormDialog from "./components/FormDialog";
 import PageInput from "./components/PageInput";
+
+import renderOverlay from "./util/renderOverlay";
 import runExtension from "./util/runExtension";
+
 import { createBlock } from "./writes";
 
 // const blockRender = (Component: React.FC) => {
@@ -122,9 +125,11 @@ export default runExtension({
     window.roamjs.extension.developer = {
       components: {
         AutocompleteInput,
+        FormDialog,
         PageInput,
       },
       util: {
+        renderOverlay,
         runExtension,
       },
     };

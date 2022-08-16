@@ -10,9 +10,8 @@ import {
 } from "@blueprintjs/core";
 import React, { useCallback, useState } from "react";
 import getTextByBlockUid from "../queries/getTextByBlockUid";
-import createOverlayRender, {
-  RoamOverlayProps,
-} from "../util/createOverlayRender";
+import createOverlayRender from "../util/createOverlayRender";
+import type { RoamOverlayProps } from "../util/renderOverlay";
 import BlockInput from "./BlockInput";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";

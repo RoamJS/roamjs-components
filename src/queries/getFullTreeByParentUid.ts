@@ -1,4 +1,4 @@
-import type { TextAlignment, TreeNode, ViewType } from "../types";
+import type { PullBlock, TextAlignment, TreeNode, ViewType } from "../types";
 
 type RoamRawBlock = {
   string?: string;
@@ -31,7 +31,7 @@ const formatRoamNode = (n: Partial<RoamRawBlock>, v: ViewType): TreeNode => ({
 
 const getFullTreeByParentUid = (uid: string): TreeNode =>
   formatRoamNode(
-    window.roamAlphaAPI.q(
+    (window.roamAlphaAPI.q(
       `[:find (pull ?b [
       :block/string 
       :node/title 
@@ -45,17 +45,18 @@ const getFullTreeByParentUid = (uid: string): TreeNode =>
       :block/props 
       {:block/children ...}
     ]) :where [?b :block/uid "${uid}"]]`
-    )?.[0]?.[0] || ({} as RoamRawBlock),
-    window.roamAlphaAPI
-      .q(
+    )?.[0]?.[0] || {}) as RoamRawBlock,
+    (
+      window.roamAlphaAPI.data.fast.q(
         `[:find
       (pull ?p [:children/view-type]) :where
       [?c :block/uid "${uid}"] [?c :block/parents ?p]]`
-      )
+      ) as [PullBlock][]
+    )
       .reverse()
       .map((a) => a[0])
-      .map((a) => a && a["view-type"])
-      .find((a) => !!a) || "bullet"
+      .map((a) => a && a[":children/view-type"])
+      .find((a) => !!a)?.slice(1) as ViewType || "bullet"
   );
 
 export default getFullTreeByParentUid;

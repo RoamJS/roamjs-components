@@ -1,14 +1,17 @@
+import { PullBlock } from "../types";
+
 const getShallowTreeByParentUid = (
   parentUid: string
 ): { uid: string; text: string }[] =>
-  window.roamAlphaAPI
-    .q(
+  (
+    window.roamAlphaAPI.data.fast.q(
       `[:find (pull ?c [:block/uid :block/string :block/order]) :where [?b :block/uid "${parentUid}"] [?b :block/children ?c]]`
-    )
-    .sort((a, b) => a[0].order - b[0].order)
-    .map(([a]: { uid: string; string: string }[]) => ({
-      uid: a.uid,
-      text: a.string,
+    ) as [PullBlock][]
+  )
+    .sort((a, b) => (a[0][":block/order"] || 0) - (b[0][":block/order"] || 0))
+    .map(([a]) => ({
+      uid: a[":block/uid"] || "",
+      text: a[":block/string"] || "",
     }));
 
 export default getShallowTreeByParentUid;

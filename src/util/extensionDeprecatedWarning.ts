@@ -6,6 +6,7 @@ import { render as renderToast } from "../components/Toast";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getSubTree from "./getSubTree";
+import { PullBlock } from "../types";
 
 const extensionDeprecatedWarning = async ({
   extensionId,
@@ -21,11 +22,11 @@ const extensionDeprecatedWarning = async ({
     key: "Do not show again",
   }).uid;
   if (!donotShowAgainUid) {
-    const blocks = window.roamAlphaAPI
-      .q(
+    const blocks = (
+      window.roamAlphaAPI.data.fast.q(
         `[:find (pull ?roamjs [:block/uid]) :where [?block :block/string ?contents] [(clojure.string/includes? ?contents  "https://roamjs.com/${extensionId}")] [?roamjs :block/children ?block]]`
-      )
-      .map(([{ uid }]) => uid as string);
+      ) as [PullBlock][]
+    ).map(([block]) => block[":block/uid"] || "");
     renderSimpleAlert({
       content: `RoamJS will soon be deprecating and then removing the ${idToTitle(
         extensionId

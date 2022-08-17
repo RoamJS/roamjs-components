@@ -35,11 +35,7 @@ declare global {
     // END TODO remove
 
     roamAlphaAPI: {
-      q: (
-        query: string,
-        ...params: unknown[]
-      ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      any[][];
+      q: (query: string, ...params: unknown[]) => unknown[][];
       pull: (
         selector: string,
         id: number | string | [string, string]

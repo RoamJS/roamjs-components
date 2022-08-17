@@ -1,3 +1,4 @@
+import { getNodeEnv } from "./env";
 import handleFetch, { HandleFetchArgs } from "./handleFetch";
 
 const handleUrlFetch =
@@ -10,7 +11,7 @@ const handleUrlFetch =
       typeof args === "string" ? { path: args, data: _data } : args;
 
     return handleFetch<T>((url, init) => {
-      if (process.env.NODE_ENV === "development") {
+      if (getNodeEnv() === "development") {
         url.searchParams.set("dev", "true");
       }
       Object.entries(data).forEach(([k, v]) =>

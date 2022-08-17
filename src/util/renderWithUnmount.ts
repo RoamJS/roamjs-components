@@ -1,4 +1,5 @@
 import ReactDOM from "react-dom";
+import { getRoamJSExtensionIdEnv } from "./env";
 
 const renderWithUnmount = (el: React.ReactElement, p: HTMLElement): void => {
   ReactDOM.render(el, p);
@@ -10,21 +11,18 @@ const renderWithUnmount = (el: React.ReactElement, p: HTMLElement): void => {
       unmountObserver.disconnect();
       ReactDOM.unmountComponentAtNode(p);
       document.body.dispatchEvent(
-        new CustomEvent(
-          `roamjs:${process.env.ROAMJS_EXTENSION_ID}:unregister`,
-          {
-            detail: {
-              reactRoots: [p],
-              observers: [unmountObserver],
-            },
-          }
-        )
+        new CustomEvent(`roamjs:${getRoamJSExtensionIdEnv()}:unregister`, {
+          detail: {
+            reactRoots: [p],
+            observers: [unmountObserver],
+          },
+        })
       );
     }
   });
   unmountObserver.observe(document.body, { childList: true, subtree: true });
   document.body.dispatchEvent(
-    new CustomEvent(`roamjs:${process.env.ROAMJS_EXTENSION_ID}:register`, {
+    new CustomEvent(`roamjs:${getRoamJSExtensionIdEnv()}:register`, {
       detail: {
         reactRoots: [p],
         observers: [unmountObserver],

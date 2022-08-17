@@ -18,7 +18,7 @@ export type ExternalLoginOptions = {
 
 const getTargetOrigin = () => {
   try {
-    // Do I still even use this? In any case, since we removed process plugin, need this to be caught when unspecified
+    // This is for debugging purposes - should probably remove
     return process.env.CUSTOM_ROAMJS_ORIGIN;
   } catch {
     return "https://roamjs.com";

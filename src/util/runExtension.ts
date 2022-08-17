@@ -13,6 +13,13 @@ import { OnloadArgs } from "../types/native";
 import getSubTree from "./getSubTree";
 import { createBlock, deleteBlock } from "../writes";
 import ReactDOM from "react-dom";
+import {
+  getNodeEnv,
+  getRoamDepotEnv,
+  getRoamJSExtensionIdEnv,
+  getRoamJSVersionEnv,
+  getRoamMarketplaceEnv,
+} from "./env";
 
 type RunReturn = {
   elements: HTMLElement[];
@@ -71,14 +78,14 @@ const runExtension = (
   const extensionId =
     typeof args === "string"
       ? args
-      : args.extensionId || process.env.ROAMJS_EXTENSION_ID || "";
+      : args.extensionId || getRoamJSExtensionIdEnv();
   const run = typeof args === "string" ? _run : args.run;
   const roamDepot =
     typeof args === "string"
       ? false
       : args.roamDepot ||
-        process.env.ROAM_MARKETPLACE === "true" ||
-        process.env.ROAM_DEPOT === "true";
+        getRoamMarketplaceEnv() === "true" ||
+        getRoamDepotEnv() === "true";
   const unload = typeof args === "string" ? () => Promise.resolve : args.unload;
   const migratedTo = typeof args === "string" ? "" : args.migratedTo;
 
@@ -150,8 +157,7 @@ const runExtension = (
       actions: {},
     };
     window.roamjs.loaded.add(extensionId);
-    window.roamjs.version[extensionId] =
-      process.env.ROAMJS_VERSION || process.env.NODE_ENV || "";
+    window.roamjs.version[extensionId] = getRoamJSVersionEnv();
 
     loaded.elements.push(
       addStyle(
@@ -165,6 +171,14 @@ const runExtension = (
     const result = run?.(args);
     Promise.resolve(result).then((res) => {
       if (res) register(res);
+      const globalApi = window.roamjs.extension[extensionId];
+      if (getNodeEnv() === "development") {
+        if (globalApi) globalApi.extensionAPI = args.extensionAPI;
+        else
+          window.roamjs.extension[extensionId] = {
+            extensionAPI: args.extensionAPI,
+          };
+      }
       document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
     });
   };
@@ -339,7 +353,7 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
         },
       },
       extension: {
-        version: process.env.ROAMJS_VERSION || "",
+        version: getRoamJSVersionEnv(),
       },
     });
   }

@@ -1,3 +1,4 @@
+import { getApiUrlEnv } from "./env";
 import getAuthorizationHeader from "./getAuthorizationHeader";
 
 export type HandleFetchArgs = {
@@ -20,10 +21,7 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     domain,
   }: Pick<RequestInit, "method"> & Omit<HandleFetchArgs, "data">
 ) => {
-  const url = new URL(
-    href ||
-      `${domain || process.env.API_URL || "https://lambda.roamjs.com"}/${path}`
-  );
+  const url = new URL(href || `${domain || getApiUrlEnv()}/${path}`);
   const defaultHeaders = !anonymous
     ? { Authorization: authorization || getAuthorizationHeader() }
     : ({} as HeadersInit);

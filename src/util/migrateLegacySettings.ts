@@ -3,9 +3,14 @@ import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import { OnloadArgs, RoamBasicNode } from "../types/native";
 import toConfigPageName from "./toConfigPageName";
 import { render as renderSimpleAlert } from "../components/SimpleAlert";
+import {
+  getRoamDepotEnv,
+  getRoamJSExtensionIdEnv,
+  getRoamMarketplaceEnv,
+} from "./env";
 
 const migrateLegacySettings = ({
-  extensionId = process.env.ROAMJS_EXTENSION_ID || "",
+  extensionId = getRoamJSExtensionIdEnv(),
   extensionAPI,
   specialKeys = {},
 }: Pick<OnloadArgs, "extensionAPI"> & {
@@ -53,8 +58,8 @@ const migrateLegacySettings = ({
               })
               .filter(
                 (c) =>
-                  process.env.ROAM_MARKETPLACE === "true" ||
-                  process.env.ROAM_DEPOT === "true" ||
+                  getRoamMarketplaceEnv() === "true" ||
+                  getRoamDepotEnv() === "true" ||
                   c.attributeConfig
               )
               .forEach((c) =>

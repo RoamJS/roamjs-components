@@ -1,3 +1,4 @@
+import { getNodeEnv } from "./env";
 import handleFetch, { HandleFetchArgs } from "./handleFetch";
 
 const handleBodyFetch =
@@ -10,7 +11,7 @@ const handleBodyFetch =
       typeof args === "string" ? { path: args, data: _data } : args;
 
     const body =
-      process.env.NODE_ENV === "development"
+      getNodeEnv() === "development"
         ? JSON.stringify({ dev: true, ...data })
         : JSON.stringify(data || {});
 

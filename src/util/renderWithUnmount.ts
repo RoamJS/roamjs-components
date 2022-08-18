@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom";
-import { getRoamJSExtensionIdEnv } from "./env";
+import dispatchToRegistry from "./dispatchToRegistry";
+import removeFromRegistry from "./removeFromRegistry";
 
 const renderWithUnmount = (el: React.ReactElement, p: HTMLElement): void => {
   ReactDOM.render(el, p);
@@ -10,25 +11,17 @@ const renderWithUnmount = (el: React.ReactElement, p: HTMLElement): void => {
     if (parentRemoved) {
       unmountObserver.disconnect();
       ReactDOM.unmountComponentAtNode(p);
-      document.body.dispatchEvent(
-        new CustomEvent(`roamjs:${getRoamJSExtensionIdEnv()}:unregister`, {
-          detail: {
-            reactRoots: [p],
-            observers: [unmountObserver],
-          },
-        })
-      );
+      removeFromRegistry({
+        reactRoots: [p],
+        observers: [unmountObserver],
+      });
     }
   });
   unmountObserver.observe(document.body, { childList: true, subtree: true });
-  document.body.dispatchEvent(
-    new CustomEvent(`roamjs:${getRoamJSExtensionIdEnv()}:register`, {
-      detail: {
-        reactRoots: [p],
-        observers: [unmountObserver],
-      },
-    })
-  );
+  dispatchToRegistry({
+    reactRoots: [p],
+    observers: [unmountObserver],
+  });
 };
 
 export default renderWithUnmount;

@@ -24,6 +24,40 @@ import type Markdown from "marked-react";
 import type JSZip from "jszip";
 export * from "./native";
 
+export type RunReturn = {
+  elements: HTMLElement[];
+  reactRoots: HTMLElement[];
+  observers: MutationObserver[];
+  domListeners: (
+    | {
+        el: Window;
+        type: keyof WindowEventMap;
+        listener: (
+          this: Window,
+          ev: WindowEventMap[keyof WindowEventMap]
+        ) => void;
+      }
+    | {
+        el: Document;
+        type: keyof DocumentEventMap;
+        listener: (
+          this: Document,
+          ev: DocumentEventMap[keyof DocumentEventMap]
+        ) => void;
+      }
+    | {
+        el: HTMLElement;
+        type: keyof HTMLElementEventMap | `roamjs:${string}`;
+        listener: (
+          this: HTMLElement,
+          ev: HTMLElementEventMap[keyof HTMLElementEventMap]
+        ) => void;
+      }
+  )[];
+  commands: string[];
+  timeouts: { timeout: number }[];
+};
+
 declare global {
   interface Window {
     // TODO remove

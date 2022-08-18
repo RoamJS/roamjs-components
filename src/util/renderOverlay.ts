@@ -1,7 +1,9 @@
 import nanoid from "nanoid";
 import React from "react";
 import ReactDOM from "react-dom";
+import dispatchToRegistry from "./dispatchToRegistry";
 import getRenderRoot from "./getRenderRoot";
+import removeFromRegistry from "./removeFromRegistry";
 
 export type RoamOverlayProps<T extends Record<string, unknown>> = {
   onClose: () => void;
@@ -22,6 +24,9 @@ const renderOverlay = <T extends Record<string, unknown>>({
     if (typeof props.onClose === "function") props.onClose();
     ReactDOM.unmountComponentAtNode(parent);
     parent.remove();
+    removeFromRegistry({
+      reactRoots: [parent],
+    });
   };
   if (!parent.hasAttribute("data-existing")) {
     ReactDOM.render(
@@ -32,6 +37,9 @@ const renderOverlay = <T extends Record<string, unknown>>({
       }),
       parent
     );
+    dispatchToRegistry({
+      reactRoots: [parent],
+    });
   }
   return onClose;
 };

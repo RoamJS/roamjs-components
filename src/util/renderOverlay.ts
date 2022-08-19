@@ -5,7 +5,9 @@ import dispatchToRegistry from "./dispatchToRegistry";
 import getRenderRoot from "./getRenderRoot";
 import removeFromRegistry from "./removeFromRegistry";
 
-export type RoamOverlayProps<T extends Record<string, unknown>> = {
+export type RoamOverlayProps<
+  T extends Record<string, unknown> = Record<string, never>
+> = {
   onClose: () => void;
   isOpen: boolean;
 } & T;

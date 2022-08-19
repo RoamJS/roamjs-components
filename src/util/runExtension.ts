@@ -20,7 +20,11 @@ import {
   getRoamJSVersionEnv,
   getRoamMarketplaceEnv,
 } from "./env";
-import type { RunReturn } from "../types";
+import type { Registry } from "../types";
+
+type RunReturn = void | Registry | (() => void);
+
+type RunExtension = (args: OnloadArgs) => RunReturn | Promise<RunReturn>;
 
 const runExtension = (
   args:
@@ -29,18 +33,12 @@ const runExtension = (
         migratedTo?: string;
         roamDepot?: boolean;
         extensionId?: string;
-        run?: (
-          args: OnloadArgs
-        ) =>
-          | void
-          | Promise<void>
-          | Partial<RunReturn>
-          | Promise<Partial<RunReturn>>;
-        unload?: () => void | Promise<void>;
+        run?: RunExtension;
+        unload?: () => void;
       },
 
   // @deprecated both args
-  _run: () => void | Promise<void> = Promise.resolve
+  _run: RunExtension
 ): void | { onload: (args: OnloadArgs) => void; onunload: () => void } => {
   const extensionId =
     typeof args === "string"
@@ -53,10 +51,10 @@ const runExtension = (
       : args.roamDepot ||
         getRoamMarketplaceEnv() === "true" ||
         getRoamDepotEnv() === "true";
-  const unload = typeof args === "string" ? () => Promise.resolve : args.unload;
+  let unload = typeof args === "string" ? undefined : args.unload;
   const migratedTo = typeof args === "string" ? "" : args.migratedTo;
 
-  const loaded: RunReturn = {
+  const registry: Registry = {
     elements: [],
     reactRoots: [],
     observers: [],
@@ -64,40 +62,40 @@ const runExtension = (
     commands: [],
     timeouts: [],
   };
-  const register = (res: Partial<RunReturn>) => {
+  const register = (res: Partial<Registry>) => {
     Object.keys(res).forEach((k) => {
-      const key = k as keyof RunReturn;
+      const key = k as keyof Registry;
       const val = res[key];
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore this is actually safe, but dont know how to coerce
-      loaded[key].push(...val);
+      registry[key].push(...val);
     });
   };
   const registerListener = ((e: CustomEvent) => {
-    const res = e.detail as Partial<RunReturn>;
+    const res = e.detail as Partial<Registry>;
     register(res);
   }) as EventListener;
   document.body.addEventListener(
     `roamjs:${extensionId}:register`,
     registerListener
   );
-  loaded.domListeners.push({
+  registry.domListeners.push({
     listener: registerListener,
     el: document.body,
     type: `roamjs:${extensionId}:register`,
   });
   const unregisterListener = ((e: CustomEvent) => {
-    const res = e.detail as Partial<RunReturn>;
+    const res = e.detail as Partial<Registry>;
     Object.keys(res).forEach((k) => {
-      const key = k as keyof RunReturn;
+      const key = k as keyof Registry;
       const val = res[key];
       if (val) {
         val.forEach((el) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore this is actually safe, but dont know how to coerce
-          const idx = loaded[key].indexOf(el);
+          const idx = registry[key].indexOf(el);
           if (idx > -1) {
-            loaded[key].splice(idx, 1);
+            registry[key].splice(idx, 1);
           }
         });
       }
@@ -107,7 +105,7 @@ const runExtension = (
     `roamjs:${extensionId}:unregister`,
     unregisterListener
   );
-  loaded.domListeners.push({
+  registry.domListeners.push({
     listener: unregisterListener,
     el: document.body,
     type: `roamjs:${extensionId}:unregister`,
@@ -126,7 +124,7 @@ const runExtension = (
     window.roamjs.loaded.add(extensionId);
     window.roamjs.version[extensionId] = getRoamJSVersionEnv();
 
-    loaded.elements.push(
+    registry.elements.push(
       addStyle(
         `.bp3-button:focus {
     outline-width: 2px;
@@ -137,7 +135,11 @@ const runExtension = (
 
     const result = run?.(args);
     Promise.resolve(result).then((res) => {
-      if (res) register(res);
+      if (typeof res === "function") {
+        if (!unload) unload = res;
+      } else if (typeof res === "object") {
+        register(res);
+      }
       const globalApi = window.roamjs.extension[extensionId];
       if (getNodeEnv() === "development") {
         if (globalApi) globalApi.extensionAPI = args.extensionAPI;
@@ -152,21 +154,20 @@ const runExtension = (
 
   const onunload = () => {
     unload?.();
-    if (loaded) {
-      loaded.elements.forEach((e) => e.remove());
-      loaded.reactRoots.forEach((e) => {
-        ReactDOM.unmountComponentAtNode(e);
-        e.remove();
-      });
-      loaded.observers.forEach((e) => e.disconnect());
-      loaded.domListeners.forEach((e) =>
-        e.el.removeEventListener(e.type, e.listener)
-      );
-      loaded.commands.forEach((label) =>
-        window.roamAlphaAPI.ui.commandPalette.removeCommand({ label })
-      );
-      loaded.timeouts.forEach((e) => window.clearTimeout(e.timeout));
-    }
+    registry.elements.forEach((e) => e.remove());
+    registry.reactRoots.forEach((e) => {
+      ReactDOM.unmountComponentAtNode(e);
+      e.remove();
+    });
+    registry.observers.forEach((e) => e.disconnect());
+    registry.domListeners.forEach((e) =>
+      e.el.removeEventListener(e.type, e.listener)
+    );
+    registry.commands.forEach((label) =>
+      window.roamAlphaAPI.ui.commandPalette.removeCommand({ label })
+    );
+    registry.timeouts.forEach((e) => window.clearTimeout(e.timeout));
+
     delete window.roamjs?.extension[extensionId];
     delete window.roamjs?.version[extensionId];
     window.roamjs?.loaded.delete(extensionId);
@@ -312,7 +313,7 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
                   // typescript why do I need this here
                 }) as Field<UnionField>[],
               }).then(({ observer, pageUid }) => {
-                if (observer) loaded.observers.push(observer);
+                if (observer) registry.observers.push(observer);
                 configPageUid = pageUid;
               });
             },

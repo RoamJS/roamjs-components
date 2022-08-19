@@ -1,7 +1,7 @@
-import { RunReturn } from "../types";
+import { Registry } from "../types";
 import { getRoamJSExtensionIdEnv } from "./env";
 
-const removeFromRegistry = (detail: Partial<RunReturn>) =>
+const removeFromRegistry = (detail: Partial<Registry>) =>
   document.body.dispatchEvent(
     new CustomEvent(`roamjs:${getRoamJSExtensionIdEnv()}:unregister`, {
       detail,

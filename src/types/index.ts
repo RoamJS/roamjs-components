@@ -24,7 +24,7 @@ import type Markdown from "marked-react";
 import type JSZip from "jszip";
 export * from "./native";
 
-export type RunReturn = {
+export type Registry = {
   elements: HTMLElement[];
   reactRoots: HTMLElement[];
   observers: MutationObserver[];

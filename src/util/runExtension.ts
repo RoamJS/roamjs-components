@@ -22,7 +22,7 @@ import {
 } from "./env";
 import type { Registry } from "../types";
 
-type RunReturn = void | Registry | (() => void);
+type RunReturn = void | Partial<Registry> | (() => void);
 
 type RunExtension = (args: OnloadArgs) => RunReturn | Promise<RunReturn>;
 
@@ -38,7 +38,7 @@ const runExtension = (
       },
 
   // @deprecated both args
-  _run: RunExtension
+  _run?: RunExtension
 ): void | { onload: (args: OnloadArgs) => void; onunload: () => void } => {
   const extensionId =
     typeof args === "string"

@@ -229,7 +229,7 @@ export type RoamPullResult = RoamPull | null;
 
 export type ViewType = "document" | "bullet" | "numbered";
 
-export type TextAlignment = "left" | "center" | "right";
+export type TextAlignment = "left" | "center" | "right" | "justify";
 
 export type RoamBlock = {
   attrs?: { source: string[] }[][];

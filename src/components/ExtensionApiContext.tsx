@@ -5,7 +5,7 @@ const ExtensionApiContext = React.createContext<OnloadArgs | undefined>(
   undefined
 );
 
-export const useExtensionApi = () =>
+export const useExtensionAPI = () =>
   useContext(ExtensionApiContext)?.extensionAPI;
 export const useVersion = () =>
   useContext(ExtensionApiContext)?.extension.version;

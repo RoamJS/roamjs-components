@@ -16,6 +16,8 @@ import {
   QueryEditorComponent,
   ExportDialogComponent,
   QueryPageComponent,
+  RunQuery,
+  ListActiveQueries,
 } from "./query-builder";
 import { SamePageApi } from "./samepage";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
@@ -212,6 +214,9 @@ declare global {
           registerDatalogTranslator: RegisterDatalogTranslator;
           unregisterDatalogTranslator: (args: { key: string }) => void;
           registerSelection: RegisterSelection;
+          // ALL TYPES ABOVE THIS COMMENT ARE SCHEDULED TO MOVE BACK INTO QUERY BUILDER AS INTERNAL
+          runQuery: RunQuery;
+          listActiveQueries: ListActiveQueries;
         };
         versioning?: {
           switch: (args: { id: string; currentVersion: string }) => void;

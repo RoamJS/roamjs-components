@@ -30,11 +30,6 @@ export type Selection = {
   uid: string;
 };
 
-export type Result = { text: string; uid: string } & Record<
-  string,
-  string | number | Date
->;
-
 export type ExportTypes = {
   name: string;
   callback: (args: {
@@ -129,3 +124,14 @@ export type RegisterDatalogTranslator = (args: {
   placeholder?: string;
   isVariable?: true;
 }) => void;
+
+// ALL TYPES ABOVE THIS COMMENT ARE SCHEDULED TO MOVE BACK INTO QUERY BUILDER AS INTERNAL
+
+export type Result = { text: string; uid: string } & Record<
+  `${string}-uid`,
+  string
+> &
+  Record<string, string | number | Date>;
+
+export type RunQuery = (parentUid: string) => Promise<Result>[];
+export type ListActiveQueries = () => { uid: string }[];

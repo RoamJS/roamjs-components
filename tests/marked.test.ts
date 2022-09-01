@@ -465,3 +465,11 @@ test(
     }
   )
 );
+
+test(
+  "space before strikethrough link",
+  runInlineTest(
+    " ~~no~~ [all](https://google.com)",
+    ` <del>no</del> <a href="https://google.com">all</a>`
+  )
+);

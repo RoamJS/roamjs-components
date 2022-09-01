@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import getUidsFromId from "../dom/getUidsFromId";
 import getBlockUidFromTarget from "../dom/getBlockUidFromTarget";
 import renderWithUnmount from "../util/renderWithUnmount";
+import { OnloadArgs } from "../types/native";
 
 const ComponentContainer: React.FunctionComponent<{
   blockId?: string;
@@ -45,7 +46,7 @@ export const createComponentRender =
     Fc: (props: { blockUid: string }) => React.ReactElement,
     className?: string
   ) =>
-  (b: HTMLButtonElement): void => {
+  (b: HTMLButtonElement, args?: OnloadArgs): void => {
     if (b.parentElement) {
       b.parentElement.onmousedown = (e: MouseEvent) => e.stopPropagation();
       const blockUid = getBlockUidFromTarget(b);
@@ -58,7 +59,8 @@ export const createComponentRender =
           <ComponentContainer blockId={blockId} className={className}>
             <Fc blockUid={blockUid} />
           </ComponentContainer>,
-          b.parentElement
+          b.parentElement,
+          args
         );
       }
     }

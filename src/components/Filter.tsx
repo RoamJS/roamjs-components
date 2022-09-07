@@ -15,6 +15,7 @@ const Filter = ({
     s ? s.toString() : <i style={{ opacity: 0.5 }}>(Empty)</i>,
   includeHelpMessage = "Only include these values",
   excludeHelpMessage = "Exclude these values",
+  small,
 }: {
   initialValue?: Filters;
   data: Record<string, string[]>;
@@ -22,6 +23,7 @@ const Filter = ({
   renderButtonText?: (s: string, key: string) => React.ReactNode;
   includeHelpMessage?: string;
   excludeHelpMessage?: string;
+  small?: boolean;
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const closeFilter = useCallback(() => {
@@ -59,6 +61,7 @@ const Filter = ({
             }}
             className="roamjs-filter"
             minimal
+            small={small}
             style={
               Object.keys(filters.includes).some(
                 (k) => filters.includes[k].size === 0

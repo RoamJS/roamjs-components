@@ -22,7 +22,7 @@ const ComponentContainer: React.FunctionComponent<{
       style={{ position: "relative", width: "fit-content", minWidth: 300 }}
     >
       {showIcons && (
-        <div style={{ position: "absolute", top: 8, right: 8, zIndex: 1000 }}>
+        <div className={"roamjs-edit-component absolute top-2 right-2 z-50"}>
           {blockId && (
             <Button
               icon="edit"

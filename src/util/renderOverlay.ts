@@ -2,7 +2,6 @@ import nanoid from "nanoid";
 import React from "react";
 import ReactDOM from "react-dom";
 import dispatchToRegistry from "./dispatchToRegistry";
-import getRenderRoot from "./getRenderRoot";
 import removeFromRegistry from "./removeFromRegistry";
 
 export type RoamOverlayProps<
@@ -16,21 +15,26 @@ const renderOverlay = <T extends Record<string, unknown>>({
   id = nanoid(),
   Overlay = (props) => React.createElement("div", props),
   props = {} as T,
+  path = "body",
 }: {
   id?: string;
   Overlay?: (props: RoamOverlayProps<T>) => React.ReactElement;
   props?: T;
+  path?: string;
 } = {}) => {
-  const parent = getRenderRoot(id);
-  const onClose = () => {
-    if (typeof props.onClose === "function") props.onClose();
-    ReactDOM.unmountComponentAtNode(parent);
-    parent.remove();
-    removeFromRegistry({
-      reactRoots: [parent],
-    });
-  };
-  if (!parent.hasAttribute("data-existing")) {
+  const parent = document.createElement("div");
+  parent.id = id;
+  const pathElement =
+    typeof path === "string" ? document.querySelector(path) : path;
+  if (pathElement && !pathElement.querySelector(`#${id}`)) {
+    const onClose = () => {
+      if (typeof props.onClose === "function") props.onClose();
+      ReactDOM.unmountComponentAtNode(parent);
+      parent.remove();
+      removeFromRegistry({
+        reactRoots: [parent],
+      });
+    };
     ReactDOM.render(
       React.createElement(Overlay, {
         ...props,
@@ -43,7 +47,7 @@ const renderOverlay = <T extends Record<string, unknown>>({
       reactRoots: [parent],
     });
   }
-  return onClose;
+  return () => {};
 };
 
 export default renderOverlay;

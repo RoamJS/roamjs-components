@@ -1,3 +1,5 @@
+// @DEPRECATED
+
 const getRenderRoot = (id: string): HTMLDivElement => {
   const rootId = `roamjs-${id}-root`;
   const existing = document.getElementById(rootId) as HTMLDivElement;

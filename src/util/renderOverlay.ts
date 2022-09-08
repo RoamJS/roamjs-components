@@ -20,8 +20,8 @@ const renderOverlay = <T extends Record<string, unknown>>({
   id?: string;
   Overlay?: (props: RoamOverlayProps<T>) => React.ReactElement;
   props?: T;
-  path?: string;
-} = {}) => {
+  path?: string | HTMLElement | null;
+} = {}): (() => void) | void => {
   const parent = document.createElement("div");
   parent.id = id;
   const pathElement =
@@ -46,8 +46,8 @@ const renderOverlay = <T extends Record<string, unknown>>({
     dispatchToRegistry({
       reactRoots: [parent],
     });
+    return onClose;
   }
-  return () => {};
 };
 
 export default renderOverlay;

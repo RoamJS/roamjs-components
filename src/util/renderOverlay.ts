@@ -27,6 +27,7 @@ const renderOverlay = <T extends Record<string, unknown>>({
   const pathElement =
     typeof path === "string" ? document.querySelector(path) : path;
   if (pathElement && !pathElement.querySelector(`#${id}`)) {
+    pathElement.appendChild(parent);
     const onClose = () => {
       if (typeof props.onClose === "function") props.onClose();
       ReactDOM.unmountComponentAtNode(parent);

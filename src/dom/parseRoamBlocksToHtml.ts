@@ -8,27 +8,25 @@ const VIEW_CONTAINER = {
 };
 const HEADINGS = ["p", "h1", "h2", "h3"];
 
-const parseRoamBlocksToHtml = async ({
+export const syncParseRoamBlocksToHtml = ({
   content,
   viewType,
   level,
   context,
+  parseInline,
 }: {
   level: number;
   context: Required<RoamContext>;
   content: TreeNode[];
   viewType: ViewType;
-}): Promise<string> => {
+  parseInline: Awaited<ReturnType<typeof getParseInline>>;
+}): string => {
   if (content.length === 0) {
     return "";
   }
-  const parseInline = await getParseInline();
   const items = content.map(async (t) => {
     let skipChildren = false;
-    const componentsWithChildren = (
-      s: string,
-      ac?: string
-    ): string | false => {
+    const componentsWithChildren = (s: string, ac?: string): string | false => {
       const parent = context.components(s, ac);
       if (parent) {
         return parent;
@@ -85,11 +83,12 @@ const parseRoamBlocksToHtml = async ({
     }>\n${
       skipChildren
         ? ""
-        : parseRoamBlocksToHtml({
+        : syncParseRoamBlocksToHtml({
             content: t.children,
             viewType: t.viewType,
             level: level + 1,
             context,
+            parseInline,
           })
     }`;
     if (level > 0 && viewType === "document") {
@@ -108,5 +107,12 @@ const parseRoamBlocksToHtml = async ({
     level > 0 && viewType === "document" ? "ul" : VIEW_CONTAINER[viewType];
   return `<${containerTag}>${items.join("\n")}</${containerTag}>`;
 };
+
+const parseRoamBlocksToHtml = (
+  args: Omit<Parameters<typeof syncParseRoamBlocksToHtml>[0], "parseInline">
+) =>
+  getParseInline().then((parseInline) =>
+    syncParseRoamBlocksToHtml({ ...args, parseInline })
+  );
 
 export default parseRoamBlocksToHtml;

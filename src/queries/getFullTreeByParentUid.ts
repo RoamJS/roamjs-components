@@ -56,7 +56,7 @@ const getFullTreeByParentUid = (uid: string): TreeNode =>
       .reverse()
       .map((a) => a[0])
       .map((a) => a && a[":children/view-type"])
-      .find((a) => !!a)?.slice(1) as ViewType || "bullet"
+      .find((a) => !!a)?.slice?.(1) as ViewType || "bullet"
   );
 
 export default getFullTreeByParentUid;

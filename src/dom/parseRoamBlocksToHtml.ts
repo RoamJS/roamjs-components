@@ -24,7 +24,7 @@ export const syncParseRoamBlocksToHtml = ({
   if (content.length === 0) {
     return "";
   }
-  const items = content.map(async (t) => {
+  const items = content.map((t) => {
     let skipChildren = false;
     const componentsWithChildren = (s: string, ac?: string): string | false => {
       const parent = context.components(s, ac);
@@ -74,7 +74,7 @@ export const syncParseRoamBlocksToHtml = ({
       classlist.push(className);
       return "";
     });
-    const inlineMarked = await parseInline(textToParse, {
+    const inlineMarked = parseInline(textToParse, {
       ...context,
       components: componentsWithChildren,
     });

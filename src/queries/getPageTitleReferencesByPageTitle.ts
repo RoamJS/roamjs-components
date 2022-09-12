@@ -1,12 +1,13 @@
+import { PullBlock } from "../types";
 import normalizePageTitle from "./normalizePageTitle";
 
 const getPageTitleReferencesByPageTitle = (title: string): string[] =>
-  window.roamAlphaAPI
-    .q(
-      `[:find ?t :where [?b :node/title ?t] [?b :block/children ?c] [?c :block/refs ?r] [?r :node/title "${normalizePageTitle(
+  (
+    window.roamAlphaAPI.data.fast.q(
+      `[:find (pull ?b [:note/title]) :where [?r :node/title "${normalizePageTitle(
         title
-      )}"]]`
-    )
-    .map((p) => p[0] as string);
+      )}"] [?c :block/refs ?r] [?c :block/page ?b]]`
+    ) as [PullBlock][]
+  ).map((p) => p[0][":node/title"] as string);
 
 export default getPageTitleReferencesByPageTitle;

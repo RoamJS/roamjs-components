@@ -4,7 +4,7 @@ import normalizePageTitle from "./normalizePageTitle";
 const getPageTitleReferencesByPageTitle = (title: string): string[] =>
   (
     window.roamAlphaAPI.data.fast.q(
-      `[:find (pull ?b [:note/title]) :where [?r :node/title "${normalizePageTitle(
+      `[:find (pull ?b [:node/title]) :where [?r :node/title "${normalizePageTitle(
         title
       )}"] [?c :block/refs ?r] [?c :block/page ?b]]`
     ) as [PullBlock][]

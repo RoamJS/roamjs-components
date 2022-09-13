@@ -22,7 +22,10 @@ import {
 } from "./env";
 import type { Registry } from "../types";
 
-type RunReturn = void | Partial<Registry> | (() => void);
+type RunReturn =
+  | void
+  | (Partial<Registry> & { unload?: () => void })
+  | (() => void);
 
 type RunExtension = (args: OnloadArgs) => RunReturn | Promise<RunReturn>;
 
@@ -34,7 +37,6 @@ const runExtension = (
         roamDepot?: boolean;
         extensionId?: string;
         run?: RunExtension;
-        unload?: () => void;
       },
 
   // @deprecated both args
@@ -51,7 +53,7 @@ const runExtension = (
       : args.roamDepot ||
         getRoamMarketplaceEnv() === "true" ||
         getRoamDepotEnv() === "true";
-  let unload = typeof args === "string" ? undefined : args.unload;
+  let unload: (() => void) | undefined;
   const migratedTo = typeof args === "string" ? "" : args.migratedTo;
 
   const registry: Registry = {
@@ -136,9 +138,10 @@ const runExtension = (
     const result = run?.(args);
     Promise.resolve(result).then((res) => {
       if (typeof res === "function") {
-        if (!unload) unload = res;
+        unload = res;
       } else if (typeof res === "object") {
         register(res);
+        unload = res.unload;
       }
       const globalApi = window.roamjs.extension[extensionId];
       if (getNodeEnv() === "development") {
@@ -153,7 +156,6 @@ const runExtension = (
   };
 
   const onunload = () => {
-    unload?.();
     registry.elements.forEach((e) => e.remove());
     registry.reactRoots.forEach((e) => {
       ReactDOM.unmountComponentAtNode(e);
@@ -174,7 +176,7 @@ const runExtension = (
     if (!window.roamjs?.loaded.size) {
       document.getElementById("roamjs-default")?.remove();
     }
-    // how to handle adding RoamJS token command? it's own extension depending on dependency management?
+    unload?.();
   };
   if (roamDepot) {
     return {
@@ -184,7 +186,7 @@ const runExtension = (
   } else {
     if (migratedTo) {
       renderSimpleAlert({
-        content: `ATTENTION: This RoamJS extension (${extensionId}) could now be found in the RoamDepot! It has been migrated to the ${migratedTo} extension from RoamDepot, which you could find by entering the Roam Depot Marketplace from the command palette.
+        content: `ATTENTION: This RoamJS extension (${extensionId}) could now be found in the RoamDepot! It has been migrated to the **${migratedTo}** extension from RoamDepot, which you could find by entering the Roam Depot Marketplace from the command palette.
 
 Please remove the \`{{[[roam/js]]}}\` code that installed this extension and refresh before installing from RoamDepot.`,
       });

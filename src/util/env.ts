@@ -15,17 +15,21 @@ export const getNodeEnv = (defaultValue = "production") => {
 
 export const getRoamJSVersionEnv = () => {
   try {
-    return process.env.ROAMJS_VERSION || getNodeEnv("");
+    return process.env.ROAMJS_VERSION || process.env.VERSION || getNodeEnv("");
   } catch {
     return getNodeEnv("");
   }
 };
 
 export const getApiUrlEnv = () => {
+  const defaultValue =
+    getNodeEnv() === "production"
+      ? "https://lambda.roamjs.com"
+      : "http://localhost:3003";
   try {
-    return process.env.API_URL || "https://lambda.roamjs.com";
+    return process.env.API_URL || defaultValue;
   } catch {
-    return "https://lambda.roamjs.com";
+    return defaultValue;
   }
 };
 
@@ -47,8 +51,8 @@ export const getRoamDepotEnv = () => {
 
 export const getRoamJSExtensionIdEnv = () => {
   try {
-    return process.env.ROAMJS_EXTENSION_ID || "";
+    return process.env.ROAMJS_EXTENSION_ID || "roamjs";
   } catch {
-    return "";
+    return "roamjs";
   }
 };

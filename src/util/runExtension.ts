@@ -145,8 +145,9 @@ const runExtension = (
       if (typeof res === "function") {
         unload = res;
       } else if (typeof res === "object") {
-        register(res);
-        unload = res.unload;
+        const { unload: resUnload, ...registry } = res;
+        register(registry);
+        unload = resUnload;
       }
       const globalApi = window.roamjs.extension[extensionId];
       if (getNodeEnv() === "development") {

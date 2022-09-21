@@ -35,6 +35,7 @@ export type ExportTypes = {
   callback: (args: {
     filename: string;
     graph: string;
+    isBackendEnabled: boolean;
   }) => Promise<{ title: string; content: string }[]>;
 }[];
 

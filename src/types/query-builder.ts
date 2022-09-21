@@ -103,12 +103,14 @@ export type ParseQuery = (q: RoamBasicNode | string) => {
   selectionsNodesUid: string;
   customNodeUid: string;
   isCustomEnabled: boolean;
+  isBackendEnabled: boolean;
 };
 
 export type FireQuery = (query: {
   returnNode: string;
   conditions: Condition[];
   selections: Selection[];
+  isBackendEnabled: boolean;
 }) => Promise<Result[]>;
 
 export type ConditionToDatalog = (condition: Condition) => DatalogClause[];

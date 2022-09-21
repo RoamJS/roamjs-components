@@ -1,3 +1,4 @@
+import React from "react";
 import type { InputTextNode } from "../../types/native";
 import type { ExternalLoginOptions } from "../ExternalLogin";
 
@@ -21,6 +22,7 @@ export type TextField = {
   defaultValue?: string;
   options?: {
     placeholder?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   };
 };
 
@@ -38,7 +40,7 @@ export type FlagField = {
   type: "flag";
   defaultValue?: boolean;
   options?: {
-    onChange?: (f: boolean) => void;
+    onChange?: (f: boolean, e: React.FormEvent<HTMLInputElement>) => void;
   };
 };
 

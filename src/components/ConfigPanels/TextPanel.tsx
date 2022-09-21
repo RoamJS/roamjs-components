@@ -12,7 +12,7 @@ const TextPanel: FieldPanel<TextField> = ({
   order,
   description,
   defaultValue = "",
-  options: { placeholder = "" } = {},
+  options: { placeholder = "", onChange: parentOnChange } = {},
 }) => {
   const { value, onChange } = useSingleChildValue({
     defaultValue,
@@ -29,9 +29,10 @@ const TextPanel: FieldPanel<TextField> = ({
       <Description description={description} />
       <InputGroup
         value={value}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange(e.target.value)
-        }
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          onChange(e.target.value);
+          parentOnChange?.(e);
+        }}
         placeholder={placeholder}
       />
     </Label>

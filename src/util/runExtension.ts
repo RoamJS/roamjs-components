@@ -3,7 +3,12 @@ import CustomPanel from "../components/ConfigPanels/CustomPanel";
 import FlagPanel from "../components/ConfigPanels/FlagPanel";
 import SelectPanel from "../components/ConfigPanels/SelectPanel";
 import TextPanel from "../components/ConfigPanels/TextPanel";
-import { Field, UnionField } from "../components/ConfigPanels/types";
+import {
+  Field,
+  FlagField,
+  TextField,
+  UnionField,
+} from "../components/ConfigPanels/types";
 import addStyle from "../dom/addStyle";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import setInputSetting from "./setInputSetting";
@@ -278,11 +283,16 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
                       Panel: FlagPanel,
                     };
                   } else if (s.action.type === "input") {
+                    const { onChange, placeholder } = s.action;
                     return {
                       title: s.id,
                       description: s.description,
                       Panel: TextPanel,
-                    };
+                      options: {
+                        onChange,
+                        placeholder,
+                      },
+                    } as Field<TextField>;
                   } else if (s.action.type === "select") {
                     return {
                       title: s.id,
@@ -293,11 +303,17 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
                       },
                     };
                   } else if (s.action.type === "switch") {
+                    const { onChange } = s.action;
                     return {
                       title: s.id,
                       description: s.description,
                       Panel: FlagPanel,
-                    };
+                      options: {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        onChange: (_, e) => onChange?.(e),
+                      },
+                    } as Field<FlagField>;
                   } else if (s.action.type === "reactComponent") {
                     return {
                       title: s.id,

@@ -29,7 +29,7 @@ const FlagPanel: FieldPanel<FlagField> = ({
           window.roamAlphaAPI.deleteBlock({ block: { uid } });
           setUid("");
         }
-        options.onChange?.(checked);
+        options.onChange?.(checked, e);
       }}
       labelElement={
         <>

@@ -77,7 +77,7 @@ export type ExportDialogComponent = (props: {
   onClose: () => void;
   isOpen: boolean;
   exportTypes: ExportTypes;
-  results: Result[] | (() => Promise<Result[]>);
+  results: Result[] | ((isBackendEnabled: boolean) => Promise<Result[]>);
 }) => JSX.Element;
 export type QueryEditorComponent = (props: {
   parentUid: string;

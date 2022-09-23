@@ -27,7 +27,8 @@ jobs:
       # - name: test
       #   run: npm t
       - name: prepare
-        run: cp LICENSE README.md package.json src/scripts/default.tsconfig.json dist
+        # run: cp LICENSE README.md package.json src/scripts/default.tsconfig.json dist
+        run: cp LICENSE README.md package.json dist
       - name: publish
         run: npm publish --access public
         working-directory: dist

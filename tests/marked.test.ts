@@ -5,28 +5,27 @@ import run, {
   RoamContext,
 } from "../src/marked";
 import fs from "fs";
+import { test, expect } from "@playwright/test";
 
 const runTest =
   (md: string, expected: string, context?: Omit<RoamContext, "marked">) =>
-  (done: jest.DoneCallback) =>
+  async () =>
     lexer(md, context)
       .then((output) => {
         fs.writeFileSync("debug.json", JSON.stringify(output, null, 4));
         return run(md, context);
       })
-      .then((actual) => expect(actual).toBe(expected))
-      .then(done);
+      .then((actual) => expect(actual).toBe(expected));
 
 const runInlineTest =
   (md: string, expected: string, context?: Omit<RoamContext, "marked">) =>
-  (done: jest.DoneCallback) =>
+  async () =>
     inlineLexer(md, context)
       .then((output) => {
         fs.writeFileSync("debug.json", JSON.stringify(output, null, 4));
         return parseInline(md, context);
       })
-      .then((actual) => expect(actual).toBe(expected))
-      .then(done);
+      .then((actual) => expect(actual).toBe(expected));
 
 test(
   "Runs Special Formats",

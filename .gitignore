@@ -3,25 +3,7 @@ dist
 build
 
 # new package dist
-/backend
-/components
-/date
-/dom
-/events
-/hooks
-/marked
-/queries
-/util
-/types
-/writes
-/index.d.ts
-/index.js
-/index.js.map
-/main.d.ts
-/main.js
-/main.js.map
-/debug.json
+/src/scripts
 
 # testing
-components.d.ts
 extension.js

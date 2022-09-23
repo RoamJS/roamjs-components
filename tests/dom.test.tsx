@@ -1,4 +1,5 @@
 import getUidsFromId from "../src/dom/getUidsFromId";
+import { test, expect } from "@playwright/test";
 
 test("getUidsFromId", () => {
   const { blockUid, windowId } = getUidsFromId(

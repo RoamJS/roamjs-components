@@ -1,4 +1,5 @@
 import extractTag from "../../src/util/extractTag";
+import { test, expect } from "@playwright/test";
 
 test("extractTag - Handles default case", () => {
   const key = "[[Hello, World]]";

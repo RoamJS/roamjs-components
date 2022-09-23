@@ -18,10 +18,16 @@ jobs:
       - uses: actions/checkout@v2
       - name: install
         run: npm install
+      - name: authenticate
+        run: echo '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}' > ~/.npmrc
+      - name: lint
+        run: npm run lint
       - name: build
-        run: npm run build
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          access: "public"
-          check-version: false
+        run: npx tsc
+      # - name: test
+      #   run: npm t
+      - name: prepare
+        run: cp LICENSE README.md package.json src/default.tsconfig.json dist
+      - name: publish
+        run: npm publish --access public
+        working-directory: dist

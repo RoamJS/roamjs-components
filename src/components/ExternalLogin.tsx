@@ -74,17 +74,17 @@ const ExternalLogin = ({
                 time: new Date().valueOf(),
               };
 
-              const existingTree = getBasicTreeByParentUid(parentUid).find(
-                (t) => /oauth/i.test(t.text)
-              );
-              const blockUid =
-                existingTree?.uid ||
-                (await createBlock({ node: { text: "oauth" }, parentUid }));
               if (useLocal) {
                 const key = `oauth-${service}`;
                 const accounts = JSON.parse(localStorageGet(key) as string);
                 localStorageSet(key, JSON.stringify([...accounts, account]));
               } else {
+                const existingTree = getBasicTreeByParentUid(parentUid).find(
+                  (t) => /oauth/i.test(t.text)
+                );
+                const blockUid =
+                  existingTree?.uid ||
+                  (await createBlock({ node: { text: "oauth" }, parentUid }));
                 window.roamAlphaAPI.createBlock({
                   block: { string: label, uid: labelUid },
                   location: {

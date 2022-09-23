@@ -5,7 +5,7 @@ export type HandleFetchArgs = {
   path?: string;
   domain?: string;
   href?: string;
-  data?: Record<string, unknown>;
+  data?: Record<string, unknown> | Uint8Array;
   authorization?: string;
   anonymous?: boolean;
   headers?: Record<string, string>;
@@ -40,9 +40,11 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     }
     return r
       .json()
-      .then(
-        (d) => ({ ...d, headers: Object.fromEntries(r.headers.entries()) } as T)
-      )
+      .then((d) => ({
+        ...(d as T),
+        headers: Object.fromEntries(r.headers.entries()),
+        status: r.status,
+      }))
       .catch(() => r.text().then((e) => Promise.reject(new Error(e))));
   });
 };

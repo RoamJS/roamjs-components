@@ -11,7 +11,9 @@ const handleBodyFetch =
       typeof args === "string" ? { path: args, data: _data } : args;
 
     const body =
-      getNodeEnv() === "development"
+      data instanceof Uint8Array
+        ? data
+        : getNodeEnv() === "development"
         ? JSON.stringify({ dev: true, ...data })
         : JSON.stringify(data || {});
 

@@ -1,10 +1,10 @@
 import { Button } from "@blueprintjs/core";
 import React, { useState } from "react";
-import localStorageGet from "roamjs-components/util/localStorageGet";
-import { localStorageSet } from "roamjs-components/util/localStorageSet";
+import localStorageGet from "../util/localStorageGet";
+import { localStorageSet } from "../util/localStorageSet";
 import ExternalLogin, {
   ExternalLoginOptions,
-} from "roamjs-components/components/ExternalLogin";
+} from "./ExternalLogin";
 
 const OauthPanel = (options: ExternalLoginOptions) => {
   const key = `oauth-${options.service}`;

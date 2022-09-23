@@ -2,9 +2,7 @@ import { Button } from "@blueprintjs/core";
 import React, { useState } from "react";
 import localStorageGet from "../util/localStorageGet";
 import { localStorageSet } from "../util/localStorageSet";
-import ExternalLogin, {
-  ExternalLoginOptions,
-} from "./ExternalLogin";
+import ExternalLogin, { ExternalLoginOptions } from "./ExternalLogin";
 
 const OauthPanel = (options: ExternalLoginOptions) => {
   const key = `oauth-${options.service}`;

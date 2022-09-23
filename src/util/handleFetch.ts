@@ -40,7 +40,9 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     }
     return r
       .json()
-      .then((r) => r as T)
+      .then(
+        (d) => ({ ...d, headers: Object.fromEntries(r.headers.entries()) } as T)
+      )
       .catch(() => r.text().then((e) => Promise.reject(new Error(e))));
   });
 };

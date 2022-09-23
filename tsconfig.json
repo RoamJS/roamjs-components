@@ -3,7 +3,7 @@
     "jsx": "react",
     "target": "es2015",
     "allowJs": false,
-    "lib": ["DOM", "esnext"],
+    "lib": ["DOM", "esnext", "DOM.Iterable"],
     "module": "commonjs",
     "moduleResolution": "node",
     "declaration": true,
@@ -18,7 +18,7 @@
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "importHelpers": true,
+    "importHelpers": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]

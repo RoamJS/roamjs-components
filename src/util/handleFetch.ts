@@ -8,6 +8,7 @@ export type HandleFetchArgs = {
   data?: Record<string, unknown>;
   authorization?: string;
   anonymous?: boolean;
+  headers?: Record<string, string>;
 };
 
 const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
@@ -19,6 +20,7 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     path,
     href,
     domain,
+    headers = {},
   }: Pick<RequestInit, "method"> & Omit<HandleFetchArgs, "data">
 ) => {
   const url = new URL(href || `${domain || getApiUrlEnv()}/${path}`);
@@ -28,7 +30,7 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
   return fetch(
     ...transformArgs(url, {
       method,
-      headers: defaultHeaders,
+      headers: { ...defaultHeaders, ...headers },
     })
   ).then((r) => {
     if (!r.ok) {

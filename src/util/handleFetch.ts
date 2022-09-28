@@ -12,19 +12,20 @@ export type HandleFetchArgs = {
   buffer?: boolean;
 };
 
-const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
+// type HandleFetchReturn<T, B> = B extends true
+//   ? Promise<ArrayBuffer>
+//   : Promise<T>;
+
+type HandleFetch = <T extends Record<string, unknown> | ArrayBuffer>(
   transformArgs: (...info: [URL, RequestInit]) => Parameters<typeof fetch>,
-  {
-    method,
-    anonymous,
-    authorization,
-    path,
-    href,
-    domain,
-    headers = {},
-    buffer,
-  }: Pick<RequestInit, "method"> & Omit<HandleFetchArgs, "data">
-): Promise<T | ArrayBuffer> => {
+  args: Pick<RequestInit, "method"> & Omit<HandleFetchArgs, "data">
+// ) => HandleFetchReturn<T, B>;
+) => Promise<T>
+
+const handleFetch: HandleFetch = (
+  transformArgs,
+  { method, anonymous, authorization, path, href, domain, headers = {}, buffer }
+) => {
   const url = new URL(href || `${domain || getApiUrlEnv()}/${path}`);
   const defaultHeaders = !anonymous
     ? { Authorization: authorization || getAuthorizationHeader() }
@@ -38,14 +39,14 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     if (!r.ok) {
       return r.text().then((e) => Promise.reject(new Error(e)));
     } else if (r.status === 204) {
-      return {} as T;
+      return {} as ReturnType<HandleFetch>;
     }
 
     return (
       buffer
         ? r.arrayBuffer()
         : r.json().then((d) => ({
-            ...(d as T),
+            ...d,
             headers: Object.fromEntries(r.headers.entries()),
             status: r.status,
           }))

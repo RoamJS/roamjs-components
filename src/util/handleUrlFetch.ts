@@ -3,7 +3,7 @@ import handleFetch, { HandleFetchArgs } from "./handleFetch";
 
 const handleUrlFetch =
   (method: "GET" | "DELETE") =>
-  <T extends Record<string, unknown> = Record<string, never>>(
+  <T extends Record<string, unknown> | ArrayBuffer = Record<string, never>>(
     args: string | HandleFetchArgs,
     _data?: Record<string, unknown>
   ) => {

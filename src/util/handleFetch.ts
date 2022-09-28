@@ -9,6 +9,7 @@ export type HandleFetchArgs = {
   authorization?: string;
   anonymous?: boolean;
   headers?: Record<string, string>;
+  buffer?: boolean;
 };
 
 const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
@@ -21,8 +22,9 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     href,
     domain,
     headers = {},
+    buffer,
   }: Pick<RequestInit, "method"> & Omit<HandleFetchArgs, "data">
-) => {
+): Promise<T | ArrayBuffer> => {
   const url = new URL(href || `${domain || getApiUrlEnv()}/${path}`);
   const defaultHeaders = !anonymous
     ? { Authorization: authorization || getAuthorizationHeader() }
@@ -38,14 +40,16 @@ const handleFetch = <T extends Record<string, unknown> = Record<string, never>>(
     } else if (r.status === 204) {
       return {} as T;
     }
-    return r
-      .json()
-      .then((d) => ({
-        ...(d as T),
-        headers: Object.fromEntries(r.headers.entries()),
-        status: r.status,
-      }))
-      .catch(() => r.text().then((e) => Promise.reject(new Error(e))));
+
+    return (
+      buffer
+        ? r.arrayBuffer()
+        : r.json().then((d) => ({
+            ...(d as T),
+            headers: Object.fromEntries(r.headers.entries()),
+            status: r.status,
+          }))
+    ).catch(() => r.text().then((e) => Promise.reject(new Error(e))));
   });
 };
 

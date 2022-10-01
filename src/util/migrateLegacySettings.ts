@@ -22,8 +22,8 @@ const migrateLegacySettings = ({
 }) => {
   const page = toConfigPageName(extensionId);
   const uid = getPageUidByPageTitle(page);
+  const label = `Migrate Settings To Roam Depot: ${extensionId}`;
   if (uid) {
-    const label = `Migrate Settings To Roam Depot: ${extensionId}`;
     window.roamAlphaAPI.ui.commandPalette.addCommand({
       label,
       callback: () => {
@@ -80,6 +80,9 @@ const migrateLegacySettings = ({
       },
     });
   }
+  return () => {
+    window.roamAlphaAPI.ui.commandPalette.removeCommand({ label });
+  };
 };
 
 export default migrateLegacySettings;

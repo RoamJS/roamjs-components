@@ -8,7 +8,7 @@ const OauthPanel = (options: ExternalLoginOptions) => {
   const key = `oauth-${options.service}`;
   const [accounts, setAccounts] = useState<
     { text: string; uid: string; data: string }[]
-  >(() => JSON.parse(localStorageGet(key) as string));
+  >(() => JSON.parse((localStorageGet(key) as string) || "[]"));
   return (
     <>
       <ExternalLogin

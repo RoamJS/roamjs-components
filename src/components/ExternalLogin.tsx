@@ -76,7 +76,9 @@ const ExternalLogin = ({
 
               if (useLocal) {
                 const key = `oauth-${service}`;
-                const accounts = JSON.parse(localStorageGet(key) as string);
+                const accounts = JSON.parse(
+                  (localStorageGet(key) as string) || "[]"
+                );
                 localStorageSet(key, JSON.stringify([...accounts, account]));
               } else {
                 const existingTree = getBasicTreeByParentUid(parentUid).find(
@@ -172,12 +174,12 @@ const ExternalLogin = ({
         onClick={onClick}
         disabled={loading}
         className={"roamjs-external-login"}
+        rightIcon={loading && <Spinner size={Spinner.SIZE_SMALL} />}
       >
         {loggedIn
           ? `Add Another ${idToTitle(service)} Account`
           : `Login With ${idToTitle(service)}`}
       </Button>
-      {loading && <Spinner size={Spinner.SIZE_SMALL} />}
       {error && (
         <div style={{ color: "red", whiteSpace: "pre-line" }}>{error}</div>
       )}

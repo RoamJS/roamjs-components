@@ -10,7 +10,7 @@ const OauthPanel = (options: ExternalLoginOptions) => {
     { text: string; uid: string; data: string }[]
   >(() => JSON.parse((localStorageGet(key) as string) || "[]"));
   return (
-    <div className="flex flex-col gap-1" style={{minWidth: 300}}>
+    <div className="flex flex-col gap-1" style={{ minWidth: 300 }}>
       <ExternalLogin
         useLocal
         onSuccess={(acc) => setAccounts([...accounts, acc])}

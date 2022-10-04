@@ -33,6 +33,6 @@ export type RegisterCommand = (args: {
     }
   ) => CommandHandler;
   delayArgs?: true;
-}) => void;
+}) => () => void;
 
 export type UnregisterCommand = (t: string) => void;

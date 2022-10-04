@@ -19,8 +19,8 @@ export type HandleFetchArgs = {
 type HandleFetch = <T extends Record<string, unknown> | ArrayBuffer>(
   transformArgs: (...info: [URL, RequestInit]) => Parameters<typeof fetch>,
   args: Pick<RequestInit, "method"> & Omit<HandleFetchArgs, "data">
-// ) => HandleFetchReturn<T, B>;
-) => Promise<T>
+  // ) => HandleFetchReturn<T, B>;
+) => Promise<T>;
 
 const handleFetch: HandleFetch = (
   transformArgs,
@@ -46,7 +46,7 @@ const handleFetch: HandleFetch = (
       buffer
         ? r.arrayBuffer()
         : r.json().then((d) => ({
-            ...d,
+            ...(Array.isArray(d) ? { data: d } : d),
             headers: Object.fromEntries(r.headers.entries()),
             status: r.status,
           }))

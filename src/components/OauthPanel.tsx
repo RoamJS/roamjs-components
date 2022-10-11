@@ -20,9 +20,8 @@ const OauthPanel = (options: ExternalLoginOptions) => {
       />
       {!!accounts.length && (
         <>
-          <h5 style={{ marginTop: 8 }}>Accounts</h5>
-          <hr />
-          <ul style={{ marginTop: 8, padding: 0 }}>
+          <h5 className="margin-0">Accounts</h5>
+          <ul className="margin-0">
             {accounts.map((act) => (
               <li
                 key={act.uid}

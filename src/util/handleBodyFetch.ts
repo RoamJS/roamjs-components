@@ -23,10 +23,12 @@ const handleBodyFetch =
         {
           ...init,
           body,
-          headers: {
-            ...init?.headers,
-            "Content-Type": "application/json",
-          },
+          headers: Object.fromEntries(
+            Object.entries({
+              "Content-Type": "application/json",
+              ...init?.headers,
+            }).filter((h) => !h[1])
+          ),
           method,
         },
       ],

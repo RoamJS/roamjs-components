@@ -234,4 +234,6 @@ customDateNlp.refiners.unshift({
 const parseNlpDate = (s: string, ref?: Date): Date =>
   customDateNlp.parseDate(s, ref) || new Date();
 
+export const parse = (t: string, ref?: Date) => customDateNlp.parse(t, ref);
+
 export default parseNlpDate;

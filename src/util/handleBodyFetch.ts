@@ -10,15 +10,15 @@ const handleBodyFetch =
     const { data, ...fetchArgs } =
       typeof args === "string" ? { path: args, data: _data } : args;
 
-    const body =
-      data instanceof Uint8Array
-        ? data
-        : getNodeEnv() === "development"
-        ? JSON.stringify({ dev: true, ...data })
-        : JSON.stringify(data || {});
-
-    return handleFetch<T>(
-      (url, init) => [
+    return handleFetch<T>((url, init) => {
+      const body =
+        data instanceof Uint8Array
+          ? data
+          : getNodeEnv() === "development" &&
+            /(localhost|roamjs)/.test(url.toString())
+          ? JSON.stringify({ dev: true, ...data })
+          : JSON.stringify(data || {});
+      return [
         url,
         {
           ...init,
@@ -31,9 +31,8 @@ const handleBodyFetch =
           ),
           method,
         },
-      ],
-      fetchArgs
-    );
+      ];
+    }, fetchArgs);
   };
 
 export default handleBodyFetch;

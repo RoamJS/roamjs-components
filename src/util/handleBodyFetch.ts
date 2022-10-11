@@ -27,7 +27,7 @@ const handleBodyFetch =
             Object.entries({
               "Content-Type": "application/json",
               ...init?.headers,
-            }).filter((h) => !h[1])
+            }).filter((h) => !!h[1])
           ),
           method,
         },

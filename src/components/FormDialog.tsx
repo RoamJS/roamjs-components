@@ -85,8 +85,8 @@ const FormDialog = <T extends Record<string, unknown>>({
       isOpen={isOpen}
       onClose={onClose}
       title={title}
-      enforceFocus={false}
-      autoFocus={false}
+      enforceFocus={!title}
+      autoFocus={!title}
     >
       <div className={Classes.DIALOG_BODY}>
         {content}

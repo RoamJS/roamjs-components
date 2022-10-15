@@ -25,10 +25,10 @@ const renderOverlay = <T extends Record<string, unknown>>({
   before?: number | HTMLElement | null;
 } = {}): (() => void) | void => {
   const parent = document.createElement("div");
-  parent.id = id;
+  parent.id = id.replace(/^\d*/, "");
   const pathElement =
     typeof path === "string" ? document.querySelector(path) : path;
-  if (pathElement && !pathElement.querySelector(`#${id}`)) {
+  if (pathElement && !pathElement.querySelector(`#${parent.id}`)) {
     if (typeof before === "number") {
       pathElement.insertBefore(parent, pathElement.children[before]);
     } else if (typeof before === "object") {

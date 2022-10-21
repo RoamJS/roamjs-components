@@ -11,30 +11,36 @@ export type RoamOverlayProps<
   isOpen: boolean;
 } & T;
 
+const BEFORE_REGEX = /::before\([\w.]+\)$/;
+
 const renderOverlay = <T extends Record<string, unknown>>({
   id = nanoid(),
   Overlay = (props) => React.createElement("div", props),
   props = {} as T,
   path = "body",
-  before,
 }: {
   id?: string;
   Overlay?: (props: RoamOverlayProps<T>) => React.ReactElement;
   props?: T;
   path?: string | HTMLElement | null;
-  before?: number | HTMLElement | null;
-} = {}): (() => void) | void => {
+} = {}): (() => void) | undefined => {
   const parent = document.createElement("div");
   parent.id = id.replace(/^\d*/, "");
   const pathElement =
-    typeof path === "string" ? document.querySelector(path) : path;
+    typeof path === "string"
+      ? document.querySelector(path.replace(BEFORE_REGEX, ""))
+      : path;
   if (pathElement && !pathElement.querySelector(`#${parent.id}`)) {
-    if (typeof before === "number") {
-      pathElement.insertBefore(parent, pathElement.children[before]);
-    } else if (typeof before === "object") {
-      pathElement.insertBefore(parent, before);
-    } else {
+    const before =
+      typeof path === "string" ? BEFORE_REGEX.exec(path)?.[1] : undefined;
+    if (!before) {
       pathElement.appendChild(parent);
+    } else if (!Number.isNaN(Number(before))) {
+      pathElement.insertBefore(parent, pathElement.children[Number(before)]);
+    } else if (pathElement.querySelector(before)) {
+      pathElement.insertBefore(parent, pathElement.querySelector(before));
+    } else {
+      return undefined;
     }
     const onClose = () => {
       if (typeof props.onClose === "function") props.onClose();
@@ -57,6 +63,7 @@ const renderOverlay = <T extends Record<string, unknown>>({
     });
     return onClose;
   }
+  return undefined;
 };
 
 export default renderOverlay;

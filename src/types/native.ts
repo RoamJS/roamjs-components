@@ -426,18 +426,20 @@ type CustomAction = {
   component: React.FC;
 };
 
+export type Action =
+  | ButtonAction
+  | SwitchAction
+  | InputAction
+  | SelectAction
+  | CustomAction;
+
 type PanelConfig = {
   tabTitle: string;
   settings: {
     id: string;
     name: string;
     description: string;
-    action:
-      | ButtonAction
-      | SwitchAction
-      | InputAction
-      | SelectAction
-      | CustomAction;
+    action: Action;
   }[];
 };
 

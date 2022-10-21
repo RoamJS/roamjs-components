@@ -9,7 +9,7 @@ const createPageTitleObserver = ({
   title: string;
   callback: (d: HTMLDivElement) => void;
   log?: boolean;
-}): void => {
+}): (() => void) => {
   const listener = (url: string) => {
     const d = document.getElementsByClassName(
       "roam-article"
@@ -34,8 +34,10 @@ const createPageTitleObserver = ({
       }
     }
   };
-  window.addEventListener("hashchange", (e) => listener(e.newURL));
+  const wrapped = (e: HashChangeEvent) => listener(e.newURL);
+  window.addEventListener("hashchange", wrapped);
   listener(window.location.href);
+  return () => window.removeEventListener("hashchange", wrapped);
 };
 
 export default createPageTitleObserver;

@@ -449,7 +449,7 @@ export type OnloadArgs = {
       panel: {
         create: (c: PanelConfig) => void;
       };
-      set: (k: string, v: unknown) => void;
+      set: (k: string, v: unknown) => Promise<void>;
     };
   };
   extension: {

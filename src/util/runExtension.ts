@@ -198,7 +198,7 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
       });
     }
     const title = toConfigPageName(extensionId);
-    const mockSettingSet = (_key: string, v: unknown, parentUid: string) => {
+    const mockSettingSet = async (_key: string, v: unknown, parentUid: string) => {
       const key = _key.replace(/-/g, " ");
       if (typeof v === "boolean") {
         const tree = getBasicTreeByParentUid(parentUid);

@@ -215,9 +215,6 @@ declare global {
           runQuery: RunQuery;
           listActiveQueries: ListActiveQueries;
         };
-        versioning?: {
-          switch: (args: { id: string; currentVersion: string }) => void;
-        };
         smartblocks?: {
           registerCommand: RegisterCommand;
           unregisterCommand: UnregisterCommand;

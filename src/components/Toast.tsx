@@ -1,10 +1,16 @@
 import React from "react";
-import { Intent, Toaster, ToasterPosition } from "@blueprintjs/core";
+import {
+  Intent,
+  IToastProps,
+  Toaster,
+  ToasterPosition,
+} from "@blueprintjs/core";
 
 type ToastBaseProps = {
   content?: string;
   timeout?: number;
   intent?: Intent;
+  onDismiss?: IToastProps["onDismiss"];
 };
 
 type ToastProps = {
@@ -40,6 +46,7 @@ export const render = ({
         content = "RoamJS Notification",
         intent = Intent.PRIMARY,
         timeout = 5000,
+        onDismiss,
       }: ToastBaseProps) => {
         return {
           message: (
@@ -50,6 +57,7 @@ export const render = ({
           ),
           intent,
           timeout,
+          onDismiss,
         };
       };
       toaster.show(Toast(props), props.id);

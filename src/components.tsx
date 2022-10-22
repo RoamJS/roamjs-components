@@ -5,6 +5,7 @@ import { Button } from "@blueprintjs/core";
 import AutocompleteInput from "./components/AutocompleteInput";
 import FormDialog from "./components/FormDialog";
 import PageInput from "./components/PageInput";
+import renderToast from "./components/Toast";
 
 import renderOverlay from "./util/renderOverlay";
 import runExtension from "./util/runExtension";
@@ -127,6 +128,7 @@ export default runExtension({
         AutocompleteInput,
         FormDialog,
         PageInput,
+        renderToast,
       },
       util: {
         renderOverlay,

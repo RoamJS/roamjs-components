@@ -11,7 +11,7 @@ export type RoamOverlayProps<
   isOpen: boolean;
 } & T;
 
-const BEFORE_REGEX = /::before\([\w.]+\)$/;
+const BEFORE_REGEX = /::before\(([\w.]+)\)$/;
 
 const renderOverlay = <T extends Record<string, unknown>>({
   id = nanoid(),

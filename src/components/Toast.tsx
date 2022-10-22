@@ -11,6 +11,7 @@ type ToastBaseProps = {
   timeout?: number;
   intent?: Intent;
   onDismiss?: IToastProps["onDismiss"];
+  action?: IToastProps['action'];
 };
 
 type ToastProps = {
@@ -47,6 +48,7 @@ export const render = ({
         intent = Intent.PRIMARY,
         timeout = 5000,
         onDismiss,
+        action,
       }: ToastBaseProps) => {
         return {
           message: (
@@ -58,6 +60,7 @@ export const render = ({
           intent,
           timeout,
           onDismiss,
+          action,
         };
       };
       toaster.show(Toast(props), props.id);

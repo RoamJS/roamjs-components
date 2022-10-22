@@ -19,7 +19,6 @@ import {
   RunQuery,
   ListActiveQueries,
 } from "./query-builder";
-import { SamePageApi } from "./samepage";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
 import type Markdown from "marked-react";
@@ -200,8 +199,6 @@ declare global {
     roamjs: {
       loaded: Set<string>;
       extension: {
-        multiplayer?: SamePageApi;
-        samepage?: SamePageApi;
         queryBuilder?: {
           ExportDialog: ExportDialogComponent;
           QueryEditor: QueryEditorComponent;

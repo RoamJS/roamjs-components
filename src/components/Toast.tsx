@@ -11,7 +11,7 @@ type ToastBaseProps = {
   timeout?: number;
   intent?: Intent;
   onDismiss?: IToastProps["onDismiss"];
-  action?: IToastProps['action'];
+  action?: IToastProps["action"];
 };
 
 type ToastProps = {

@@ -221,6 +221,7 @@ export type PullBlock = {
     };
     ":showing-own-icons?": boolean;
     ":showing-user-icons?": boolean;
+    ":first-day-of-week"?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   };
   ":user/uid"?: string;
 };

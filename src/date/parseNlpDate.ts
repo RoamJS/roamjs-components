@@ -1,13 +1,30 @@
 import addWeeks from "date-fns/addWeeks";
 import addDays from "date-fns/addDays";
-import startOfWeek from "date-fns/startOfWeek";
+import dateFnsStartOfWeek from "date-fns/startOfWeek";
 import startOfMonth from "date-fns/startOfMonth";
 import startOfYear from "date-fns/startOfYear";
-import endOfWeek from "date-fns/endOfWeek";
+import dateFnsEndOfWeek from "date-fns/endOfWeek";
 import endOfMonth from "date-fns/endOfMonth";
 import endOfYear from "date-fns/endOfYear";
 import * as chrono from "chrono-node";
 import { ParsingComponents } from "chrono-node/dist/results";
+import getCurrentUserUid from "../queries/getCurrentUserUid";
+
+const startOfWeek = (date: Date) => {
+  const weekStartsOn = window.roamAlphaAPI.pull("[:user/settings]", [
+    ":user/uid",
+    getCurrentUserUid(),
+  ])?.[":user/settings"]?.[":first-day-of-week"];
+  return dateFnsStartOfWeek(date, weekStartsOn ? { weekStartsOn } : undefined);
+};
+
+const endOfWeek = (date: Date) => {
+  const weekStartsOn = window.roamAlphaAPI.pull("[:user/settings]", [
+    ":user/uid",
+    getCurrentUserUid(),
+  ])?.[":user/settings"]?.[":first-day-of-week"];
+  return dateFnsEndOfWeek(date, weekStartsOn ? { weekStartsOn } : undefined);
+};
 
 const ORDINAL_WORD_DICTIONARY: { [word: string]: number } = {
   first: 1,

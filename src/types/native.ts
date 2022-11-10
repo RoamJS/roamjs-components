@@ -246,6 +246,7 @@ export type TreeNode = {
   text: string;
   order: number;
   children: TreeNode[];
+  parents: number[];
   uid: string;
   heading: number;
   open: boolean;

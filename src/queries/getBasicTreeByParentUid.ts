@@ -1,20 +1,21 @@
-import { RoamBasicNode, RoamUnorderedBasicNode } from "../types";
+import { PullBlock, RoamBasicNode } from "../types";
 
-const sortBasicNodes = (c: RoamUnorderedBasicNode[]): RoamBasicNode[] =>
+const sortBasicNodes = (c: PullBlock[]): RoamBasicNode[] =>
   c
-    .sort(({ order: a }, { order: b }) => a - b)
-    .map(({ order: _, children = [], ...node }) => ({
-      children: sortBasicNodes(children),
-      ...node,
+    .sort((a, b) => (a[":block/order"] || 0) - (b[":block/order"] || 0))
+    .map((node) => ({
+      children: sortBasicNodes(node[":block/children"] || []),
+      uid: node[":block/uid"] || "",
+      text: node[":block/string"] || "",
     }));
 
 const getBasicTreeByParentUid = (uid: string): RoamBasicNode[] =>
   sortBasicNodes(
-    window.roamAlphaAPI
+    window.roamAlphaAPI.data.fast
       .q(
-        `[:find (pull ?c [[:block/string :as "text"] :block/uid :block/order {:block/children ...}]) :where [?b :block/uid "${uid}"] [?b :block/children ?c]]`
+        `[:find (pull ?c [:block/string :block/uid :block/order {:block/children ...}]) :where [?b :block/uid "${uid}"] [?b :block/children ?c]]`
       )
-      .map((a) => a[0] as RoamUnorderedBasicNode)
+      .map((a) => a[0] as PullBlock)
   );
 
 export default getBasicTreeByParentUid;

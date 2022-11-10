@@ -149,13 +149,6 @@ export type RoamBasicNode = {
   children: RoamBasicNode[];
 };
 
-export type RoamUnorderedBasicNode = {
-  text: string;
-  uid: string;
-  order: number;
-  children?: RoamUnorderedBasicNode[];
-};
-
 export type RoamPull = {
   "block/children"?: RoamNode[];
   "block/heading"?: number;
@@ -176,7 +169,7 @@ export type RoamPull = {
 } & RoamNode;
 
 export type PullBlock = {
-  ":block/children"?: { ":db/id": number }[];
+  ":block/children"?: ({ ":db/id": number } | PullBlock)[];
   ":block/heading"?: number;
   ":block/open"?: boolean;
   ":block/order"?: number;

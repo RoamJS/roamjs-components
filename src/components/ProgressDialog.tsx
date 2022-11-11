@@ -35,6 +35,10 @@ const ProgressDialog = ({
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, [onId, setTimeout, props]);
+  const numActions = Object.keys(window.roamjs.actions).length;
+  useEffect(() => {
+    if (numActions === 0) onClose();
+  }, [numActions]);
   return (
     <>
       <style>{`.roamjs-progress-dialog {

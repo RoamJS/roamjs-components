@@ -37,7 +37,13 @@ const handleFetch: HandleFetch = (
     })
   ).then((r) => {
     if (!r.ok) {
-      return r.text().then((e) => Promise.reject(new Error(e)));
+      return r.text().then((e) => {
+        try {
+          return Promise.reject(JSON.parse(e));
+        } catch {
+          return Promise.reject(new Error(e));
+        }
+      });
     } else if (r.status === 204) {
       return {} as ReturnType<HandleFetch>;
     }

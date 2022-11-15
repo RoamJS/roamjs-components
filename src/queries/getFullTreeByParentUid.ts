@@ -1,10 +1,9 @@
 import type { PullBlock, TreeNode, ViewType } from "../types";
 
 const formatRoamNode = (n: PullBlock, v: ViewType): TreeNode => {
-  const viewType = (n[":children/view-type"] || v).replace(
-    /^:/,
-    ""
-  ) as ViewType;
+  const viewType = (
+    typeof n[":children/view-type"] === "string" ? n[":children/view-type"] : v
+  ).replace(/^:/, "") as ViewType;
   return {
     text: n[":block/string"] || n[":node/title"] || "",
     open: typeof n[":block/open"] === "undefined" ? true : n[":block/open"],

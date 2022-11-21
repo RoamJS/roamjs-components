@@ -6,7 +6,7 @@ import startOfYear from "date-fns/startOfYear";
 import dateFnsEndOfWeek from "date-fns/endOfWeek";
 import endOfMonth from "date-fns/endOfMonth";
 import endOfYear from "date-fns/endOfYear";
-import * as chrono from "chrono-node";
+import { Chrono, Parser } from "chrono-node";
 import { ParsingComponents } from "chrono-node/dist/results";
 import getCurrentUserUid from "../queries/getCurrentUserUid";
 
@@ -77,7 +77,7 @@ const ORDINAL_REGEX = new RegExp(
   "i"
 );
 
-const customDateNlp = new chrono.Chrono();
+const customDateNlp = new Chrono();
 const DAYS_OFFSET = {
   sunday: 0,
   sun: 0,
@@ -154,8 +154,7 @@ customDateNlp.parsers.push(
   }
 );
 
-export const addNlpDateParser = (p: chrono.Parser) =>
-  customDateNlp.parsers.push(p);
+export const addNlpDateParser = (p: Parser) => customDateNlp.parsers.push(p);
 
 const assignDay = (p: ParsingComponents, d: Date) => {
   p.assign("year", d.getFullYear());

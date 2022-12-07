@@ -1,9 +1,4 @@
 node_modules
 dist
 build
-
-# new package dist
-/src/scripts
-
-# testing
 extension.js

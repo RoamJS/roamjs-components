@@ -47,15 +47,24 @@ const handleFetch: HandleFetch = (
     } else if (r.status === 204) {
       return {} as ReturnType<HandleFetch>;
     }
+    const type = r.headers.get("content-type") || "";
 
     return (
       buffer
         ? r.arrayBuffer()
-        : r.json().then((d) => ({
+        : /application\/json/.test(type)
+        ? r.json().then((d) => ({
             ...(Array.isArray(d) ? { data: d } : d),
             headers: Object.fromEntries(r.headers.entries()),
             status: r.status,
           }))
+        : r
+            .text()
+            .then((t) => ({
+              data: t,
+              headers: Object.fromEntries(r.headers.entries()),
+              status: r.status,
+            }))
     ).catch(() => r.text().then((e) => Promise.reject(new Error(e))));
   });
 };

@@ -58,13 +58,11 @@ const handleFetch: HandleFetch = (
             headers: Object.fromEntries(r.headers.entries()),
             status: r.status,
           }))
-        : r
-            .text()
-            .then((t) => ({
-              data: t,
-              headers: Object.fromEntries(r.headers.entries()),
-              status: r.status,
-            }))
+        : r.text().then((t) => ({
+            data: t,
+            headers: Object.fromEntries(r.headers.entries()),
+            status: r.status,
+          }))
     ).catch(() => r.text().then((e) => Promise.reject(new Error(e))));
   });
 };

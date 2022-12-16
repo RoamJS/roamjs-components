@@ -6,6 +6,7 @@ import {
 } from "../types/native";
 import { parseEDNString } from "edn-data";
 import nanoid from "nanoid";
+import { JSDOM } from "jsdom";
 
 type Graph = {
   state: Record<number, PullBlock>;
@@ -1374,9 +1375,11 @@ const mockQuery = ({ graph, query }: { graph: Graph; query: string }) => {
 
 const mockRoamEnvironment = () => {
   const graph = initMockGraph();
-  global.window = {
-    ...global.window,
-  };
+  const dom = new JSDOM();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  global.window = dom.window;
+  global.document = dom.window.document;
   global.window.roamAlphaAPI = {
     ...global.window.roamAlphaAPI,
     pull: (_, id) => {
@@ -1427,6 +1430,31 @@ const mockRoamEnvironment = () => {
         parentBlock[":block/children"] || []
       ).concat({ ":db/id": id });
       graph.state[id] = block;
+    },
+    updateBlock: async (action) => {
+      if (!action.block) throw new Error(`block field is required`);
+      if (!action.block.uid) throw new Error(`block uid is required`);
+      const block = graph.uids[action.block.uid];
+      if (!block) {
+        throw new Error(`Could not find block by uid: ${action.block.uid}`);
+      }
+      if (typeof action.block.string !== "undefined") {
+        graph.state[block][":block/string"] = action.block.string;
+      }
+      if (typeof action.block.open !== "undefined") {
+        graph.state[block][":block/open"] = action.block.open;
+      }
+      if (typeof action.block.heading !== "undefined") {
+        graph.state[block][":block/heading"] = action.block.heading;
+      }
+      if (typeof action.block["text-align"] !== "undefined") {
+        graph.state[block][":block/text-align"] = action.block["text-align"];
+      }
+      if (typeof action.block["children-view-type"] !== "undefined") {
+        graph.state[block][
+          ":children/view-type"
+        ] = `:${action.block["children-view-type"]}`;
+      }
     },
     createPage: async (action) => {
       if (!action.page) throw new Error(`page field is required`);

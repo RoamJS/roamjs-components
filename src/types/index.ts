@@ -23,6 +23,7 @@ import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
 import type Markdown from "marked-react";
 import type JSZip from "jszip";
+import type cytoscape from "cytoscape";
 export * from "./native";
 
 export type Registry = {
@@ -66,6 +67,23 @@ declare global {
       JSZip: () => Promise<typeof JSZip>;
       Marked: () => Promise<typeof marked>;
       MarkedReact: () => Promise<typeof Markdown>;
+      Cytoscape: () => Promise<typeof cytoscape>;
+      Insect: () => Promise<{
+        // insect uses purescript instead of typescript -.-
+        commands: string[];
+        fmtConsole: (M: unknown) => unknown;
+        fmtJqueryTerminal: (M: unknown) => unknown;
+        fmtPlain: (M: unknown) => unknown;
+        functions: (M: unknown) => unknown;
+        identifiers: (M: unknown) => unknown;
+        initialEnvironment: { values: unknown; functions: unknown };
+        repl: (
+          fmt: (M: unknown) => unknown
+        ) => (env: {
+          values: unknown;
+          functions: unknown;
+        }) => (s: string) => { msg: string };
+      }>;
     };
     // END TODO remove
 

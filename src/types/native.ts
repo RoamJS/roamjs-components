@@ -438,6 +438,13 @@ type PanelConfig = {
   }[];
 };
 
+type AddCommandOptions = {
+  label: string;
+  callback: () => void;
+  disableHotkey?: boolean;
+  defaultHotkey?: string | string[];
+};
+
 export type OnloadArgs = {
   extensionAPI: {
     settings: {
@@ -447,6 +454,11 @@ export type OnloadArgs = {
         create: (c: PanelConfig) => void;
       };
       set: (k: string, v: unknown) => Promise<void>;
+    };
+    ui: {
+      commandPalette: {
+        addCommand: (c: AddCommandOptions) => void;
+      };
     };
   };
   extension: {

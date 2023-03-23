@@ -338,6 +338,16 @@ Please remove the \`{{[[roam/js]]}}\` code that installed this extension and ref
             },
           },
         },
+        ui: {
+          commandPalette: {
+            addCommand: ({ label, callback, disableHotkey, defaultHotkey }) => {
+                  label
+                  callback
+                  disableHotkey
+                  defaultHotkey
+                },
+            },
+        },
       },
       extension: {
         version: getRoamJSVersionEnv(),

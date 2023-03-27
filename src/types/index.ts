@@ -182,7 +182,8 @@ declare global {
           "block-uid": string;
         };
         components: {
-          renderBlock: (args: { uid: string; el: HTMLElement }) => null;
+          renderBlock: (args: { uid: string; el: HTMLElement; zoomPath?: boolean }) => null;
+          renderPage: (args: { uid: string; el: HTMLElement; hideMentions?: boolean }) => null;
         };
         mainWindow: {
           focusFirstBlock: () => Promise<void>;

@@ -160,8 +160,8 @@ declare global {
           unpinWindow: SidebarAction;
         };
         commandPalette: {
-          addCommand: (action: { label: string; callback: () => void }) => void;
-          removeCommand: (action: { label: string }) => void;
+          addCommand: (action: { label: string; callback: () => void }) => Promise<void>;
+          removeCommand: (action: { label: string }) => Promise<void>;
         };
         blockContextMenu: {
           addCommand: (action: {
@@ -182,7 +182,8 @@ declare global {
           "block-uid": string;
         };
         components: {
-          renderBlock: (args: { uid: string; el: HTMLElement }) => null;
+          renderBlock: (args: { uid: string; el: HTMLElement; zoomPath?: boolean }) => null;
+          renderPage: (args: { uid: string; el: HTMLElement; hideMentions?: boolean }) => null;
         };
         mainWindow: {
           focusFirstBlock: () => Promise<void>;

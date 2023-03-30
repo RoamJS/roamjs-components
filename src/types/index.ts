@@ -160,8 +160,8 @@ declare global {
           unpinWindow: SidebarAction;
         };
         commandPalette: {
-          addCommand: (action: { label: string; callback: () => void }) => void;
-          removeCommand: (action: { label: string }) => void;
+          addCommand: (action: { label: string; callback: () => void }) => Promise<void>;
+          removeCommand: (action: { label: string }) => Promise<void>;
         };
         blockContextMenu: {
           addCommand: (action: {

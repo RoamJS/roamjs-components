@@ -438,11 +438,15 @@ type PanelConfig = {
   }[];
 };
 
-type AddCommandOptions = {
+export type AddCommandOptions = {
   label: string;
   callback: () => void;
   disableHotkey?: boolean;
   defaultHotkey?: string | string[];
+};
+
+type RemoveCommandOptions = {
+  label: string;
 };
 
 export type OnloadArgs = {
@@ -455,9 +459,10 @@ export type OnloadArgs = {
       };
       set: (k: string, v: unknown) => Promise<void>;
     };
-    ui: {
+    ui?: {
       commandPalette: {
-        addCommand: (c: AddCommandOptions) => void;
+        addCommand: (c: AddCommandOptions) => Promise<void>;
+        removeCommand: (c: RemoveCommandOptions) => Promise<void>;
       };
     };
   };

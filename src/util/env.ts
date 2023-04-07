@@ -1,4 +1,4 @@
-// Some developers may use roamjs-components without roamjs-scripts, in which case
+// Some developers may use roamjs-components without RoamJS scripting, in which case
 // envs wont be interpolated. best way to deal with that afaik is to try to get the value
 // catch defaulting to a known value
 

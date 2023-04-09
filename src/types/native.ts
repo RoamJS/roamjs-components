@@ -440,7 +440,7 @@ type PanelConfig = {
 
 export type AddCommandOptions = {
   label: string;
-  callback: () => void;
+  callback: (() => void) | ((uids: string[]) => Promise<void>);
   disableHotkey?: boolean;
   defaultHotkey?: string | string[];
 };

@@ -7,15 +7,6 @@ import {
   WriteAction,
 } from "./native";
 import {
-  RegisterSelection,
-  ParseQuery,
-  FireQuery,
-  ConditionToDatalog,
-  RegisterDatalogTranslator,
-  ResultsViewComponent,
-  QueryEditorComponent,
-  ExportDialogComponent,
-  QueryPageComponent,
   RunQuery,
   ListActiveQueries,
 } from "./query-builder";
@@ -219,18 +210,6 @@ declare global {
       loaded: Set<string>;
       extension: {
         queryBuilder?: {
-          ExportDialog: ExportDialogComponent;
-          QueryEditor: QueryEditorComponent;
-          QueryPage: QueryPageComponent;
-          ResultsView: ResultsViewComponent;
-          fireQuery: FireQuery;
-          parseQuery: ParseQuery;
-          conditionToDatalog: ConditionToDatalog;
-          getConditionLabels: () => string[];
-          registerDatalogTranslator: RegisterDatalogTranslator;
-          unregisterDatalogTranslator: (args: { key: string }) => void;
-          registerSelection: RegisterSelection;
-          // ALL TYPES ABOVE THIS COMMENT ARE SCHEDULED TO MOVE BACK INTO QUERY BUILDER AS INTERNAL
           runQuery: RunQuery;
           listActiveQueries: ListActiveQueries;
         };

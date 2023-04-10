@@ -10,7 +10,6 @@
     "build": "tsc",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
-    "postversion": "git push origin main && git push --tags",
     "test": "playwright test",
     "prestart:new": "node scripts/build.js",
     "start:new": "http-server -p 8000 build",

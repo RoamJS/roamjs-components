@@ -11,9 +11,7 @@
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "test": "playwright test",
-    "prestart:new": "node scripts/build.js",
-    "start:new": "http-server -p 8000 build",
-    "start": "roamjs-scripts dev --depot"
+    "start": "samepage dev"
   },
   "sideEffects": false,
   "license": "MIT",
@@ -45,7 +43,7 @@
     "tslib": "2.2.0"
   },
   "dependencies": {
-    "@samepage/scripts": "^0.56.7",
+    "@samepage/scripts": "^0.62.3",
     "@testing-library/react": "^12.1.5",
     "aws-sdk-plus": "^0.5.3",
     "color": "^4.0.1",
@@ -76,5 +74,34 @@
   },
   "bin": {
     "roamjs": "./scripts/index.js"
+  },
+  "samepage": {
+    "external": [
+      "react-dom/client",
+      "@blueprintjs/core=window.Blueprint.Core",
+      "@blueprintjs/datetime=window.Blueprint.DateTime",
+      "@blueprintjs/select=window.Blueprint.Select",
+      "chrono-node=window.ChronoNode",
+      "crypto-js=window.CryptoJS",
+      "cytoscape=window.RoamLazy.Cytoscape",
+      "file-saver=window.FileSaver",
+      "jszip=window.RoamLazy.JSZip",
+      "idb=window.idb",
+      "insect=window.RoamLazy.Insect",
+      "marked=window.RoamLazy.Marked",
+      "marked-react=window.RoamLazy.MarkedReact",
+      "nanoid=window.Nanoid",
+      "react=window.React",
+      "react-dom=window.ReactDOM",
+      "react-youtube=window.ReactYoutube",
+      "tslib=window.TSLib"
+    ],
+    "include": [
+      "package.json",
+      "README.md"
+    ],
+    "out": "extension",
+    "mirror": ".",
+    "format": "esm"
   }
 }

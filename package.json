@@ -43,7 +43,7 @@
     "tslib": "2.2.0"
   },
   "dependencies": {
-    "@samepage/scripts": "^0.62.3",
+    "@samepage/scripts": "^0.62.5",
     "@testing-library/react": "^12.1.5",
     "aws-sdk-plus": "^0.5.3",
     "color": "^4.0.1",
@@ -102,6 +102,7 @@
     ],
     "out": "extension",
     "mirror": ".",
-    "format": "esm"
+    "format": "esm",
+    "review": "node_modules/roamjs-components/scripts/publishToRoamDepot"
   }
 }

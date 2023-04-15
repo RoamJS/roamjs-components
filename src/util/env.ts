@@ -33,22 +33,6 @@ export const getApiUrlEnv = () => {
   }
 };
 
-export const getRoamMarketplaceEnv = () => {
-  try {
-    return process.env.ROAM_MARKETPLACE || "";
-  } catch {
-    return "";
-  }
-};
-
-export const getRoamDepotEnv = () => {
-  try {
-    return process.env.ROAM_DEPOT || "";
-  } catch {
-    return "";
-  }
-};
-
 export const getRoamJSExtensionIdEnv = () => {
   try {
     return process.env.ROAMJS_EXTENSION_ID || "roamjs";

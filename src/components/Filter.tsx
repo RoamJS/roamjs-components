@@ -1,4 +1,4 @@
-import { Tooltip, Position, Popover, Button } from "@blueprintjs/core";
+import { Tooltip, Position, Popover, Button, Icon } from "@blueprintjs/core";
 import React, { useCallback, useRef, useState } from "react";
 import fuzzy from "fuzzy";
 
@@ -49,29 +49,24 @@ const Filter = ({
   });
   const [filters, setFilters] = useState(filtersRef.current);
   const [filterSearch, setFilterSearch] = useState("");
+  const active =
+    Object.keys(filters.includes).some((k) => filters.includes[k].size > 0) ||
+    Object.keys(filters.excludes).some((k) => filters.excludes[k].size > 0);
   return (
     <Tooltip content={"Filters"} position={Position.BOTTOM}>
       <Popover
         target={
           <Button
-            icon={"filter"}
+            icon={
+              <Icon icon={"filter"} color={active ? "#a82a2a" : "#5c7080"} />
+            }
             onClick={(e) => {
               e.stopPropagation();
               setIsFilterOpen(!isFilterOpen);
             }}
-            className="roamjs-filter"
+            className={`roamjs-filter ${active ? "roamjs-filter-active" : ""}`}
             minimal
             small={small}
-            style={
-              Object.keys(filters.includes).some(
-                (k) => filters.includes[k].size === 0
-              ) ||
-              Object.keys(filters.excludes).some(
-                (k) => filters.includes[k].size === 0
-              )
-                ? { color: "#a82a2a" }
-                : {}
-            }
           />
         }
         content={

@@ -22,7 +22,7 @@ const publishToRoamDepot = async ({
   owner?: string;
   branch?: string;
   proxy?: string;
-}) => {
+} = {}) => {
   console.log("Attempting to publish to Roam Depot...");
   const pr = await axios
     .get(

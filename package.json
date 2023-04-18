@@ -43,7 +43,7 @@
     "tslib": "2.2.0"
   },
   "dependencies": {
-    "@samepage/scripts": "^0.62.6",
+    "@samepage/scripts": "^0.62.10",
     "@testing-library/react": "^12.1.5",
     "aws-sdk-plus": "^0.5.3",
     "color": "^4.0.1",

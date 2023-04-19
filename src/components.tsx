@@ -20,11 +20,17 @@ import { createBlock } from "./writes";
 //   ReactDOM.render(<Component />, parent);
 // };
 
+const unloads = new Set<() => void>();
+
 const rootRender = (Component: React.FC) => {
   const root = document.querySelector(".roam-article");
   const parent = document.createElement("div");
   root?.insertBefore(parent, root.firstElementChild);
   ReactDOM.render(<Component />, parent);
+  unloads.add(() => {
+    ReactDOM.unmountComponentAtNode(parent);
+    parent.remove();
+  });
 };
 
 const components = [
@@ -82,6 +88,10 @@ const components = [
                   label: "Select Field",
                   options: ["apple", "banana", "orange"],
                 },
+                embed: {
+                  type: "embed",
+                  label: "Embed Field",
+                },
               }}
             />
           </>
@@ -116,9 +126,9 @@ const components = [
 
 export default runExtension({
   extensionId: "components",
-  run: () => {
+  run: (args) => {
     components.forEach(({ callback, label }) => {
-      window.roamAlphaAPI.ui.commandPalette.addCommand({
+      args.extensionAPI.ui.commandPalette.addCommand({
         label: `Render RoamJS component ${label}`,
         callback,
       });
@@ -134,7 +144,10 @@ export default runExtension({
         renderOverlay,
         runExtension,
       },
+      args,
     };
-    return { commands: components.map((k) => k.label) };
+    return () => {
+      unloads.forEach((unload) => unload());
+    };
   },
 });

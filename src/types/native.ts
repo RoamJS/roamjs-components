@@ -459,7 +459,7 @@ export type OnloadArgs = {
       };
       set: (k: string, v: unknown) => Promise<void>;
     };
-    ui?: {
+    ui: {
       commandPalette: {
         addCommand: (c: AddCommandOptions) => Promise<void>;
         removeCommand: (c: RemoveCommandOptions) => Promise<void>;

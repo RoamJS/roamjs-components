@@ -8,13 +8,15 @@ import {
   Label,
   NumericInput,
 } from "@blueprintjs/core";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import getTextByBlockUid from "../queries/getTextByBlockUid";
 import createOverlayRender from "../util/createOverlayRender";
 import type { RoamOverlayProps } from "../util/renderOverlay";
 import BlockInput from "./BlockInput";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
+import nanoid from "nanoid";
+import { AddPullWatch } from "../types";
 
 type Props<T> = {
   title?: React.ReactNode;
@@ -48,8 +50,61 @@ type Props<T> = {
           defaultValue?: boolean;
           type: "flag";
         }
+      | {
+          defaultValue?: string;
+          type: "embed";
+        }
     ) & { label?: string }
   >;
+};
+
+const EmbedInput = ({
+  defaultValue = "",
+  onChange,
+}: {
+  defaultValue?: string;
+  onChange: (s: string) => void;
+}) => {
+  const elRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (elRef.current) {
+      const uid = window.roamAlphaAPI.util.generateUID();
+      const parentUid = window.roamAlphaAPI.util.generateUID();
+      window.roamAlphaAPI.createPage({
+        page: { uid: parentUid, title: nanoid() },
+      });
+      window.roamAlphaAPI.createBlock({
+        location: {
+          "parent-uid": parentUid,
+          order: 0,
+        },
+        block: { uid, string: defaultValue },
+      });
+      window.roamAlphaAPI.ui.components.renderBlock({
+        uid,
+        el: elRef.current,
+      });
+      const watchArgs: Parameters<AddPullWatch> = [
+        "[:block/string]",
+        `[:block/uid "${uid}"]`,
+        (_, a) => onChange(a?.[":block/string"] || ""),
+      ];
+      window.roamAlphaAPI.data.addPullWatch(...watchArgs);
+      return () => {
+        window.roamAlphaAPI.data.removePullWatch(...watchArgs);
+        window.roamAlphaAPI.deleteBlock({ block: { uid } });
+        window.roamAlphaAPI.deletePage({ page: { uid: parentUid } });
+      };
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    return () => {};
+  }, [elRef, defaultValue]);
+  return (
+    <div
+      ref={elRef}
+      className="rounded-md bg-white font-normal mt-1 bp3-input h-auto"
+    />
+  );
 };
 
 const FormDialog = <T extends Record<string, unknown>>({
@@ -185,6 +240,21 @@ const FormDialog = <T extends Record<string, unknown>>({
                         : text,
                     })
                   }
+                />
+              </Label>
+            );
+          } else if (meta.type === "embed") {
+            return (
+              <Label>
+                {meta.label}
+                <EmbedInput
+                  defaultValue={meta.defaultValue}
+                  onChange={(value) => {
+                    setData({
+                      ...data,
+                      [name]: value,
+                    });
+                  }}
                 />
               </Label>
             );

@@ -7,6 +7,7 @@ import {
   getRoamJSVersionEnv,
 } from "./env";
 import type { Registry } from "../types";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
 type RunReturn =
   | void
@@ -22,6 +23,9 @@ const runExtension = ({
   extensionId?: string;
   run?: RunExtension;
 }): void | { onload: (args: OnloadArgs) => void; onunload: () => void } => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore React17 shim
+  window.React.useSyncExternalStore = useSyncExternalStore;
   let unload: (() => void) | undefined;
 
   const registry: Registry = {

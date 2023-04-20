@@ -45,7 +45,7 @@
     "use-sync-external-store": "^1.2.0"
   },
   "dependencies": {
-    "@samepage/scripts": "^0.63.1",
+    "@samepage/scripts": "^0.64.2",
     "@testing-library/react": "^12.1.5",
     "aws-sdk-plus": "^0.5.3",
     "color": "^4.0.1",

@@ -52,7 +52,7 @@ const handleFetch: HandleFetch = (
     return (
       buffer
         ? r.arrayBuffer()
-        : /application\/json/.test(type)
+        : /^application\/json/.test(type)
         ? r.json().then((d) => ({
             ...(Array.isArray(d) ? { data: d } : d),
             headers: Object.fromEntries(r.headers.entries()),

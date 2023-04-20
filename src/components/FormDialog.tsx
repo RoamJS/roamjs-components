@@ -16,7 +16,6 @@ import BlockInput from "./BlockInput";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import nanoid from "nanoid";
-import { AddPullWatch } from "../types";
 
 type Props<T> = {
   title?: React.ReactNode;
@@ -63,7 +62,7 @@ const EmbedInput = ({
   onChange,
 }: {
   defaultValue?: string;
-  onChange: (s: string) => void;
+  onChange: (s: () => string) => void;
 }) => {
   const elRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -84,21 +83,16 @@ const EmbedInput = ({
         uid,
         el: elRef.current,
       });
-      const watchArgs: Parameters<AddPullWatch> = [
-        "[:block/string]",
-        `[:block/uid "${uid}"]`,
-        (_, a) => onChange(a?.[":block/string"] || ""),
-      ];
-      window.roamAlphaAPI.data.addPullWatch(...watchArgs);
+      // In the future, we can return the whole tree of data from `parentUid`
+      onChange(() => getTextByBlockUid(uid));
       return () => {
-        window.roamAlphaAPI.data.removePullWatch(...watchArgs);
         window.roamAlphaAPI.deleteBlock({ block: { uid } });
         window.roamAlphaAPI.deletePage({ page: { uid: parentUid } });
       };
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
-  }, [elRef, defaultValue]);
+  }, [elRef, defaultValue, onChange]);
   return (
     <div
       ref={elRef}
@@ -127,7 +121,16 @@ const FormDialog = <T extends Record<string, unknown>>({
   );
   const onClick = useCallback(
     () =>
-      Promise.resolve(onSubmit(data))
+      Promise.resolve(
+        onSubmit(
+          Object.fromEntries(
+            Object.entries(data).map(
+              ([key, value]) =>
+                [key, typeof value === "function" ? value() : value] as const
+            )
+          ) as T
+        )
+      )
         .then(onClose)
         .catch((e) => {
           setError(e.message);

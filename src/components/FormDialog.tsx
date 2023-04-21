@@ -67,23 +67,27 @@ const EmbedInput = ({
   const elRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    if (elRef.current && !loaded) {
+    const el = elRef.current;
+    if (el && !loaded) {
       const uid = window.roamAlphaAPI.util.generateUID();
       const parentUid = window.roamAlphaAPI.util.generateUID();
       window.roamAlphaAPI.createPage({
         page: { uid: parentUid, title: nanoid() },
       });
-      window.roamAlphaAPI.createBlock({
-        location: {
-          "parent-uid": parentUid,
-          order: 0,
-        },
-        block: { uid, string: defaultValue },
-      });
-      window.roamAlphaAPI.ui.components.renderBlock({
-        uid,
-        el: elRef.current,
-      });
+      window.roamAlphaAPI
+        .createBlock({
+          location: {
+            "parent-uid": parentUid,
+            order: 0,
+          },
+          block: { uid, string: defaultValue },
+        })
+        .then(() => {
+          window.roamAlphaAPI.ui.components.renderBlock({
+            uid,
+            el,
+          });
+        });
       // In the future, we can return the whole tree of data from `parentUid`
       onChange(() => getTextByBlockUid(uid));
       setLoaded(true);

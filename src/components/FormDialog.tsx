@@ -97,8 +97,8 @@ const EmbedInput = ({
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
   }, [
-    elRef, 
-    defaultValue, 
+    elRef,
+    defaultValue,
     // Triggering infinite rerender
     // onChange
   ]);

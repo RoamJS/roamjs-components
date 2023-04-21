@@ -96,8 +96,12 @@ const EmbedInput = ({
   return (
     <div
       ref={elRef}
-      className="rounded-md bg-white font-normal mt-1 bp3-input h-auto"
-    />
+      className="rounded-md bg-white font-normal mt-1 bp3-input h-auto h-32 overflow-scroll"
+    >
+      <style>{`div.rm-autocomplete__results {
+  z-index: 1000;
+}`}</style>
+    </div>
   );
 };
 

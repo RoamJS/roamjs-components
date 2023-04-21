@@ -65,8 +65,9 @@ const EmbedInput = ({
   onChange: (s: () => string) => void;
 }) => {
   const elRef = useRef<HTMLDivElement>(null);
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    if (elRef.current) {
+    if (elRef.current && !loaded) {
       const uid = window.roamAlphaAPI.util.generateUID();
       const parentUid = window.roamAlphaAPI.util.generateUID();
       window.roamAlphaAPI.createPage({
@@ -85,6 +86,7 @@ const EmbedInput = ({
       });
       // In the future, we can return the whole tree of data from `parentUid`
       onChange(() => getTextByBlockUid(uid));
+      setLoaded(true);
       return () => {
         window.roamAlphaAPI.deleteBlock({ block: { uid } });
         window.roamAlphaAPI.deletePage({ page: { uid: parentUid } });
@@ -92,7 +94,7 @@ const EmbedInput = ({
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
-  }, [elRef, defaultValue, onChange]);
+  }, [elRef, defaultValue, onChange, setLoaded, loaded]);
   return (
     <div
       ref={elRef}

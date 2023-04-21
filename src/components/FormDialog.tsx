@@ -65,10 +65,9 @@ const EmbedInput = ({
   onChange: (s: () => string) => void;
 }) => {
   const elRef = useRef<HTMLDivElement>(null);
-  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     const el = elRef.current;
-    if (el && !loaded) {
+    if (el) {
       const uid = window.roamAlphaAPI.util.generateUID();
       const parentUid = window.roamAlphaAPI.util.generateUID();
       window.roamAlphaAPI.createPage({
@@ -90,7 +89,6 @@ const EmbedInput = ({
         });
       // In the future, we can return the whole tree of data from `parentUid`
       onChange(() => getTextByBlockUid(uid));
-      setLoaded(true);
       return () => {
         window.roamAlphaAPI.deleteBlock({ block: { uid } });
         window.roamAlphaAPI.deletePage({ page: { uid: parentUid } });
@@ -98,11 +96,16 @@ const EmbedInput = ({
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
-  }, [elRef, defaultValue, onChange, setLoaded, loaded]);
+  }, [
+    elRef, 
+    defaultValue, 
+    // Triggering infinite rerender
+    // onChange
+  ]);
   return (
     <div
       ref={elRef}
-      className="rounded-md bg-white font-normal mt-1 bp3-input h-auto h-32 overflow-scroll"
+      className="rounded-md bg-white font-normal mt-1 bp3-input h-32 overflow-scroll"
     >
       <style>{`div.rm-autocomplete__results {
   z-index: 1000;

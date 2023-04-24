@@ -23,12 +23,14 @@ const BlockInput = ({
   onBlur,
   onConfirm,
   getAllBlocks = getAllBlockUidsAndTexts,
+  autoFocus,
 }: {
   value: string;
   setValue: (q: string, uid?: string) => void;
   onBlur?: (v: string) => void;
   onConfirm?: () => void;
   getAllBlocks?: () => { text: string; uid: string }[];
+  autoFocus?: boolean;
 }): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
@@ -105,6 +107,7 @@ const BlockInput = ({
             }
           }}
           inputRef={inputRef}
+          autoFocus={autoFocus}
         />
       }
     />

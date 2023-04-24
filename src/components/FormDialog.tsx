@@ -16,6 +16,7 @@ import BlockInput from "./BlockInput";
 import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import nanoid from "nanoid";
+import { getUids } from "../dom";
 
 type Props<T> = {
   title?: React.ReactNode;
@@ -60,9 +61,11 @@ type Props<T> = {
 const EmbedInput = ({
   defaultValue = "",
   onChange,
+  autoFocus,
 }: {
   defaultValue?: string;
   onChange: (s: () => string) => void;
+  autoFocus: boolean;
 }) => {
   const elRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -86,6 +89,19 @@ const EmbedInput = ({
             uid,
             el,
           });
+          if (autoFocus) {
+            const block = el.querySelector<
+              HTMLDivElement | HTMLTextAreaElement
+            >(`div[id*="block-input"],textarea[id*="block-input"]`);
+            const { windowId, blockUid } = getUids(block);
+            if (blockUid)
+              window.roamAlphaAPI.ui.setBlockFocusAndSelection({
+                location: {
+                  "block-uid": blockUid,
+                  "window-id": windowId,
+                },
+              });
+          }
         });
       // In the future, we can return the whole tree of data from `parentUid`
       onChange(() => getTextByBlockUid(uid));
@@ -99,6 +115,7 @@ const EmbedInput = ({
   }, [
     elRef,
     defaultValue,
+    autoFocus,
     // Triggering infinite rerender
     // onChange
   ]);
@@ -162,7 +179,7 @@ const FormDialog = <T extends Record<string, unknown>>({
     >
       <div className={Classes.DIALOG_BODY}>
         {content}
-        {Object.entries(fields).map(([name, meta]) => {
+        {Object.entries(fields).map(([name, meta], index) => {
           if (meta.type === "text") {
             return (
               <Label>
@@ -175,6 +192,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                       [name]: e.target.value,
                     })
                   }
+                  autoFocus={index === 0}
                 />
               </Label>
             );
@@ -190,6 +208,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                       [name]: e.target.value,
                     })
                   }
+                  autoFocus={index === 0}
                 />
               </Label>
             );
@@ -204,6 +223,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                     [name]: (e.target as HTMLInputElement).checked,
                   })
                 }
+                autoFocus={index === 0}
               />
             );
           } else if (meta.type === "select") {
@@ -219,6 +239,9 @@ const FormDialog = <T extends Record<string, unknown>>({
                     })
                   }
                   items={meta.options || []}
+                  ButtonProps={{
+                    autoFocus: index === 0,
+                  }}
                 />
               </Label>
             );
@@ -234,6 +257,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                       [name]: e,
                     })
                   }
+                  autoFocus={index === 0}
                 />
               </Label>
             );
@@ -257,6 +281,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                         : text,
                     })
                   }
+                  autoFocus={index === 0}
                 />
               </Label>
             );
@@ -272,6 +297,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                       [name]: value,
                     });
                   }}
+                  autoFocus={index === 0}
                 />
               </Label>
             );

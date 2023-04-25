@@ -217,6 +217,7 @@ export type PullBlock = {
     ":first-day-of-week"?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   };
   ":user/uid"?: string;
+  ":user/email"?: string;
 };
 
 export type RoamPullResult = RoamPull | null;

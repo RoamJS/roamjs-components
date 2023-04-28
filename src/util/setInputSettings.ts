@@ -20,11 +20,11 @@ export const setInputSettings = ({
     keyNode.children
       .filter(({ text }) => !values.includes(text))
       .forEach(({ uid }) => deleteBlock(uid));
-    values
-      .filter((v) => !keyNode.children.some(({ text }) => text === v))
-      .forEach((text, order) =>
+    values.forEach(
+      (text, order) =>
+        !keyNode.children.some(({ text: c }) => text === c) &&
         createBlock({ node: { text }, order, parentUid: keyNode.uid })
-      );
+    );
   } else {
     createBlock({
       parentUid: blockUid,

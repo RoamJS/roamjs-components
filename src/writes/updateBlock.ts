@@ -8,6 +8,7 @@ const updateBlock = ({
   textAlign,
   viewType,
   open,
+  props,
 }: { uid: string } & Partial<
   Omit<InputTextNode, "children">
 >): Promise<string> => {
@@ -22,6 +23,7 @@ const updateBlock = ({
           "text-align": textAlign,
           "children-view-type": viewType,
           open,
+          props,
         },
       },
     },

@@ -294,6 +294,7 @@ export type InputTextNode = {
   textAlign?: TextAlignment;
   viewType?: ViewType;
   open?: boolean;
+  props?: Record<string, unknown>;
 };
 
 type PlusType = [number, string];
@@ -340,6 +341,7 @@ export type ActionParams = {
     heading?: number;
     "text-align"?: TextAlignment;
     "children-view-type"?: ViewType;
+    props?: Record<string, unknown>;
   };
   page?: {
     title?: string;

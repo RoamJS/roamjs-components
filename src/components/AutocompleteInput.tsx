@@ -27,6 +27,7 @@ export type AutocompleteInputProps = {
   placeholder?: string;
   autoFocus?: boolean;
   multiline?: boolean;
+  id?: string;
 };
 
 const AutocompleteInput = ({
@@ -39,6 +40,7 @@ const AutocompleteInput = ({
   placeholder = "Enter value",
   autoFocus,
   multiline,
+  id,
 }: AutocompleteInputProps): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
@@ -128,6 +130,7 @@ const AutocompleteInput = ({
               onKeyDown(e);
             }
           }}
+          id={id}
           onClick={() => setIsTyping(true)}
           onBlur={(e) => {
             if (

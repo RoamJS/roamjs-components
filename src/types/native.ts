@@ -190,9 +190,11 @@ export type PullBlock = {
         };
       };
     };
+    [k: `:roamjs-${string}`]: Record<string, unknown>;
   };
   ":block/refs"?: { ":db/id": number }[];
   ":block/string"?: string;
+  ":block/view-type"?: `:${BlockViewType}`;
   ":block/text-align"?: TextAlignment;
   ":block/uid"?: string;
   ":children/view-type"?: `:${ViewType}`;
@@ -223,6 +225,15 @@ export type PullBlock = {
 export type RoamPullResult = RoamPull | null;
 
 export type ViewType = "document" | "bullet" | "numbered";
+
+export type BlockViewType =
+  | "tabs"
+  | "outline"
+  | "horizontal"
+  | "popout"
+  | "comment"
+  | "side"
+  | "vertical";
 
 export type TextAlignment = "left" | "center" | "right" | "justify";
 

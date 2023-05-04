@@ -97,7 +97,7 @@ export type DatalogPredExpr = {
 
 export type DatalogFnExpr = {
   type: "fn-expr";
-  fn: "re-pattern";
+  fn: "re-pattern" | "get";
   arguments: DatalogArgument[];
   binding: DatalogBinding;
 };

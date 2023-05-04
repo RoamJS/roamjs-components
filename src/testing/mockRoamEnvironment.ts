@@ -1064,7 +1064,7 @@ const fireQuery = ({
                 }
                 const rightValue =
                   right.type === "constant" ? Number(right.value) : dict[r];
-                if (typeof leftValue !== "number") {
+                if (typeof rightValue !== "number") {
                   throw new Error("Right argument must be a number");
                 }
                 return leftValue > rightValue;
@@ -1094,7 +1094,7 @@ const fireQuery = ({
                 }
                 const rightValue =
                   right.type === "constant" ? Number(right.value) : dict[r];
-                if (typeof leftValue !== "number") {
+                if (typeof rightValue !== "number") {
                   throw new Error("Right argument must be a number");
                 }
                 return leftValue < rightValue;

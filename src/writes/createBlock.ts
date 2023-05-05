@@ -10,6 +10,7 @@ export const gatherActions = ({
     viewType,
     textAlign,
     open = true,
+    props,
   },
   parentUid,
   order = 0,
@@ -28,6 +29,7 @@ export const gatherActions = ({
         "text-align": textAlign,
         "children-view-type": viewType,
         open,
+        props,
       },
     },
     ...children.flatMap((node, order) =>

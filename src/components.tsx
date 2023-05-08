@@ -46,6 +46,7 @@ const components = [
               setValue={setValue}
               options={options}
             />
+            <div>Chosen value: {value}</div>
           </>
         );
       }),

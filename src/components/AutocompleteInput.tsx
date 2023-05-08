@@ -17,20 +17,29 @@ import React, {
 import useArrowKeyDown from "../hooks/useArrowKeyDown";
 import fuzzy from "fuzzy";
 
-export type AutocompleteInputProps = {
-  value: string;
-  setValue: (q: string) => void;
+export type AutocompleteInputProps<T = string> = {
+  value: T;
+  setValue: (q: T) => void;
   showButton?: boolean;
   onBlur?: (v: string) => void;
   onConfirm?: () => void;
-  options?: string[];
+  options?: T[];
   placeholder?: string;
   autoFocus?: boolean;
   multiline?: boolean;
   id?: string;
+  filterOptions?: (options: T[], query: string) => T[];
+  itemToString?: (item: T) => string;
+  renderItem?: (props: {
+    item: T;
+    onClick: () => void;
+    active: boolean;
+  }) => React.ReactElement;
+  onNewItem?: (s: string) => T;
 };
 
-const AutocompleteInput = ({
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+const AutocompleteInput = <T extends unknown = string>({
   value,
   setValue,
   onBlur,
@@ -41,26 +50,29 @@ const AutocompleteInput = ({
   autoFocus,
   multiline,
   id,
-}: AutocompleteInputProps): React.ReactElement => {
+  filterOptions = (o, q) =>
+    typeof o[0] === "string"
+      ? (fuzzy.filter(q, o).map((e) => e.string) as T[])
+      : o,
+  itemToString = (i) => `${i}`,
+  renderItem,
+  onNewItem = (s) => s as T,
+}: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState<string>("");
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
   const [isTyping, setIsTyping] = useState(false);
   const items = useMemo(
-    () =>
-      value
-        ? fuzzy
-            .filter(value, options)
-            .slice(0, 9)
-            .map((e) => e.string)
-        : options.slice(0, 9),
-    [value, options]
+    () => (query ? filterOptions(options, query) : options),
+    [value, options, filterOptions]
   );
   const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const onEnter = useCallback(
-    (value) => {
-      if (isOpen) {
+    (value?: T) => {
+      if (isOpen && value) {
+        setQuery(itemToString(value));
         setValue(value);
         setIsTyping(false);
       } else if (onConfirm) {
@@ -80,6 +92,9 @@ const AutocompleteInput = ({
     if (!items.length || !isTyping) close();
     else open();
   }, [items, close, open, isTyping]);
+  useEffect(() => {
+    setValue(items[activeIndex] || onNewItem(query));
+  }, [setValue, activeIndex, items, onNewItem, query]);
   const Input = useMemo(() => (multiline ? TextArea : InputGroup), [multiline]);
   return (
     <Popover
@@ -98,27 +113,40 @@ const AutocompleteInput = ({
       }}
       content={
         <Menu className={"max-h-64 overflow-auto max-w-md"} ulRef={menuRef}>
-          {items.map((t, i) => (
-            <MenuItem
-              text={t}
-              active={activeIndex === i}
-              key={i}
-              multiline
-              onClick={() => {
+          {items.map((t, i) => {
+            const sharedProps = {
+              onClick: () => {
                 setIsTyping(false);
                 setValue(t);
+                setQuery(itemToString(t));
                 inputRef.current?.focus();
-              }}
-            />
-          ))}
+              },
+              active: activeIndex === i,
+            };
+            return renderItem ? (
+              <React.Fragment key={i}>
+                {renderItem?.({
+                  item: t,
+                  ...sharedProps,
+                })}
+              </React.Fragment>
+            ) : (
+              <MenuItem
+                text={itemToString(t)}
+                key={i}
+                multiline
+                {...sharedProps}
+              />
+            );
+          })}
         </Menu>
       }
       target={
         <Input
-          value={value || ""}
+          value={query}
           onChange={(e) => {
             setIsTyping(true);
-            setValue(e.target.value);
+            setQuery(e.target.value);
           }}
           autoFocus={autoFocus}
           placeholder={placeholder}
@@ -148,7 +176,9 @@ const AutocompleteInput = ({
           inputRef={inputRef}
           {...(showButton
             ? {
-                rightElement: <Button icon={"add"} minimal onClick={onEnter} />,
+                rightElement: (
+                  <Button icon={"add"} minimal onClick={() => onEnter()} />
+                ),
               }
             : {})}
         />

@@ -254,7 +254,7 @@ const fireQuery = ({
                     isNode(targetEntry)
                       ? [targetEntry.id]
                       : (graph.state[sourceId]?.[":block/children"] || []).map(
-                          (c) => c[":db/id"]!
+                          (c) => c[":db/id"] || 0
                         )
                   ).map((id) => ({
                     ...dict,

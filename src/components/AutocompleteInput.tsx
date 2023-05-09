@@ -18,7 +18,8 @@ import useArrowKeyDown from "../hooks/useArrowKeyDown";
 import fuzzy from "fuzzy";
 
 export type AutocompleteInputProps<T = string> = {
-  value: T;
+  // TODO - unused
+  value?: T;
   setValue: (q: T) => void;
   showButton?: boolean;
   onBlur?: (v: string) => void;
@@ -40,7 +41,6 @@ export type AutocompleteInputProps<T = string> = {
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const AutocompleteInput = <T extends unknown = string>({
-  value,
   setValue,
   onBlur,
   onConfirm,
@@ -65,7 +65,7 @@ const AutocompleteInput = <T extends unknown = string>({
   const [isTyping, setIsTyping] = useState(false);
   const items = useMemo(
     () => (query ? filterOptions(options, query) : options),
-    [value, options, filterOptions]
+    [query, options, filterOptions]
   );
   const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);

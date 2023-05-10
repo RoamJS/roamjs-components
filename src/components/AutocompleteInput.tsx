@@ -18,8 +18,7 @@ import useArrowKeyDown from "../hooks/useArrowKeyDown";
 import fuzzy from "fuzzy";
 
 export type AutocompleteInputProps<T = string> = {
-  // TODO - unused
-  value?: T;
+  value: T;
   setValue: (q: T) => void;
   showButton?: boolean;
   onBlur?: (v: string) => void;
@@ -41,6 +40,7 @@ export type AutocompleteInputProps<T = string> = {
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 const AutocompleteInput = <T extends unknown = string>({
+  value,
   setValue,
   onBlur,
   onConfirm,
@@ -59,7 +59,7 @@ const AutocompleteInput = <T extends unknown = string>({
   onNewItem = (s) => s as T,
 }: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string>(() => itemToString(value));
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
   const [isTyping, setIsTyping] = useState(false);
@@ -93,7 +93,7 @@ const AutocompleteInput = <T extends unknown = string>({
     else open();
   }, [items, close, open, isTyping]);
   useEffect(() => {
-    setValue(items[activeIndex] || onNewItem(query));
+    if (query) setValue(items[activeIndex] || onNewItem(query));
   }, [setValue, activeIndex, items, onNewItem, query]);
   const Input = useMemo(() => (multiline ? TextArea : InputGroup), [multiline]);
   return (

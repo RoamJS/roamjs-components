@@ -21,7 +21,7 @@ type FilterOptions<T> = (options: T[], query: string) => T[];
 type OnNewItem<T> = (s: string) => T;
 
 export type AutocompleteInputProps<T = string> = {
-  value: T;
+  value?: T;
   setValue: (q: T) => void;
   showButton?: boolean;
   onBlur?: (v: string) => void;
@@ -32,7 +32,7 @@ export type AutocompleteInputProps<T = string> = {
   multiline?: boolean;
   id?: string;
   filterOptions?: FilterOptions<T>;
-  itemToString?: (item: T) => string;
+  itemToQuery?: (item?: T) => string;
   renderItem?: (props: {
     item: T;
     onClick: () => void;
@@ -54,12 +54,12 @@ const AutocompleteInput = <T extends unknown = string>({
   multiline,
   id,
   filterOptions: _filterOptions,
-  itemToString = (i) => `${i}`,
+  itemToQuery = (i) => `${i}`,
   renderItem,
   onNewItem: _onNewItem,
 }: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState<string>(() => itemToString(value));
+  const [query, setQuery] = useState<string>(() => itemToQuery(value));
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
   const [isTyping, setIsTyping] = useState(false);
@@ -86,7 +86,7 @@ const AutocompleteInput = <T extends unknown = string>({
   const onEnter = useCallback(
     (value?: T) => {
       if (isOpen && value) {
-        setQuery(itemToString(value));
+        setQuery(itemToQuery(value));
         setValue(value);
         setIsTyping(false);
       } else if (onConfirm) {
@@ -132,7 +132,7 @@ const AutocompleteInput = <T extends unknown = string>({
               onClick: () => {
                 setIsTyping(false);
                 setValue(t);
-                setQuery(itemToString(t));
+                setQuery(itemToQuery(t));
                 inputRef.current?.focus();
               },
               active: activeIndex === i,
@@ -146,7 +146,7 @@ const AutocompleteInput = <T extends unknown = string>({
               </React.Fragment>
             ) : (
               <MenuItem
-                text={itemToString(t)}
+                text={itemToQuery(t)}
                 key={i}
                 multiline
                 {...sharedProps}

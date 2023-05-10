@@ -17,6 +17,9 @@ import React, {
 import useArrowKeyDown from "../hooks/useArrowKeyDown";
 import fuzzy from "fuzzy";
 
+type FilterOptions<T> = (options: T[], query: string) => T[];
+type OnNewItem<T> = (s: string) => T;
+
 export type AutocompleteInputProps<T = string> = {
   value: T;
   setValue: (q: T) => void;
@@ -28,14 +31,14 @@ export type AutocompleteInputProps<T = string> = {
   autoFocus?: boolean;
   multiline?: boolean;
   id?: string;
-  filterOptions?: (options: T[], query: string) => T[];
+  filterOptions?: FilterOptions<T>;
   itemToString?: (item: T) => string;
   renderItem?: (props: {
     item: T;
     onClick: () => void;
     active: boolean;
   }) => React.ReactElement;
-  onNewItem?: (s: string) => T;
+  onNewItem?: OnNewItem<T>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
@@ -50,19 +53,30 @@ const AutocompleteInput = <T extends unknown = string>({
   autoFocus,
   multiline,
   id,
-  filterOptions = (o, q) =>
-    typeof o[0] === "string"
-      ? (fuzzy.filter(q, o).map((e) => e.string) as T[])
-      : o,
+  filterOptions: _filterOptions,
   itemToString = (i) => `${i}`,
   renderItem,
-  onNewItem = (s) => s as T,
+  onNewItem: _onNewItem,
 }: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState<string>(() => itemToString(value));
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
   const [isTyping, setIsTyping] = useState(false);
+  const filterOptions = useMemo<FilterOptions<T>>(
+    () =>
+      _filterOptions ||
+      ((o, q) =>
+        typeof o[0] === "string"
+          ? (fuzzy.filter(q, o).map((e) => e.string) as T[])
+          : o),
+    [_filterOptions]
+  );
+  const onNewItem = useMemo<OnNewItem<T>>(
+    () => _onNewItem || ((s) => s as T),
+    [_onNewItem]
+  );
+
   const items = useMemo(
     () => (query ? filterOptions(options, query) : options),
     [query, options, filterOptions]

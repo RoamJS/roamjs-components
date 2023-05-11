@@ -35,7 +35,9 @@ export const getApiUrlEnv = () => {
 
 export const getRoamJSExtensionIdEnv = () => {
   try {
-    return process.env.ROAMJS_EXTENSION_ID || "roamjs";
+    return (
+      process.env.PACKAGE_NAME || "roamjs"
+    );
   } catch {
     return "roamjs";
   }

@@ -67,12 +67,14 @@ const components = [
                   .getOpenPageOrBlockUid()
                   .then((parentUid) =>
                     createBlock({
-                      parentUid: parentUid || "",
+                      parentUid:
+                        parentUid ||
+                        window.roamAlphaAPI.util.dateToPageUid(new Date()),
                       node: {
                         text: "Response",
                         children: Object.entries(data).map(([k, v]) => ({
                           text: k,
-                          children: [{ text: `${v}` }],
+                          children: Array.isArray(v) ? v : [{ text: `${v}` }],
                         })),
                       },
                     })

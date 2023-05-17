@@ -19,6 +19,7 @@ import fuzzy from "fuzzy";
 
 type FilterOptions<T> = (options: T[], query: string) => T[];
 type OnNewItem<T> = (s: string) => T;
+type ItemToQuery<T> = (t?: T) => string;
 
 export type AutocompleteInputProps<T = string> = {
   value?: T;
@@ -32,7 +33,7 @@ export type AutocompleteInputProps<T = string> = {
   multiline?: boolean;
   id?: string;
   filterOptions?: FilterOptions<T>;
-  itemToQuery?: (item?: T) => string;
+  itemToQuery?: ItemToQuery<T>;
   renderItem?: (props: {
     item: T;
     onClick: () => void;
@@ -54,11 +55,15 @@ const AutocompleteInput = <T extends unknown = string>({
   multiline,
   id,
   filterOptions: _filterOptions,
-  itemToQuery = (i) => `${i}`,
+  itemToQuery: _itemToQuery,
   renderItem,
   onNewItem: _onNewItem,
 }: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
+  const itemToQuery = useMemo<ItemToQuery<T>>(
+    () => _itemToQuery || ((s) => (s ? `${s}` : "")),
+    [_onNewItem]
+  );
   const [query, setQuery] = useState<string>(() => itemToQuery(value));
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);

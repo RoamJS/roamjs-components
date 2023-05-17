@@ -7,8 +7,16 @@ import {
   Intent,
   Label,
   NumericInput,
+  Spinner,
+  SpinnerSize,
 } from "@blueprintjs/core";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import getTextByBlockUid from "../queries/getTextByBlockUid";
 import createOverlayRender from "../util/createOverlayRender";
 import type { RoamOverlayProps } from "../util/renderOverlay";
@@ -17,6 +25,9 @@ import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import nanoid from "nanoid";
 import { getUids } from "../dom";
+import { InputTextNode } from "../types";
+import getFullTreeByParentUid from "../queries/getFullTreeByParentUid";
+import createPage from "../writes/createPage";
 
 type Props<T> = {
   title?: React.ReactNode;
@@ -51,7 +62,7 @@ type Props<T> = {
           type: "flag";
         }
       | {
-          defaultValue?: string;
+          defaultValue?: InputTextNode[];
           type: "embed";
         }
     ) & { label?: string }
@@ -59,52 +70,47 @@ type Props<T> = {
 };
 
 const EmbedInput = ({
-  defaultValue = "",
+  defaultValue,
   onChange,
   autoFocus,
 }: {
-  defaultValue?: string;
-  onChange: (s: () => string) => void;
+  defaultValue?: InputTextNode[];
+  onChange: (s: () => InputTextNode[]) => void;
   autoFocus: boolean;
 }) => {
+  const defaultEmbed = useMemo(() => defaultValue || [], [defaultValue]);
   const elRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = elRef.current;
     if (el) {
       const uid = window.roamAlphaAPI.util.generateUID();
       const parentUid = window.roamAlphaAPI.util.generateUID();
-      window.roamAlphaAPI.createPage({
-        page: { uid: parentUid, title: nanoid() },
-      });
-      window.roamAlphaAPI
-        .createBlock({
-          location: {
-            "parent-uid": parentUid,
-            order: 0,
-          },
-          block: { uid, string: defaultValue },
-        })
-        .then(() => {
-          window.roamAlphaAPI.ui.components.renderBlock({
-            uid,
-            el,
-          });
-          if (autoFocus) {
-            const block = el.querySelector<
-              HTMLDivElement | HTMLTextAreaElement
-            >(`div[id*="block-input"],textarea[id*="block-input"]`);
-            const { windowId, blockUid } = getUids(block);
-            if (blockUid)
-              window.roamAlphaAPI.ui.setBlockFocusAndSelection({
-                location: {
-                  "block-uid": blockUid,
-                  "window-id": windowId,
-                },
-              });
-          }
+      createPage({
+        uid: parentUid,
+        title: nanoid(),
+        tree: defaultEmbed,
+      }).then(() => {
+        window.roamAlphaAPI.ui.components.renderPage({
+          uid: parentUid,
+          el,
+          hideMentions: true,
         });
+        if (autoFocus) {
+          const block = el.querySelector<HTMLDivElement | HTMLTextAreaElement>(
+            `div[id*="block-input"],textarea[id*="block-input"]`
+          );
+          const { windowId, blockUid } = getUids(block);
+          if (blockUid)
+            window.roamAlphaAPI.ui.setBlockFocusAndSelection({
+              location: {
+                "block-uid": blockUid,
+                "window-id": windowId,
+              },
+            });
+        }
+      });
       // In the future, we can return the whole tree of data from `parentUid`
-      onChange(() => getTextByBlockUid(uid));
+      onChange(() => getFullTreeByParentUid(parentUid).children);
       return () => {
         window.roamAlphaAPI.deleteBlock({ block: { uid } });
         window.roamAlphaAPI.deletePage({ page: { uid: parentUid } });
@@ -114,7 +120,7 @@ const EmbedInput = ({
     return () => {};
   }, [
     elRef,
-    defaultValue,
+    defaultEmbed,
     autoFocus,
     // Triggering infinite rerender
     // onChange
@@ -122,11 +128,15 @@ const EmbedInput = ({
   return (
     <>
       <style>{`div.rm-autocomplete__results {
-z-index: 1000;
+  z-index: 1000;
+}
+.roamjs-form-embed div div:has(> h1.rm-title-display),
+.roamjs-form-embed .rm-api-render--page > div:has(.rm-reference-main) {
+  display: none;
 }`}</style>
       <div
         ref={elRef}
-        className="rounded-md bg-white font-normal mt-1 bp3-input h-32 overflow-scroll"
+        className="rounded-md bg-white font-normal mt-1 bp3-input h-32 overflow-scroll roamjs-form-embed py-2 px-4"
       />
     </>
   );
@@ -250,6 +260,7 @@ const FormDialog = <T extends Record<string, unknown>>({
               <Label>
                 {meta.label}
                 <PageInput
+                  key={name}
                   value={data[name] as string}
                   setValue={(e) =>
                     setData({
@@ -307,14 +318,21 @@ const FormDialog = <T extends Record<string, unknown>>({
         })}
       </div>
       <div className={Classes.DIALOG_FOOTER}>
-        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+        <div className={`${Classes.DIALOG_FOOTER_ACTIONS} items-center`}>
+          {loading && <Spinner size={SpinnerSize.SMALL} />}
           <span className="text-red-700">{error}</span>
-          <Button text={"Cancel"} onClick={onClose} disabled={loading} />
+          <Button
+            text={"Cancel"}
+            onClick={onClose}
+            disabled={loading}
+            className="flex-shrink-0"
+          />
           <Button
             text={"Submit"}
             intent={Intent.PRIMARY}
             onClick={onClick}
             disabled={loading}
+            className="flex-shrink-0"
           />
         </div>
       </div>

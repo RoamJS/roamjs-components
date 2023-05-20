@@ -65,7 +65,7 @@ type Props<T> = {
           defaultValue?: InputTextNode[];
           type: "embed";
         }
-    ) & { label?: string }
+    ) & { label?: string; conditional?: string }
   >;
 };
 
@@ -165,10 +165,15 @@ const FormDialog = <T extends Record<string, unknown>>({
       Promise.resolve(
         onSubmit(
           Object.fromEntries(
-            Object.entries(data).map(
-              ([key, value]) =>
-                [key, typeof value === "function" ? value() : value] as const
-            )
+            Object.entries(data)
+              .filter(([key]) => {
+                const { conditional } = fields[key];
+                return !conditional || !!data[conditional];
+              })
+              .map(
+                ([key, value]) =>
+                  [key, typeof value === "function" ? value() : value] as const
+              )
           ) as T
         )
       )
@@ -190,9 +195,12 @@ const FormDialog = <T extends Record<string, unknown>>({
       <div className={Classes.DIALOG_BODY}>
         {content}
         {Object.entries(fields).map(([name, meta], index) => {
+          if (meta.conditional && !data[meta.conditional]) {
+            return <div key={name} />;
+          }
           if (meta.type === "text") {
             return (
-              <Label>
+              <Label key={name}>
                 {meta.label}
                 <InputGroup
                   value={data[name] as string}
@@ -208,7 +216,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "number") {
             return (
-              <Label>
+              <Label key={name}>
                 {meta.label}
                 <NumericInput
                   value={data[name] as string}
@@ -233,12 +241,13 @@ const FormDialog = <T extends Record<string, unknown>>({
                     [name]: (e.target as HTMLInputElement).checked,
                   })
                 }
+                key={name}
                 autoFocus={index === 0}
               />
             );
           } else if (meta.type === "select") {
             return (
-              <Label>
+              <Label key={name}>
                 {meta.label}
                 <MenuItemSelect
                   activeItem={data[name] as string}
@@ -257,7 +266,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "page") {
             return (
-              <Label>
+              <Label key={name}>
                 {meta.label}
                 <PageInput
                   key={name}
@@ -274,7 +283,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "block") {
             return (
-              <Label>
+              <Label key={name}>
                 {meta.label}
                 <BlockInput
                   value={
@@ -298,7 +307,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "embed") {
             return (
-              <Label>
+              <Label key={name}>
                 {meta.label}
                 <EmbedInput
                   defaultValue={meta.defaultValue}
@@ -313,7 +322,7 @@ const FormDialog = <T extends Record<string, unknown>>({
               </Label>
             );
           } else {
-            return <></>;
+            return <div key={name} />;
           }
         })}
       </div>

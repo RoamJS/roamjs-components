@@ -114,6 +114,16 @@ const AutocompleteInput = <T extends unknown = string>({
   useEffect(() => {
     if (query) setValue(items[activeIndex] || onNewItem(query));
   }, [setValue, activeIndex, items, onNewItem, query]);
+  useEffect(() => {
+    if (
+      inputRef.current &&
+      inputRef.current === document.activeElement &&
+      value
+    ) {
+      const index = itemToQuery(value).length;
+      inputRef.current.setSelectionRange(index, index);
+    }
+  }, [inputRef]);
   const Input = useMemo(() => (multiline ? TextArea : InputGroup), [multiline]);
   return (
     <Popover

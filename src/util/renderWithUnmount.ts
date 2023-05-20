@@ -10,6 +10,7 @@ const renderWithUnmount = (
   p: HTMLElement,
   args?: OnloadArgs
 ): (() => void) => {
+  const oldChildren = p.children;
   ReactDOM.render(
     React.createElement(ExtensionApiContextProvider, args, el),
     p
@@ -21,6 +22,9 @@ const renderWithUnmount = (
       reactRoots: [p],
       observers: [observer],
     });
+    if (oldChildren.length && document.body.contains(p)) {
+      Array.from(oldChildren).forEach((c) => p.appendChild(c));
+    }
   };
   const unmountObserver = new MutationObserver((ms, observer) => {
     const parentRemoved = ms

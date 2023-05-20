@@ -84,6 +84,11 @@ const components = [
                 text: { type: "text", label: "Text Field" },
                 number: { type: "number", label: "Number Field" },
                 flag: { type: "flag", label: "Flag Field" },
+                conditionalText: {
+                  type: "text",
+                  label: "Conditional Text Field",
+                  conditional: "flag",
+                },
                 page: { type: "page", label: "Page Field" },
                 block: { type: "block", label: "Block Field" },
                 select: {

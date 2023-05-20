@@ -100,7 +100,7 @@ const AutocompleteInput = <T extends unknown = string>({
         setIsOpen(true);
       }
     },
-    [setValue, close, onConfirm, isOpen]
+    [setValue, onConfirm, isOpen]
   );
   const { activeIndex, onKeyDown } = useArrowKeyDown({
     onEnter,
@@ -123,7 +123,24 @@ const AutocompleteInput = <T extends unknown = string>({
       const index = itemToQuery(value).length;
       inputRef.current.setSelectionRange(index, index);
     }
-  }, [inputRef]);
+    const touchEndListener = (e: TouchEvent) => {
+      if (
+        !e.target ||
+        !(e.target instanceof HTMLElement) ||
+        !menuRef.current ||
+        menuRef.current.contains(e.target)
+      ) {
+        return;
+      }
+      if (inputRef.current && inputRef.current.contains(e.target)) {
+        return;
+      }
+      close();
+    };
+    document.body.addEventListener("touchend", touchEndListener);
+    return () =>
+      document.body.removeEventListener("touchend", touchEndListener);
+  }, [inputRef, menuRef, close]);
   const Input = useMemo(() => (multiline ? TextArea : InputGroup), [multiline]);
   return (
     <Popover
@@ -143,13 +160,15 @@ const AutocompleteInput = <T extends unknown = string>({
       content={
         <Menu className={"max-h-64 overflow-auto max-w-md"} ulRef={menuRef}>
           {items.map((t, i) => {
+            const onClick = () => {
+              setIsTyping(false);
+              setValue(t);
+              setQuery(itemToQuery(t));
+              inputRef.current?.focus();
+            };
             const sharedProps = {
-              onClick: () => {
-                setIsTyping(false);
-                setValue(t);
-                setQuery(itemToQuery(t));
-                inputRef.current?.focus();
-              },
+              onClick,
+              onTouchEnd: onClick,
               active: activeIndex === i,
             };
             return renderItem ? (

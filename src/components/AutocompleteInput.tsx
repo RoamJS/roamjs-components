@@ -126,13 +126,12 @@ const AutocompleteInput = <T extends unknown = string>({
     const touchEndListener = (e: TouchEvent) => {
       if (
         !e.target ||
-        !(e.target instanceof HTMLElement) ||
         !menuRef.current ||
-        menuRef.current.contains(e.target)
+        menuRef.current.contains(e.target as Element)
       ) {
         return;
       }
-      if (inputRef.current && inputRef.current.contains(e.target)) {
+      if (!inputRef.current || inputRef.current.contains(e.target as Element)) {
         return;
       }
       close();

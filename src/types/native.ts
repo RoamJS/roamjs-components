@@ -169,6 +169,15 @@ export type RoamPull = {
 } & RoamNode;
 
 export type PullBlock = {
+  ":attrs/lookup"?: ({ ":db/id": number } | PullBlock)[];
+  ":entity/attrs"?: [
+    { ":source": [":block/uid", string]; ":value": [":block/uid", string] },
+    { ":source": [":block/uid", string]; ":value": [":block/uid", string] },
+    {
+      ":source": [":block/uid", string];
+      ":value": string | [":block/uid", string];
+    }
+  ][];
   ":block/children"?: ({ ":db/id": number } | PullBlock)[];
   ":block/heading"?: number;
   ":block/open"?: boolean;

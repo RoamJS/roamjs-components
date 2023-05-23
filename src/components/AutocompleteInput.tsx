@@ -62,7 +62,7 @@ const AutocompleteInput = <T extends unknown = string>({
   const [isOpen, setIsOpen] = useState(false);
   const itemToQuery = useMemo<ItemToQuery<T>>(
     () => _itemToQuery || ((s) => (s ? `${s}` : "")),
-    [_onNewItem]
+    [_itemToQuery]
   );
   const [query, setQuery] = useState<string>(() => itemToQuery(value));
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
@@ -72,10 +72,11 @@ const AutocompleteInput = <T extends unknown = string>({
     () =>
       _filterOptions ||
       ((o, q) =>
-        typeof o[0] === "string"
-          ? (fuzzy.filter(q, o).map((e) => e.string) as T[])
-          : o),
-    [_filterOptions]
+        fuzzy
+          .filter(q, o, { extract: itemToQuery })
+          .map((f) => f.original)
+          .filter((f): f is T => !!f)),
+    [_filterOptions, itemToQuery]
   );
   const onNewItem = useMemo<OnNewItem<T>>(
     () => _onNewItem || ((s) => s as T),

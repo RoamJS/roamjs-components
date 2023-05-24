@@ -8,6 +8,7 @@ import {
 } from "./env";
 import type { Registry } from "../types";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
+import { provideExtensionApi } from "./extensionApiContext";
 
 type RunReturn =
   | void
@@ -89,6 +90,7 @@ const runExtension = ({
     if (window.roamjs?.loaded?.has?.(extensionId)) {
       return;
     }
+    provideExtensionApi(args.extensionAPI);
     window.roamjs = {
       loaded: window.roamjs?.loaded || new Set(),
       extension: window.roamjs?.extension || {},

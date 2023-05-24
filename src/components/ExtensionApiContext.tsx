@@ -1,3 +1,4 @@
+// @deprecated - use utils/extensionApiContext instead
 import React, { useContext } from "react";
 import { OnloadArgs } from "../types";
 

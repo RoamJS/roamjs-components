@@ -9,6 +9,9 @@ export const provideExtensionApi = (api: OnloadArgs["extensionAPI"]) => {
   extensionApi = api;
 };
 
-const getExtensionApi = () => extensionApi;
+const getExtensionApi = () => {
+  if (!extensionApi) throw new Error("Extension API not provided");
+  return extensionApi;
+};
 
 export default getExtensionApi;

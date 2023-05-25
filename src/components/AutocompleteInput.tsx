@@ -113,7 +113,8 @@ const AutocompleteInput = <T extends unknown = string>({
     else open();
   }, [items, close, open, isTyping]);
   useEffect(() => {
-    if (query) setValue(items[activeIndex] || onNewItem(query));
+    if (query && isOpen) setValue(items[activeIndex] || onNewItem(query));
+    else if (query) setValue(onNewItem(query));
   }, [setValue, activeIndex, items, onNewItem, query]);
   useEffect(() => {
     if (

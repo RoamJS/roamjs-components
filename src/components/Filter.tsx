@@ -105,14 +105,13 @@ const Filter = ({
                         color: "rgb(167, 182, 194)",
                       }}
                     >
-                      {Object.keys(filters.includes).every(
-                        (k) => filters.includes[k].size === 0
+                      {Object.values(filters.includes).every(
+                        (v) => v.size === 0
                       )
                         ? includeHelpMessage
-                        : Object.keys(data).flatMap((key) =>
-                            data[key]
-                              .filter((n) => filters.includes[key].has(n))
-                              .map((n, i) => (
+                        : Object.entries(filters.includes).flatMap(
+                            ([key, col]) =>
+                              Array.from(col).map((n, i) => (
                                 <div
                                   style={{
                                     position: "relative",
@@ -174,14 +173,13 @@ const Filter = ({
                         color: "rgb(167, 182, 194)",
                       }}
                     >
-                      {Object.keys(filters.excludes).every(
-                        (k) => filters.excludes[k].size === 0
+                      {Object.values(filters.excludes).every(
+                        (v) => v.size === 0
                       )
                         ? excludeHelpMessage
-                        : Object.keys(data).flatMap((key) =>
-                            data[key]
-                              .filter((n) => filters.excludes[key].has(n))
-                              .map((n, i) => (
+                        : Object.entries(filters.excludes).flatMap(
+                            ([key, col]) =>
+                              Array.from(col).map((n, i) => (
                                 <div
                                   style={{
                                     position: "relative",

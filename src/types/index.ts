@@ -6,10 +6,7 @@ import {
   SidebarWindowInput,
   WriteAction,
 } from "./native";
-import {
-  RunQuery,
-  ListActiveQueries,
-} from "./query-builder";
+import { RunQuery, ListActiveQueries } from "./query-builder";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
 import type Markdown from "marked-react";
@@ -96,7 +93,7 @@ declare global {
         dateToPageTitle: (date: Date) => string;
         dateToPageUid: (date: Date) => string;
         pageTitleToDate: (title: string) => Date | null;
-        uploadFile: (title: string) => Date;
+        uploadFile: (args: { file: File }) => string;
       };
       data: {
         addPullWatch: AddPullWatch;
@@ -151,7 +148,10 @@ declare global {
           unpinWindow: SidebarAction;
         };
         commandPalette: {
-          addCommand: (action: { label: string; callback: () => void }) => Promise<void>;
+          addCommand: (action: {
+            label: string;
+            callback: () => void;
+          }) => Promise<void>;
           removeCommand: (action: { label: string }) => Promise<void>;
         };
         blockContextMenu: {
@@ -173,8 +173,16 @@ declare global {
           "block-uid": string;
         };
         components: {
-          renderBlock: (args: { uid: string; el: HTMLElement; zoomPath?: boolean }) => null;
-          renderPage: (args: { uid: string; el: HTMLElement; hideMentions?: boolean }) => null;
+          renderBlock: (args: {
+            uid: string;
+            el: HTMLElement;
+            zoomPath?: boolean;
+          }) => null;
+          renderPage: (args: {
+            uid: string;
+            el: HTMLElement;
+            hideMentions?: boolean;
+          }) => null;
         };
         mainWindow: {
           focusFirstBlock: () => Promise<void>;

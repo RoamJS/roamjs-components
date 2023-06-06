@@ -20,7 +20,7 @@ const formatRoamNode = (n: PullBlock, v: ViewType): TreeNode => {
           (a[":block/order"] || 0) - (b[":block/order"] || 0)
       )
       .map((r) => formatRoamNode(r, viewType)),
-    parents: (n[":block/parents"] || []).map((n) => n[":db/id"]),
+    parents: (n[":block/parents"] || []).map((n) => n?.[":db/id"] || 0),
   };
 };
 

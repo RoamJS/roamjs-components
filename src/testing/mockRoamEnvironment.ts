@@ -273,7 +273,7 @@ const fireQuery = ({
                     isNode(targetEntry)
                       ? [targetEntry.id]
                       : (graph.state[sourceId]?.[":block/parents"] || []).map(
-                          (d) => d[":db/id"]
+                          (d) => d[":db/id"] || 0
                         )
                   ).map((id) => ({
                     ...dict,
@@ -1419,7 +1419,7 @@ const mockRoamEnvironment = () => {
         ":block/string": action.block.string,
         ":block/uid":
           action.block.uid || window.roamAlphaAPI.util.generateUID(),
-        ":block/parents": [{ ":db/id": parent }].concat(
+        ":block/parents": ([{ ":db/id": parent }] as PullBlock[]).concat(
           parentBlock[":block/parents"] || []
         ),
         ":db/id": id,

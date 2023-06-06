@@ -25,9 +25,10 @@ import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import nanoid from "nanoid";
 import { getUids } from "../dom";
-import { InputTextNode } from "../types";
+import { InputTextNode, PullBlock } from "../types";
 import getFullTreeByParentUid from "../queries/getFullTreeByParentUid";
 import createPage from "../writes/createPage";
+import { createBlock } from "../writes";
 
 type Props<T> = {
   title?: React.ReactNode;
@@ -80,11 +81,29 @@ const EmbedInput = ({
 }) => {
   const defaultEmbed = useMemo(() => defaultValue || [], [defaultValue]);
   const elRef = useRef<HTMLDivElement>(null);
+  const parentUid = useMemo(window.roamAlphaAPI.util.generateUID, []);
+  const realFocus = useCallback(() => {
+    if (!elRef.current) return;
+    const block = elRef.current.querySelector<
+      HTMLDivElement | HTMLTextAreaElement
+    >(`div[id*="block-input"],textarea[id*="block-input"]`);
+    if (document.activeElement === block) return;
+    if (block?.id === "block-input-ghost")
+      createBlock({ parentUid, node: { text: "" } }).then(() =>
+        setTimeout(realFocus, 500)
+      );
+    const { windowId, blockUid } = getUids(block);
+    if (blockUid)
+      window.roamAlphaAPI.ui.setBlockFocusAndSelection({
+        location: {
+          "block-uid": blockUid,
+          "window-id": windowId,
+        },
+      });
+  }, [elRef]);
   useEffect(() => {
     const el = elRef.current;
     if (el) {
-      const uid = window.roamAlphaAPI.util.generateUID();
-      const parentUid = window.roamAlphaAPI.util.generateUID();
       createPage({
         uid: parentUid,
         title: nanoid(),
@@ -95,24 +114,11 @@ const EmbedInput = ({
           el,
           hideMentions: true,
         });
-        if (autoFocus) {
-          const block = el.querySelector<HTMLDivElement | HTMLTextAreaElement>(
-            `div[id*="block-input"],textarea[id*="block-input"]`
-          );
-          const { windowId, blockUid } = getUids(block);
-          if (blockUid)
-            window.roamAlphaAPI.ui.setBlockFocusAndSelection({
-              location: {
-                "block-uid": blockUid,
-                "window-id": windowId,
-              },
-            });
-        }
+        if (autoFocus) realFocus();
       });
       // In the future, we can return the whole tree of data from `parentUid`
       onChange(() => getFullTreeByParentUid(parentUid).children);
       return () => {
-        window.roamAlphaAPI.deleteBlock({ block: { uid } });
         window.roamAlphaAPI.deletePage({ page: { uid: parentUid } });
       };
     }
@@ -122,6 +128,8 @@ const EmbedInput = ({
     elRef,
     defaultEmbed,
     autoFocus,
+    realFocus,
+    parentUid,
     // Triggering infinite rerender
     // onChange
   ]);
@@ -137,6 +145,45 @@ const EmbedInput = ({
       <div
         ref={elRef}
         className="rounded-md bg-white font-normal mt-1 bp3-input h-32 overflow-scroll roamjs-form-embed py-2 px-4"
+        tabIndex={0}
+        onFocus={realFocus}
+        onKeyDown={(e) => {
+          if (e.key !== "Tab") return;
+          const { blockUid } = getUids(e.target as HTMLTextAreaElement);
+          const { [":block/order"]: order, [":block/parents"]: parents } =
+            window.roamAlphaAPI.pull(
+              "[:block/order {:block/parents [:block/uid]}]",
+              [":block/uid", blockUid]
+            ) as PullBlock;
+          if (
+            !(
+              order === 0 &&
+              parents?.length === 1 &&
+              parents[0][":block/uid"] === parentUid
+            )
+          )
+            return;
+          e.stopPropagation();
+          e.preventDefault();
+          const label = elRef.current?.parentElement;
+          if (!label) return;
+          const nextElToFocus = e.shiftKey
+            ? label.previousElementSibling ||
+              label
+                .closest(".bp3-dialog")
+                ?.querySelector(
+                  ".bp3-dialog-footer .bp3-button.bp3-intent-primary"
+                )
+            : label.nextElementSibling ||
+              label
+                .closest(".bp3-dialog")
+                ?.querySelector(".bp3-dialog-footer .bp3-button");
+          if (!nextElToFocus) return;
+          const focusQuery = "input,button";
+          if (nextElToFocus.matches(focusQuery))
+            (nextElToFocus as HTMLElement).focus();
+          else nextElToFocus.querySelector<HTMLElement>(focusQuery)?.focus();
+        }}
       />
     </>
   );
@@ -200,7 +247,7 @@ const FormDialog = <T extends Record<string, unknown>>({
           }
           if (meta.type === "text") {
             return (
-              <Label key={name}>
+              <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <InputGroup
                   value={data[name] as string}
@@ -216,7 +263,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "number") {
             return (
-              <Label key={name}>
+              <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <NumericInput
                   value={data[name] as string}
@@ -243,11 +290,12 @@ const FormDialog = <T extends Record<string, unknown>>({
                 }
                 key={name}
                 autoFocus={index === 0}
+                className={`roamjs-field-${name}`}
               />
             );
           } else if (meta.type === "select") {
             return (
-              <Label key={name}>
+              <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <MenuItemSelect
                   activeItem={data[name] as string}
@@ -266,7 +314,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "page") {
             return (
-              <Label key={name}>
+              <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <PageInput
                   key={name}
@@ -283,7 +331,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "block") {
             return (
-              <Label key={name}>
+              <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <BlockInput
                   value={
@@ -307,7 +355,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "embed") {
             return (
-              <Label key={name}>
+              <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <EmbedInput
                   defaultValue={meta.defaultValue}

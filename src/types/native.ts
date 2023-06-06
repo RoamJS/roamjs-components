@@ -178,12 +178,12 @@ export type PullBlock = {
       ":value": string | [":block/uid", string];
     }
   ][];
-  ":block/children"?: ({ ":db/id": number } | PullBlock)[];
+  ":block/children"?: PullBlock[];
   ":block/heading"?: number;
   ":block/open"?: boolean;
   ":block/order"?: number;
   ":block/page"?: { ":db/id": number };
-  ":block/parents"?: { ":db/id": number }[];
+  ":block/parents"?: PullBlock[];
   ":block/props"?: {
     ":image-size"?: {
       [p: string]: {

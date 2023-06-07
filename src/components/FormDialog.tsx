@@ -379,7 +379,9 @@ const FormDialog = <T extends Record<string, unknown>>({
         })}
       </div>
       <div className={Classes.DIALOG_FOOTER}>
-        <div className={`${Classes.DIALOG_FOOTER_ACTIONS} items-center flex-row-reverse`}>
+        <div
+          className={`${Classes.DIALOG_FOOTER_ACTIONS} items-center flex-row-reverse`}
+        >
           <Button
             text={submitButtonText}
             intent={Intent.PRIMARY}

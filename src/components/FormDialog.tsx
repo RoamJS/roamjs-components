@@ -34,6 +34,8 @@ type Props<T> = {
   title?: React.ReactNode;
   content?: React.ReactNode;
   onSubmit?: (data: T) => Promise<unknown> | unknown;
+  submitButtonText?: string;
+  cancelButtonText?: string;
   fields?: Record<
     string,
     (
@@ -171,13 +173,13 @@ const EmbedInput = ({
             ? label.previousElementSibling ||
               label
                 .closest(".bp3-dialog")
-                ?.querySelector(
-                  ".bp3-dialog-footer .bp3-button.bp3-intent-primary"
-                )
+                ?.querySelector(".bp3-dialog-footer .bp3-button")
             : label.nextElementSibling ||
               label
                 .closest(".bp3-dialog")
-                ?.querySelector(".bp3-dialog-footer .bp3-button");
+                ?.querySelector(
+                  ".bp3-dialog-footer .bp3-button.bp3-intent-primary"
+                );
           if (!nextElToFocus) return;
           const focusQuery = "input,button";
           if (nextElToFocus.matches(focusQuery))
@@ -196,6 +198,8 @@ const FormDialog = <T extends Record<string, unknown>>({
   onClose,
   onSubmit = () => Promise.resolve(),
   fields = {},
+  submitButtonText = "Submit",
+  cancelButtonText = "Cancel",
 }: RoamOverlayProps<Props<T>>) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -375,22 +379,22 @@ const FormDialog = <T extends Record<string, unknown>>({
         })}
       </div>
       <div className={Classes.DIALOG_FOOTER}>
-        <div className={`${Classes.DIALOG_FOOTER_ACTIONS} items-center`}>
-          {loading && <Spinner size={SpinnerSize.SMALL} />}
-          <span className="text-red-700">{error}</span>
+        <div className={`${Classes.DIALOG_FOOTER_ACTIONS} items-center flex-row-reverse`}>
           <Button
-            text={"Cancel"}
-            onClick={onClose}
-            disabled={loading}
-            className="flex-shrink-0"
-          />
-          <Button
-            text={"Submit"}
+            text={submitButtonText}
             intent={Intent.PRIMARY}
             onClick={onClick}
             disabled={loading}
             className="flex-shrink-0"
           />
+          <Button
+            text={cancelButtonText}
+            onClick={onClose}
+            disabled={loading}
+            className="flex-shrink-0"
+          />
+          <span className="text-red-700 flex-grow">{error}</span>
+          {loading && <Spinner size={SpinnerSize.SMALL} />}
         </div>
       </div>
     </Dialog>

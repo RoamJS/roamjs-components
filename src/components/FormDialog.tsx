@@ -173,7 +173,7 @@ const EmbedInput = ({
             ? label.previousElementSibling ||
               label
                 .closest(".bp3-dialog")
-                ?.querySelector(".bp3-dialog-footer .bp3-button")
+                ?.querySelector(".bp3-dialog-footer .bp3-button.roamjs-cancel")
             : label.nextElementSibling ||
               label
                 .closest(".bp3-dialog")
@@ -393,7 +393,7 @@ const FormDialog = <T extends Record<string, unknown>>({
             text={cancelButtonText}
             onClick={onClose}
             disabled={loading}
-            className="flex-shrink-0"
+            className="flex-shrink-0 roamjs-cancel"
           />
           <span className="text-red-700 flex-grow">{error}</span>
           {loading && <Spinner size={SpinnerSize.SMALL} />}

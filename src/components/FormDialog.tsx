@@ -36,6 +36,7 @@ type Props<T> = {
   onSubmit?: (data: T) => Promise<unknown> | unknown;
   submitButtonText?: string;
   cancelButtonText?: string;
+  enforceFocus?: boolean;
   fields?: Record<
     string,
     (
@@ -181,7 +182,7 @@ const EmbedInput = ({
                   ".bp3-dialog-footer .bp3-button.bp3-intent-primary"
                 );
           if (!nextElToFocus) return;
-          const focusQuery = "input,button";
+          const focusQuery = "input,button,div.roamjs-form-embed";
           if (nextElToFocus.matches(focusQuery))
             (nextElToFocus as HTMLElement).focus();
           else nextElToFocus.querySelector<HTMLElement>(focusQuery)?.focus();
@@ -200,6 +201,7 @@ const FormDialog = <T extends Record<string, unknown>>({
   fields = {},
   submitButtonText = "Submit",
   cancelButtonText = "Cancel",
+  enforceFocus,
 }: RoamOverlayProps<Props<T>>) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -240,7 +242,7 @@ const FormDialog = <T extends Record<string, unknown>>({
       isOpen={isOpen}
       onClose={onClose}
       title={title}
-      enforceFocus={!title}
+      enforceFocus={!title || enforceFocus}
       autoFocus={!title}
     >
       <div className={Classes.DIALOG_BODY}>

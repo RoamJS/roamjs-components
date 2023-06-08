@@ -87,10 +87,14 @@ const EmbedInput = ({
   const parentUid = useMemo(window.roamAlphaAPI.util.generateUID, []);
   const realFocus = useCallback(() => {
     if (!elRef.current) return;
+    if (
+      elRef.current.contains(document.activeElement) &&
+      elRef.current !== document.activeElement
+    )
+      return;
     const block = elRef.current.querySelector<
       HTMLDivElement | HTMLTextAreaElement
     >(`div[id*="block-input"],textarea[id*="block-input"]`);
-    if (document.activeElement === block) return;
     if (block?.id === "block-input-ghost")
       createBlock({ parentUid, node: { text: "" } }).then(() =>
         setTimeout(realFocus, 500)
@@ -153,6 +157,7 @@ const EmbedInput = ({
         onKeyDown={(e) => {
           if (e.key !== "Tab") return;
           const { blockUid } = getUids(e.target as HTMLTextAreaElement);
+          if (!blockUid) return;
           const { [":block/order"]: order, [":block/parents"]: parents } =
             window.roamAlphaAPI.pull(
               "[:block/order {:block/parents [:block/uid]}]",

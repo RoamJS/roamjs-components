@@ -256,18 +256,15 @@ const FormDialog = <T extends Record<string, unknown>>({
           if (meta.conditional && !data[meta.conditional]) {
             return <div key={name} />;
           }
+          const setValue = (value: unknown) =>
+            setData((d) => ({ ...d, [name]: value }));
           if (meta.type === "text") {
             return (
               <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <InputGroup
                   value={data[name] as string}
-                  onChange={(e) =>
-                    setData({
-                      ...data,
-                      [name]: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setValue(e.target.value)}
                   autoFocus={index === 0}
                 />
               </Label>
@@ -278,12 +275,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                 {meta.label}
                 <NumericInput
                   value={data[name] as string}
-                  onChange={(e) =>
-                    setData({
-                      ...data,
-                      [name]: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setValue(e.target.value)}
                   autoFocus={index === 0}
                 />
               </Label>
@@ -294,10 +286,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                 label={meta.label}
                 value={data[name] as string}
                 onChange={(e) =>
-                  setData({
-                    ...data,
-                    [name]: (e.target as HTMLInputElement).checked,
-                  })
+                  setValue((e.target as HTMLInputElement).checked)
                 }
                 key={name}
                 autoFocus={index === 0}
@@ -310,12 +299,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                 {meta.label}
                 <MenuItemSelect
                   activeItem={data[name] as string}
-                  onItemSelect={(e) =>
-                    setData({
-                      ...data,
-                      [name]: e,
-                    })
-                  }
+                  onItemSelect={setValue}
                   items={meta.options || []}
                   ButtonProps={{
                     autoFocus: index === 0,
@@ -330,12 +314,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                 <PageInput
                   key={name}
                   value={data[name] as string}
-                  setValue={(e) =>
-                    setData({
-                      ...data,
-                      [name]: e,
-                    })
-                  }
+                  setValue={setValue}
                   autoFocus={index === 0}
                 />
               </Label>
@@ -350,15 +329,14 @@ const FormDialog = <T extends Record<string, unknown>>({
                     (data[name] as string)
                   }
                   setValue={(text, uid) =>
-                    setData({
-                      ...data,
-                      [name]: window.roamAlphaAPI.pull("[:db/id]", [
+                    setValue(
+                      window.roamAlphaAPI.pull("[:db/id]", [
                         ":block/uid",
                         uid || "",
                       ])
                         ? uid
-                        : text,
-                    })
+                        : text
+                    )
                   }
                   autoFocus={index === 0}
                 />
@@ -370,12 +348,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                 {meta.label}
                 <EmbedInput
                   defaultValue={meta.defaultValue}
-                  onChange={(value) => {
-                    setData({
-                      ...data,
-                      [name]: value,
-                    });
-                  }}
+                  onChange={setValue}
                   autoFocus={index === 0}
                 />
               </Label>

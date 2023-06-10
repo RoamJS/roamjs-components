@@ -1,9 +1,24 @@
 import type { PullBlock, TreeNode, ViewType } from "../types";
 
-const formatRoamNode = (n: PullBlock, v: ViewType): TreeNode => {
-  const viewType = (
-    typeof n[":children/view-type"] === "string" ? n[":children/view-type"] : v
-  ).replace(/^:/, "") as ViewType;
+const formatRoamNode = (n: PullBlock | null): TreeNode => {
+  if (!n)
+    return {
+      text: "",
+      open: true,
+      order: 0,
+      uid: "",
+      children: [],
+      parents: [],
+      heading: 0,
+      viewType: "bullet",
+      editTime: new Date(0),
+      props: { imageResize: {}, iframe: {} },
+      textAlign: "left",
+    };
+  const viewType =
+    ((n[":block/parents"] || [])
+      .find((a) => typeof a[":children/view-type"] === "string")
+      ?.[":children/view-type"]?.replace?.(/^:/, "") as ViewType) || "bullet";
   return {
     text: n[":block/string"] || n[":node/title"] || "",
     open: typeof n[":block/open"] === "undefined" ? true : n[":block/open"],
@@ -15,19 +30,16 @@ const formatRoamNode = (n: PullBlock, v: ViewType): TreeNode => {
     props: { imageResize: {}, iframe: {} },
     textAlign: n[":block/text-align"] || "left",
     children: (n[":block/children"] || [])
-      .sort(
-        (a: PullBlock, b: PullBlock) =>
-          (a[":block/order"] || 0) - (b[":block/order"] || 0)
-      )
-      .map((r) => formatRoamNode(r, viewType)),
+      .sort((a, b) => (a[":block/order"] || 0) - (b[":block/order"] || 0))
+      .map(formatRoamNode),
     parents: (n[":block/parents"] || []).map((n) => n?.[":db/id"] || 0),
   };
 };
 
 const getFullTreeByParentUid = (uid: string): TreeNode =>
   formatRoamNode(
-    (window.roamAlphaAPI.data.fast.q(
-      `[:find (pull ?b [
+    window.roamAlphaAPI.pull(
+      `[
       :block/string 
       :node/title 
       :block/uid 
@@ -38,22 +50,11 @@ const getFullTreeByParentUid = (uid: string): TreeNode =>
       :block/text-align
       :edit/time 
       :block/props
-      :block/parents
+      {:block/parents [:children/view-type]}
       {:block/children ...}
-    ]) :where [?b :block/uid "${uid}"]]`
-    )?.[0]?.[0] || {}) as PullBlock,
-    ((
-      window.roamAlphaAPI.data.fast.q(
-        `[:find
-      (pull ?p [:children/view-type]) :where
-      [?c :block/uid "${uid}"] [?c :block/parents ?p]]`
-      ) as [PullBlock][]
+    ]`,
+      [`:block/uid`, uid]
     )
-      .reverse()
-      .map((a) => a[0])
-      .map((a) => a && a[":children/view-type"])
-      .find((a) => !!a)
-      ?.replace?.(/^:/, "") as ViewType) || "bullet"
   );
 
 export default getFullTreeByParentUid;

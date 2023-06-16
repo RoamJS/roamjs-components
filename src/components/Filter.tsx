@@ -1,5 +1,5 @@
 import { Tooltip, Position, Popover, Button, Icon } from "@blueprintjs/core";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useMemo } from "react";
 import fuzzy from "fuzzy";
 
 export type Filters = {
@@ -29,24 +29,32 @@ const Filter = ({
   const closeFilter = useCallback(() => {
     setIsFilterOpen(false);
   }, [setIsFilterOpen]);
-  const filtersRef = useRef({
-    includes: Object.fromEntries(
-      Object.keys(data).map((k) => [
-        k,
-        new Set<string>(
-          data[k].filter((d) => initialValue && initialValue.includes[k].has(d))
-        ),
-      ])
-    ),
-    excludes: Object.fromEntries(
-      Object.keys(data).map((k) => [
-        k,
-        new Set<string>(
-          data[k].filter((d) => initialValue && initialValue.excludes[k].has(d))
-        ),
-      ])
-    ),
-  });
+  const initialFiltersValue = useMemo(
+    () => ({
+      includes: Object.fromEntries(
+        Object.keys(data).map((k) => [
+          k,
+          new Set<string>(
+            data[k].filter(
+              (d) => initialValue && initialValue.includes[k].has(d)
+            )
+          ),
+        ])
+      ),
+      excludes: Object.fromEntries(
+        Object.keys(data).map((k) => [
+          k,
+          new Set<string>(
+            data[k].filter(
+              (d) => initialValue && initialValue.excludes[k].has(d)
+            )
+          ),
+        ])
+      ),
+    }),
+    [initialValue, data]
+  );
+  const filtersRef = useRef(initialFiltersValue);
   const [filters, setFilters] = useState(filtersRef.current);
   const [filterSearch, setFilterSearch] = useState("");
   const active =

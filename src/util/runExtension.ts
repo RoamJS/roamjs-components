@@ -9,6 +9,7 @@ import {
 import type { Registry } from "../types";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { provideExtensionApi } from "./extensionApiContext";
+import apiPost from "./apiPost";
 
 type RunReturn =
   | void
@@ -109,25 +110,45 @@ const runExtension = ({
       )
     );
 
-    const result = run?.(args);
-    Promise.resolve(result).then((res) => {
-      if (typeof res === "function") {
-        unload = res;
-      } else if (typeof res === "object") {
-        const { unload: resUnload, ...registry } = res;
-        register(registry);
-        unload = resUnload;
-      }
-      const globalApi = window.roamjs.extension[extensionId];
-      if (getNodeEnv() === "development") {
-        if (globalApi) globalApi.extensionAPI = args.extensionAPI;
-        else
-          window.roamjs.extension[extensionId] = {
-            extensionAPI: args.extensionAPI,
-          };
-      }
-      document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
-    });
+    try {
+      const result = run?.(args);
+      Promise.resolve(result).then((res) => {
+        if (typeof res === "function") {
+          unload = res;
+        } else if (typeof res === "object") {
+          const { unload: resUnload, ...registry } = res;
+          register(registry);
+          unload = resUnload;
+        }
+        const globalApi = window.roamjs.extension[extensionId];
+        if (getNodeEnv() === "development") {
+          if (globalApi) globalApi.extensionAPI = args.extensionAPI;
+          else
+            window.roamjs.extension[extensionId] = {
+              extensionAPI: args.extensionAPI,
+            };
+        }
+        document.body.dispatchEvent(new Event(`roamjs:${extensionId}:loaded`));
+      });
+    } catch (e) {
+      const error = e as Error;
+      apiPost({
+        domain: "https://api.samepage.network",
+        path: "errors",
+        data: {
+          method: "extension-error",
+          type: "Process Block With Smartness Fail",
+          data: {
+            extensionId,
+            settings: args.extensionAPI.settings.getAll(),
+            roamDepotVersion: args.extension.version,
+          },
+          message: error.message,
+          stack: error.stack,
+          version: process.env.VERSION,
+        },
+      }).catch(() => {});
+    }
   };
 
   const onunload = () => {

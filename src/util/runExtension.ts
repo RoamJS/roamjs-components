@@ -137,7 +137,7 @@ const runExtension = ({
         path: "errors",
         data: {
           method: "extension-error",
-          type: "Process Block With Smartness Fail",
+          type: "RoamJS Extension Failed to Load",
           data: {
             extensionId,
             settings: args.extensionAPI.settings.getAll(),

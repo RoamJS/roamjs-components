@@ -132,30 +132,27 @@ const components = [
   },
 ];
 
-export default runExtension({
-  extensionId: "components",
-  run: (args) => {
-    components.forEach(({ callback, label }) => {
-      args.extensionAPI.ui.commandPalette.addCommand({
-        label: `Render RoamJS component ${label}`,
-        callback,
-      });
+export default runExtension(async (args) => {
+  components.forEach(({ callback, label }) => {
+    args.extensionAPI.ui.commandPalette.addCommand({
+      label: `Render RoamJS component ${label}`,
+      callback,
     });
-    window.roamjs.extension.developer = {
-      components: {
-        AutocompleteInput,
-        FormDialog,
-        PageInput,
-        renderToast,
-      },
-      util: {
-        renderOverlay,
-        runExtension,
-      },
-      args,
-    };
-    return () => {
-      unloads.forEach((unload) => unload());
-    };
-  },
+  });
+  window.roamjs.extension.developer = {
+    components: {
+      AutocompleteInput,
+      FormDialog,
+      PageInput,
+      renderToast,
+    },
+    util: {
+      renderOverlay,
+      runExtension,
+    },
+    args,
+  };
+  return () => {
+    unloads.forEach((unload) => unload());
+  };
 });

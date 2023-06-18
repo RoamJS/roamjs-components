@@ -10,6 +10,7 @@ import type { Registry } from "../types";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { provideExtensionApi } from "./extensionApiContext";
 import apiPost from "./apiPost";
+import renderToast from "../components/Toast";
 
 type RunReturn =
   | void
@@ -142,7 +143,19 @@ const runExtension = (
             stack: error.stack,
             version: process.env.VERSION,
           },
-        }).catch(() => {});
+        })
+          .then(() =>
+            renderToast({
+              id: "roamjs-extension-error",
+              content: `Failed to load ${extensionId} extension. An Error Report has been sent to the SamePage team.`,
+            })
+          )
+          .catch(() => {
+            renderToast({
+              id: "roamjs-email-error",
+              content: `Failed to load ${extensionId} extension. The Error Report also failed to send to the SamePage team, please reach out to them directly at support@samepage.network.`,
+            });
+          });
       });
   };
 

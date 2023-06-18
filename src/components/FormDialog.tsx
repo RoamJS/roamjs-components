@@ -256,8 +256,10 @@ const FormDialog = <T extends Record<string, unknown>>({
           if (meta.conditional && !data[meta.conditional]) {
             return <div key={name} />;
           }
-          const setValue = (value: unknown) =>
-            setData((d) => ({ ...d, [name]: value }));
+          const setValue = useCallback(
+            (value: unknown) => setData((d) => ({ ...d, [name]: value })),
+            [setData]
+          );
           if (meta.type === "text") {
             return (
               <Label key={name} className={`roamjs-field-${name}`}>

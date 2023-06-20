@@ -253,11 +253,13 @@ const FormDialog = <T extends Record<string, unknown>>({
       <div className={Classes.DIALOG_BODY}>
         {content}
         {Object.entries(fields).map(([name, meta], index) => {
+          const setValue = useCallback(
+            (value: unknown) => setData((d) => ({ ...d, [name]: value })),
+            [setData, name]
+          );
           if (meta.conditional && !data[meta.conditional]) {
             return <div key={name} />;
           }
-          const setValue = (value: unknown) =>
-            setData((d) => ({ ...d, [name]: value }));
           if (meta.type === "text") {
             return (
               <Label key={name} className={`roamjs-field-${name}`}>

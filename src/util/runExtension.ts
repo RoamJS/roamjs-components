@@ -148,12 +148,14 @@ const runExtension = (
             renderToast({
               id: "roamjs-extension-error",
               content: `Failed to load ${extensionId} extension. An Error Report has been sent to the SamePage team.`,
+              intent: "danger",
             })
           )
           .catch(() => {
             renderToast({
               id: "roamjs-email-error",
               content: `Failed to load ${extensionId} extension. The Error Report also failed to send to the SamePage team, please reach out to them directly at support@samepage.network.`,
+              intent: "danger",
             });
           });
       });

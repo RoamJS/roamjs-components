@@ -16,7 +16,7 @@ const publishToRoamDepot = async ({
   owner = process.env.GITHUB_REPOSITORY_OWNER,
   repo = path.basename(process.cwd()),
   branch = repo,
-  proxy = owner,
+  proxy = process.env.ROAMJS_PROXY || owner,
 }: {
   repo?: string;
   owner?: string;

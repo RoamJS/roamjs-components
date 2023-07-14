@@ -5,6 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
+    "postinstall": "patch-package",
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
     "build": "tsc",

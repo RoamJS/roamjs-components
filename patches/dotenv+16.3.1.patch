@@ -1,0 +1,12 @@
+diff --git a/node_modules/dotenv/lib/main.d.ts b/node_modules/dotenv/lib/main.d.ts
+index af84746..2247963 100644
+--- a/node_modules/dotenv/lib/main.d.ts
++++ b/node_modules/dotenv/lib/main.d.ts
+@@ -1,6 +1,6 @@
+ // TypeScript Version: 3.0
+ /// <reference types="node" />
+-import type { URL } from 'node:url';
++import type { URL } from 'url';
+ 
+ export interface DotenvParseOutput {
+   [name: string]: string;

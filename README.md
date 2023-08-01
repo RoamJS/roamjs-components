@@ -2,8 +2,6 @@
     
 This is a collection of common UI components used by RoamJS extensions made available to make development easier for other Roam developers.
 
-All documentation lives on https://roamjs.com/extensions/developer.
-
 ## Util
 
 The following are a list of methods used to help interface with the RoamJS Components found in this library.

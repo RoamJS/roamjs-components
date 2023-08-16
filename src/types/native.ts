@@ -341,7 +341,7 @@ export type ClientParams = {
 export type ActionParams = {
   location?: {
     "parent-uid": string;
-    order: number;
+    order: number | "last";
   };
   block?: {
     string?: string;

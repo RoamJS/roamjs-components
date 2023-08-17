@@ -1429,6 +1429,7 @@ const mockRoamEnvironment = () => {
       parentBlock[":block/children"] = (
         parentBlock[":block/children"] || []
       ).concat({ ":db/id": id });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       graph.state[id] = block;
     },

@@ -1429,6 +1429,7 @@ const mockRoamEnvironment = () => {
       parentBlock[":block/children"] = (
         parentBlock[":block/children"] || []
       ).concat({ ":db/id": id });
+      // @ts-ignore
       graph.state[id] = block;
     },
     updateBlock: async (action) => {

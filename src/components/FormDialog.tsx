@@ -29,6 +29,7 @@ import { InputTextNode, PullBlock } from "../types";
 import getFullTreeByParentUid from "../queries/getFullTreeByParentUid";
 import createPage from "../writes/createPage";
 import { createBlock } from "../writes";
+import AutocompleteInput from "./AutocompleteInput";
 
 type Props<T> = {
   title?: React.ReactNode;
@@ -43,6 +44,10 @@ type Props<T> = {
       | {
           defaultValue?: string;
           type: "text";
+        }
+      | {
+          defaultValue?: string;
+          type: "label";
         }
       | {
           defaultValue?: number;
@@ -62,6 +67,11 @@ type Props<T> = {
           type: "block";
         }
       | {
+          defaultValue?: string;
+          type: "autocomplete";
+          options?: string[];
+        }
+      | {
           defaultValue?: boolean;
           type: "flag";
         }
@@ -69,7 +79,7 @@ type Props<T> = {
           defaultValue?: InputTextNode[];
           type: "embed";
         }
-    ) & { label?: string; conditional?: string }
+    ) & { label?: string; conditional?: string; conditionalValues?: string[] }
   >;
 };
 
@@ -259,6 +269,13 @@ const FormDialog = <T extends Record<string, unknown>>({
           );
           if (meta.conditional && !data[meta.conditional]) {
             return <div key={name} />;
+          } else if (
+            meta.conditional &&
+            meta.conditionalValues &&
+            typeof data[meta.conditional] === "string" &&
+            !meta.conditionalValues.includes(data[meta.conditional] as string)
+          ) {
+            return <div key={name} />;
           }
           if (meta.type === "text") {
             return (
@@ -280,6 +297,12 @@ const FormDialog = <T extends Record<string, unknown>>({
                   onChange={(e) => setValue(e.target.value)}
                   autoFocus={index === 0}
                 />
+              </Label>
+            );
+          } else if (meta.type === "label") {
+            return (
+              <Label key={name} className={`roamjs-field-${name}`}>
+                {meta.label}
               </Label>
             );
           } else if (meta.type === "flag") {
@@ -340,6 +363,21 @@ const FormDialog = <T extends Record<string, unknown>>({
                         : text
                     )
                   }
+                  autoFocus={index === 0}
+                />
+              </Label>
+            );
+          } else if (meta.type === "autocomplete") {
+            return (
+              <Label key={name} className={`roamjs-field-${name}`}>
+                {meta.label}
+                <AutocompleteInput
+                  value={
+                    getTextByBlockUid(data[name] as string) ||
+                    (data[name] as string)
+                  }
+                  options={meta.options}
+                  setValue={setValue}
                   autoFocus={index === 0}
                 />
               </Label>

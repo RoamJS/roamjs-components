@@ -83,6 +83,7 @@ const components = [
               fields={{
                 text: { type: "text", label: "Text Field" },
                 number: { type: "number", label: "Number Field" },
+                label: { type: "label", label: "Text Field" },
                 flag: { type: "flag", label: "Flag Field" },
                 conditionalText: {
                   type: "text",
@@ -94,6 +95,22 @@ const components = [
                 select: {
                   type: "select",
                   label: "Select Field",
+                  options: [
+                    "apple",
+                    "banana",
+                    "orange",
+                    "conditional select 1",
+                  ],
+                },
+                conditionalSelect: {
+                  type: "text",
+                  label: "Conditional Text Field",
+                  conditional: "select",
+                  conditionalValues: ["conditional select 1"],
+                },
+                autocomplete: {
+                  type: "autocomplete",
+                  label: "Autocomplete Field",
                   options: ["apple", "banana", "orange"],
                 },
                 embed: {

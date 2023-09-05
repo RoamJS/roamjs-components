@@ -83,7 +83,7 @@ const components = [
               fields={{
                 text: { type: "text", label: "Text Field" },
                 number: { type: "number", label: "Number Field" },
-                label: { type: "label", label: "Label Field" },
+                info: { type: "info", label: "Read Only Info Text" },
                 flag: { type: "flag", label: "Flag Field" },
                 conditionalText: {
                   type: "text",

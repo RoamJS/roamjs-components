@@ -47,7 +47,7 @@ type Props<T> = {
         }
       | {
           defaultValue?: string;
-          type: "label";
+          type: "info";
         }
       | {
           defaultValue?: number;
@@ -299,11 +299,11 @@ const FormDialog = <T extends Record<string, unknown>>({
                 />
               </Label>
             );
-          } else if (meta.type === "label") {
+          } else if (meta.type === "info") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <div key={name} className={`roamjs-static-${name} mb-4`}>
                 {meta.label}
-              </Label>
+              </div>
             );
           } else if (meta.type === "flag") {
             return (
@@ -372,10 +372,7 @@ const FormDialog = <T extends Record<string, unknown>>({
               <Label key={name} className={`roamjs-field-${name}`}>
                 {meta.label}
                 <AutocompleteInput
-                  value={
-                    getTextByBlockUid(data[name] as string) ||
-                    (data[name] as string)
-                  }
+                  value={data[name] as string}
                   options={meta.options}
                   setValue={setValue}
                   autoFocus={index === 0}

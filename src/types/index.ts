@@ -120,7 +120,7 @@ declare global {
         removePullWatch: (
           pullPattern: string,
           entityId: string,
-          callback: (before: PullBlock, after: PullBlock) => void
+          callback?: (before: PullBlock, after: PullBlock) => void
         ) => boolean;
         redo: () => void;
         undo: () => void;

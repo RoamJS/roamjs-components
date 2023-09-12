@@ -73,8 +73,6 @@ const components = [
               value={value}
               setValue={setValue}
               options={options}
-              onConfirm={() => setValue("")}
-              showButton
             />
             <div>Chosen value: {value}</div>
           </>

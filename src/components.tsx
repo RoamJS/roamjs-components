@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import React, { useState, useMemo } from "react";
-import { Button } from "@blueprintjs/core";
+import { Button, Checkbox } from "@blueprintjs/core";
 
 import AutocompleteInput from "./components/AutocompleteInput";
 import FormDialog from "./components/FormDialog";
@@ -11,6 +11,7 @@ import renderOverlay from "./util/renderOverlay";
 import runExtension from "./util/runExtension";
 
 import { createBlock } from "./writes";
+import MenuItemSelect from "./components/MenuItemSelect";
 
 // const blockRender = (Component: React.FC) => {
 //   const block = window.roamAlphaAPI.ui.getFocusedBlock();
@@ -38,6 +39,33 @@ const components = [
     callback: () =>
       rootRender(() => {
         const [value, setValue] = useState("");
+        const [filterable, setFilterable] = useState(false);
+        const options = useMemo(() => ["apple", "banana", "orange"], []);
+        return (
+          <>
+            <div>Chosen value: {value}</div>
+            <Checkbox
+              checked={filterable as boolean}
+              onChange={(e) =>
+                setFilterable((e.target as HTMLInputElement).checked)
+              }
+              label={"Filterable"}
+            />
+            <MenuItemSelect
+              activeItem={value}
+              items={options}
+              onItemSelect={(item) => setValue(item)}
+              filterable={filterable}
+            />
+          </>
+        );
+      }),
+    label: "MenuItemSelect",
+  },
+  {
+    callback: () =>
+      rootRender(() => {
+        const [value, setValue] = useState("");
         const options = useMemo(() => ["apple", "banana", "orange"], []);
         return (
           <>
@@ -45,6 +73,8 @@ const components = [
               value={value}
               setValue={setValue}
               options={options}
+              onConfirm={() => setValue("")}
+              showButton
             />
             <div>Chosen value: {value}</div>
           </>

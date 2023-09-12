@@ -12,7 +12,7 @@ const MenuItemSelect = <T extends ReactText>(
     const text = props.transformItem ? props.transformItem(item) : item;
     return String(text).toLowerCase().includes(query.toLowerCase());
   };
-  const { activeItem, ...selectProps } = props;
+  const { activeItem, filterable = false, ...selectProps } = props;
   return (
     <TypeSelect
       {...selectProps}
@@ -24,7 +24,7 @@ const MenuItemSelect = <T extends ReactText>(
           onClick={handleClick}
         />
       )}
-      filterable={props.filterable}
+      filterable={filterable}
       itemPredicate={props.filterable ? itemPredicate : undefined}
       popoverProps={{
         minimal: true,

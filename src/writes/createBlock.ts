@@ -17,7 +17,7 @@ export const gatherActions = ({
 }: {
   node: InputTextNode;
   parentUid: string;
-  order?: number;
+  order?: number | "last";
 }): ActionParams[] => {
   return [
     {

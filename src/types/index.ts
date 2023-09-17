@@ -184,6 +184,18 @@ declare global {
             hideMentions?: boolean;
           }) => null;
         };
+        graphView: {
+          wholeGraph: {
+            addCallback: (props: {
+              label: string;
+              callback: (arg: { "sigma-renderer": unknown }) => void;
+            }) => any;
+            removeCallback: (props: { label: string }) => void;
+            setExplorePages: (pages: string[]) => void;
+            getExplorePages: () => string[];
+            setMode: (mode: "Whole Graph" | "Explore") => void;
+          };
+        };
         mainWindow: {
           focusFirstBlock: () => Promise<void>;
           openBlock: (p: { block: { uid: string } }) => Promise<void>;

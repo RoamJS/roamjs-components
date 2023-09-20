@@ -243,6 +243,10 @@ declare global {
             targetUid?: string;
             variables?: Record<string, string>;
           }) => Promise<unknown>;
+          getSmartblockOutput: (args: {
+            srcName?: string;
+            srcUid?: string;
+          }) => Promise<unknown>;
         };
         [id: string]: Record<string, unknown> | undefined;
       };

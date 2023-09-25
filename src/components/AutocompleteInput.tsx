@@ -40,6 +40,8 @@ export type AutocompleteInputProps<T = string> = {
     active: boolean;
   }) => React.ReactElement;
   onNewItem?: OnNewItem<T>;
+  disabled?: boolean;
+  maxItemsDisplayed?: number;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
@@ -58,6 +60,8 @@ const AutocompleteInput = <T extends unknown = string>({
   itemToQuery: _itemToQuery,
   renderItem,
   onNewItem: _onNewItem,
+  disabled = false,
+  maxItemsDisplayed = Infinity,
 }: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const itemToQuery = useMemo<ItemToQuery<T>>(
@@ -84,8 +88,12 @@ const AutocompleteInput = <T extends unknown = string>({
   );
 
   const items = useMemo(
-    () => (query ? filterOptions(options, query) : options),
-    [query, options, filterOptions]
+    () =>
+      (query ? filterOptions(options, query) : options).slice(
+        0,
+        maxItemsDisplayed
+      ),
+    [query, options, filterOptions, maxItemsDisplayed]
   );
   const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
@@ -192,6 +200,7 @@ const AutocompleteInput = <T extends unknown = string>({
       }
       target={
         <Input
+          disabled={disabled}
           value={query}
           onChange={(e) => {
             setIsTyping(true);

@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import React, { useState, useMemo } from "react";
-import { Button, Checkbox } from "@blueprintjs/core";
+import { Button, Checkbox, NumericInput, Label } from "@blueprintjs/core";
 
 import AutocompleteInput from "./components/AutocompleteInput";
 import FormDialog from "./components/FormDialog";
@@ -66,15 +66,54 @@ const components = [
     callback: () =>
       rootRender(() => {
         const [value, setValue] = useState("");
-        const options = useMemo(() => ["apple", "banana", "orange"], []);
+        const [numResults, setNumResults] = useState(100);
+        const [disabled, setDisabled] = useState(false);
+        const [maxItemsDisplayed, setMaxItemsDisplayed] = useState(0);
+        const options = useMemo(() => {
+          const items = [];
+          for (let i = 0; i < numResults; i++) {
+            items.push(Math.random().toString(36).substring(7));
+          }
+          return items;
+        }, [numResults]);
         return (
           <>
-            <AutocompleteInput
-              value={value}
-              setValue={setValue}
-              options={options}
+            <Label>
+              Number of Results
+              <NumericInput
+                value={numResults}
+                onValueChange={(e) => setNumResults(e)}
+                buttonPosition={"none"}
+              />
+            </Label>
+            <Label>
+              Max Items Displayed (0 for all)
+              <NumericInput
+                value={maxItemsDisplayed}
+                onValueChange={(e) => setMaxItemsDisplayed(e)}
+                buttonPosition={"none"}
+              />
+            </Label>
+            <Label>Chosen value: {value}</Label>
+            <Checkbox
+              checked={disabled}
+              onChange={(e) =>
+                setDisabled((e.target as HTMLInputElement).checked)
+              }
+              label={"Disabled"}
             />
-            <div>Chosen value: {value}</div>
+            <Label>
+              Autocomplete
+              <AutocompleteInput
+                disabled={disabled}
+                value={value}
+                setValue={setValue}
+                options={options}
+                maxItemsDisplayed={
+                  maxItemsDisplayed === 0 ? undefined : maxItemsDisplayed
+                }
+              />
+            </Label>
           </>
         );
       }),

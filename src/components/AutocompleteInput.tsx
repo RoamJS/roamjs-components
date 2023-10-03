@@ -60,7 +60,7 @@ const AutocompleteInput = <T extends unknown = string>({
   itemToQuery: _itemToQuery,
   renderItem,
   onNewItem: _onNewItem,
-  disabled = false,
+  disabled,
   maxItemsDisplayed = Infinity,
 }: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);

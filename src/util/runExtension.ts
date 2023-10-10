@@ -142,6 +142,11 @@ const runExtension = (
             message: error.message,
             stack: error.stack,
             version: process.env.VERSION,
+            notebookUuid: JSON.stringify({
+              owner: "RoamJS",
+              app: extensionId,
+              workspace: window.roamAlphaAPI.graph.name,
+            }),
           },
         })
           .then(() =>

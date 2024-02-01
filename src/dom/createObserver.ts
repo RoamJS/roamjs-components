@@ -5,10 +5,11 @@ const createObserver = (
     mutationList: MutationRecord[],
     observer: MutationObserver
   ) => void
-): MutationObserver =>
-  createDivObserver(
+): MutationObserver => {
+  return createDivObserver(
     mutationCallback,
-    document.getElementsByClassName("roam-body")[0]
+    document.getElementsByClassName("app")[0]
   );
+};
 
 export default createObserver;

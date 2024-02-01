@@ -1,4 +1,4 @@
-import { Button, Card, Tab, Tabs } from "@blueprintjs/core";
+import { Card, Tab, Tabs } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import createHTMLObserver from "../dom/createHTMLObserver";
@@ -12,7 +12,6 @@ import idToTitle from "../util/idToTitle";
 import type { Field, UnionField } from "./ConfigPanels/types";
 import { Brand } from "./ConfigPanels/getBrandColors";
 import { InputTextNode } from "../types";
-import { VersionSwitcherProps } from "./VersionSwitcher";
 
 type ConfigTab = {
   id: string;
@@ -26,7 +25,7 @@ type ConfigTab = {
 type Config =
   | {
       tabs: ConfigTab[];
-      versioning?: boolean | ((props: VersionSwitcherProps) => void);
+      versioning?: boolean;
       brand?: Brand;
     }
   | Field<UnionField>[];
@@ -129,7 +128,6 @@ const ConfigPage = ({
   const tree = getBasicTreeByParentUid(pageUid);
 
   // first character trimmed intentionally for the `v` below
-  const currentVersion = window.roamjs?.version?.[id] || "ersion not set";
   const titleRef = useRef<HTMLDivElement>(null);
   const experimentalMode = useMemo(() => localStorageGet("experimental"), []);
   return (
@@ -140,25 +138,6 @@ const ConfigPage = ({
         tabIndex={-1}
       >
         <h4 style={{ padding: 4 }}>{idToTitle(id)} Configuration</h4>
-        <span>
-          <span style={{ color: "#cccccc", fontSize: 8 }}>
-            v{currentVersion}
-          </span>
-          {"versioning" in config && typeof config.versioning === "function" && (
-            <Button
-              icon={"git-branch"}
-              minimal
-              onClick={() =>
-                typeof config.versioning === "function" &&
-                config.versioning({
-                  id,
-                  currentVersion,
-                })
-              }
-              style={{ marginLeft: 4 }}
-            />
-          )}
-        </span>
       </div>
       <style>{`.roamjs-config-tabs {\npadding: 4px;\n}`}</style>
       {isLegacy ? (

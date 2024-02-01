@@ -8,7 +8,7 @@ const createObserver = (
 ): MutationObserver => {
   return createDivObserver(
     mutationCallback,
-    document.getElementsByClassName("app")[0]
+    document.getElementById("app") ?? document.body
   );
 };
 

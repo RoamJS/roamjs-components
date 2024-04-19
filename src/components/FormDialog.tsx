@@ -252,6 +252,19 @@ const FormDialog = <T extends Record<string, unknown>>({
         }),
     [data, onClose, setError, setLoading]
   );
+
+  const getFieldAttributes = (
+    name: string,
+    meta: { type: string; label?: string }
+  ) => {
+    const attributes: Record<string, string> = {
+      "data-field-name": name,
+      "data-field-type": meta.type,
+    };
+    if (meta.label) attributes["data-field-label"] = meta.label;
+    return attributes;
+  };
+
   return (
     <Dialog
       isOpen={isOpen}
@@ -263,6 +276,7 @@ const FormDialog = <T extends Record<string, unknown>>({
       <div className={Classes.DIALOG_BODY}>
         {content}
         {Object.entries(fields).map(([name, meta], index) => {
+          const fieldClassName = `roamjs-form-field`;
           const setValue = useCallback(
             (value: unknown) => setData((d) => ({ ...d, [name]: value })),
             [setData, name]
@@ -279,7 +293,11 @@ const FormDialog = <T extends Record<string, unknown>>({
           }
           if (meta.type === "text") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <Label
+                key={name}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
                 <InputGroup
                   value={data[name] as string}
@@ -290,7 +308,11 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "number") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <Label
+                key={name}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
                 <NumericInput
                   value={data[name] as string}
@@ -301,7 +323,11 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "info") {
             return (
-              <div key={name} className={`roamjs-static-${name} mb-4`}>
+              <div
+                key={name}
+                className={`${fieldClassName} mb-4`}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
               </div>
             );
@@ -315,12 +341,17 @@ const FormDialog = <T extends Record<string, unknown>>({
                 }
                 key={name}
                 autoFocus={index === 0}
-                className={`roamjs-field-${name}`}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
               />
             );
           } else if (meta.type === "select") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <Label
+                key={name}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
                 <MenuItemSelect
                   activeItem={data[name] as string}
@@ -334,7 +365,11 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "page") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <Label
+                key={name}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
                 <PageInput
                   key={name}
@@ -346,7 +381,11 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "block") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <Label
+                key={name}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
                 <BlockInput
                   value={
@@ -369,7 +408,11 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "autocomplete") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <Label
+                key={name}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
                 <AutocompleteInput
                   value={data[name] as string}
@@ -381,7 +424,11 @@ const FormDialog = <T extends Record<string, unknown>>({
             );
           } else if (meta.type === "embed") {
             return (
-              <Label key={name} className={`roamjs-field-${name}`}>
+              <Label
+                key={name}
+                className={fieldClassName}
+                {...getFieldAttributes(name, meta)}
+              >
                 {meta.label}
                 <EmbedInput
                   defaultValue={meta.defaultValue}

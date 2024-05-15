@@ -7,7 +7,7 @@ import {
 } from "@blueprintjs/core";
 
 type ToastBaseProps = {
-  content?: string;
+  content?: React.ReactNode;
   timeout?: number;
   intent?: Intent;
   onDismiss?: IToastProps["onDismiss"];
@@ -50,11 +50,12 @@ export const render = ({
         onDismiss,
         action,
       }: ToastBaseProps) => {
+        const isStringContent = typeof content === "string";
         return {
           message: (
             <>
               <style>{`.${className} p { margin-bottom: 0; }`}</style>
-              <Markdown>{content}</Markdown>
+              {isStringContent ? <Markdown>{content}</Markdown> : content}
             </>
           ),
           intent,

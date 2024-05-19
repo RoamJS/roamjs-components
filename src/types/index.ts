@@ -6,7 +6,12 @@ import {
   SidebarWindowInput,
   WriteAction,
 } from "./native";
-import { RunQuery, ListActiveQueries } from "./query-builder";
+import {
+  RunQuery,
+  ListActiveQueries,
+  RunQuerySync,
+  IsDiscourseNode,
+} from "./query-builder";
 import { RegisterCommand, UnregisterCommand } from "./smartblocks";
 import type marked from "marked";
 import type Markdown from "marked-react";
@@ -231,7 +236,9 @@ declare global {
       extension: {
         queryBuilder?: {
           runQuery: RunQuery;
+          runQuerySync: RunQuerySync;
           listActiveQueries: ListActiveQueries;
+          isDiscourseNode: IsDiscourseNode;
         };
         smartblocks?: {
           registerCommand: RegisterCommand;

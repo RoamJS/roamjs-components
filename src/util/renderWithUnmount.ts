@@ -8,7 +8,8 @@ import removeFromRegistry from "./removeFromRegistry";
 const renderWithUnmount = (
   el: React.ReactElement,
   p: HTMLElement,
-  args?: OnloadArgs
+  args?: OnloadArgs,
+  blockUid?: string
 ): (() => void) => {
   const oldChildren = p.children;
   ReactDOM.render(
@@ -30,9 +31,14 @@ const renderWithUnmount = (
     const parentRemoved = ms
       .flatMap((m) => Array.from(m.removedNodes))
       .some((n) => {
-        const el = n as HTMLElement;
-        const roamBodyRemoved = el.classList.contains("roam-body-main");
-        return n === p || (roamBodyRemoved && el.contains(p));
+        const htmlEl = n as HTMLElement;
+        const roamBodyRemoved = htmlEl.classList.contains("roam-body-main");
+        const blockRemoved = blockUid && htmlEl.id.includes(blockUid);
+        return (
+          n === p ||
+          (roamBodyRemoved && htmlEl.contains(p)) ||
+          (blockRemoved && htmlEl.contains(p))
+        );
       });
     if (parentRemoved) {
       unmount(observer);

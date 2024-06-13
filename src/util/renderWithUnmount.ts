@@ -29,7 +29,11 @@ const renderWithUnmount = (
   const unmountObserver = new MutationObserver((ms, observer) => {
     const parentRemoved = ms
       .flatMap((m) => Array.from(m.removedNodes))
-      .some((n) => n === p || n.contains(p));
+      .some((n) => {
+        const el = n as HTMLElement;
+        const roamBodyRemoved = el.classList.contains("roam-body-main");
+        return n === p || (roamBodyRemoved && el.contains(p));
+      });
     if (parentRemoved) {
       unmount(observer);
     }

@@ -60,8 +60,7 @@ export const createComponentRender =
             <Fc blockUid={blockUid} />
           </ComponentContainer>,
           b.parentElement,
-          args,
-          blockUid
+          args
         );
       }
     }

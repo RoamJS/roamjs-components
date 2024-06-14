@@ -8,8 +8,7 @@ import removeFromRegistry from "./removeFromRegistry";
 const renderWithUnmount = (
   el: React.ReactElement,
   p: HTMLElement,
-  args?: OnloadArgs,
-  blockUid?: string
+  args?: OnloadArgs
 ): (() => void) => {
   const oldChildren = p.children;
   ReactDOM.render(
@@ -28,20 +27,16 @@ const renderWithUnmount = (
     }
   };
   const unmountObserver = new MutationObserver((ms, observer) => {
+    const addedNodes: Node[] = [];
     const parentRemoved = ms
-      .flatMap((m) => Array.from(m.removedNodes))
-      .some((n) => {
-        const htmlEl = n as HTMLElement;
-        const roamBodyRemoved = htmlEl.classList.contains("roam-body-main");
-        const blockRemoved = blockUid && htmlEl.id.includes(blockUid);
-        return (
-          n === p ||
-          (roamBodyRemoved && htmlEl.contains(p)) ||
-          (blockRemoved && htmlEl.contains(p))
-        );
-      });
+      .flatMap((m) => {
+        addedNodes.push(...Array.from(m.addedNodes));
+        return Array.from(m.removedNodes);
+      })
+      .some((n) => n === p || n.contains(p));
     if (parentRemoved) {
-      unmount(observer);
+      const isNodeAdded = addedNodes.some((n) => n.contains(p));
+      if (!isNodeAdded) unmount(observer);
     }
   });
   unmountObserver.observe(document.body, { childList: true, subtree: true });

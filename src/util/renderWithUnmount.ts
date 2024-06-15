@@ -27,11 +27,16 @@ const renderWithUnmount = (
     }
   };
   const unmountObserver = new MutationObserver((ms, observer) => {
+    const addedNodes: Node[] = [];
     const parentRemoved = ms
-      .flatMap((m) => Array.from(m.removedNodes))
+      .flatMap((m) => {
+        addedNodes.push(...Array.from(m.addedNodes));
+        return Array.from(m.removedNodes);
+      })
       .some((n) => n === p || n.contains(p));
     if (parentRemoved) {
-      unmount(observer);
+      const isNodeAdded = addedNodes.some((n) => n.contains(p));
+      if (!isNodeAdded) unmount(observer);
     }
   });
   unmountObserver.observe(document.body, { childList: true, subtree: true });

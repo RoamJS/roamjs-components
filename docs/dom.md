@@ -1,6 +1,6 @@
 # DOM Manipulation
 
-https://github.com/RoamJS/roamjs-components/blob/main/src/dom`
+https://github.com/RoamJS/roamjs-components/blob/main/src/dom
 
 The `https://github.com/RoamJS/roamjs-components/blob/main/src/dom` directory contains utility functions and constants for interacting with the Document Object Model (DOM) in the context of Roam Research. These utilities facilitate various operations, including adding commands, observing DOM changes, retrieving data, generating URLs, and parsing block content.
 

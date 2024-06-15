@@ -2,7 +2,7 @@
 
 https://github.com/RoamJS/roamjs-components/blob/main/src/writes
 
-`https://github.com/RoamJS/roamjs-components/blob/main/src/writes` contains functions that handle various write operations in a Roam-like note-taking application. These functions include clearing, creating, updating, and deleting blocks, as well as creating pages and managing sidebar operations.
+`https://github.com/RoamJS/roamjs-components/blob/main/src/writes` contains functions that handle various write operations in a Roam. These functions include clearing, creating, updating, and deleting blocks, as well as creating pages and managing sidebar operations.
 
 - [`clearBlockById`](https://github.com/RoamJS/roamjs-components/blob/main/src/writes/clearBlockById.ts#L4): Clears the content of a block by its ID. It uses [`getUidsFromId`](https://github.com/RoamJS/roamjs-components/blob/main/src/dom/getUidsFromId.ts#L1) to extract the block UID and then calls [`submitActions`](https://github.com/RoamJS/roamjs-components/blob/main/src/writes/submitActions.ts#L19) to update the block content to an empty string.
 - [`clearBlockByUid`](https://github.com/RoamJS/roamjs-components/blob/main/src/writes/clearBlockByUid.ts#L3): Clears the content of a block by its UID. It directly calls [`submitActions`](https://github.com/RoamJS/roamjs-components/blob/main/src/writes/submitActions.ts#L19) with an update action to set the block content to an empty string.

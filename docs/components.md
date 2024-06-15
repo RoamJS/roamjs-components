@@ -16,9 +16,7 @@ The [`ExtensionApiContext`](https://github.com/RoamJS/roamjs-components/blob/mai
 
 [See More](https://wiki.mutable.ai/RoamJS/roamjs-components#extension-api-context)
 
-## Utility Components
-
-Utility components are located in `https://github.com/RoamJS/roamjs-components/blob/main/src/components/util` and provide additional functionality within the Roam Research application. Key components include:
+## Additional Components
 
 - **AutocompleteInput**: Provides an autocomplete input field with fuzzy string matching and customizable options.
 - **BlockErrorBoundary**: A React error boundary that handles errors within a specific block of content.

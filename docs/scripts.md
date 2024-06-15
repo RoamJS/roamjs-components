@@ -4,7 +4,7 @@ https://github.com/RoamJS/roamjs-components/blob/main/src/scripts
 
 The `https://github.com/RoamJS/roamjs-components/blob/main/src/scripts` directory contains two main files: [`index.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/dom/index.ts#L0) and [`publishToRoamDepot.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/scripts/publishToRoamDepot.ts#L0).
 
-- The [`index.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/dom/index.ts#L0) file serves as an entry point for the `@samepage/scripts/cli` module. This module likely provides command-line interface (CLI) functionality for the project. The script dynamically imports the `@samepage/scripts/cli` module, allowing for lazy loading, which can improve performance and startup time.
+- The [`index.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/dom/index.ts#L0) file serves as an entry point for the `@samepage/scripts/cli` module. This module provides command-line interface (CLI) functionality for the project.
 
 - The [`publishToRoamDepot.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/scripts/publishToRoamDepot.ts#L0) file contains the [`publishToRoamDepot`](https://github.com/RoamJS/roamjs-components/blob/main/src/scripts/publishToRoamDepot.ts#L15) function, which is responsible for publishing a Roam extension to the Roam Depot. The function performs several key tasks:
   - Checks for existing pull requests for the current branch in the Roam Depot repository using the GitHub API.

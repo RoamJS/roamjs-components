@@ -14,11 +14,11 @@ Utility functions for interacting with the Roam Research database are provided i
 
 These utility functions are essential for efficiently interacting with the Roam Research database, enabling complex queries and data manipulations. For more detailed information on specific operations, refer to the respective sections on
 
-- [Block Retrieval](https://wiki.mutable.ai/RoamJS/roamjs-components#block-retrieval),
-- [Page Retrieval](https://wiki.mutable.ai/RoamJS/roamjs-components#page-retrieval),
-- [User Information](https://wiki.mutable.ai/RoamJS/roamjs-components#user-information),
-- [Block Hierarchy](https://wiki.mutable.ai/RoamJS/roamjs-components#block-hierarchy),
-- [Block Metadata](https://wiki.mutable.ai/RoamJS/roamjs-components#block-metadata),
-- [Attribute Retrieval](https://wiki.mutable.ai/RoamJS/roamjs-components#attribute-retrieval).
-- [Datalog Compilation](https://wiki.mutable.ai/RoamJS/roamjs-components#datalog-compilation).
-- [Utility Functions](https://wiki.mutable.ai/RoamJS/roamjs-components#utility-functions).
+- [Block Retrieval](https://wiki.mutable.ai/RoamJS/roamjs-components#block-retrieval)
+- [Page Retrieval](https://wiki.mutable.ai/RoamJS/roamjs-components#page-retrieval)
+- [User Information](https://wiki.mutable.ai/RoamJS/roamjs-components#user-information)
+- [Block Hierarchy](https://wiki.mutable.ai/RoamJS/roamjs-components#block-hierarchy)
+- [Block Metadata](https://wiki.mutable.ai/RoamJS/roamjs-components#block-metadata)
+- [Attribute Retrieval](https://wiki.mutable.ai/RoamJS/roamjs-components#attribute-retrieval)
+- [Datalog Compilation](https://wiki.mutable.ai/RoamJS/roamjs-components#datalog-compilation)
+- [Utility Functions](https://wiki.mutable.ai/RoamJS/roamjs-components#utility-functions)

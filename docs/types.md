@@ -15,14 +15,14 @@ The [`native.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/type
 - **User Settings**: The [`UserSettings`](https://github.com/RoamJS/roamjs-components/blob/main/src/types/native.ts#L363) type represents the user settings for the Roam Research application.
 - **Sidebar Functionality**: Types like [`SidebarWindowInput`](https://github.com/RoamJS/roamjs-components/blob/main/src/types/native.ts#L376) and [`SidebarBlockWindow`](https://github.com/RoamJS/roamjs-components/blob/main/src/types/native.ts#L381) model the sidebar functionality of the Roam Research application.
 
-The [`query-builder.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/types/query-builder.ts#L0) file defines types related to querying and working with data in a Roam-like environment. Key types include:
+The [`query-builder.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/types/query-builder.ts#L0) file defines types related to querying and working with data in [Query Builder](https://github.com/RoamJS/query-builder). Key types include:
 
 - **Result**: Represents the result of a query, containing fields like [`text`](https://github.com/RoamJS/roamjs-components/blob/main/src/marked/index.ts#L211) and [`uid`](https://github.com/RoamJS/roamjs-components/blob/main/src/util/getOauth.ts#L45).
 - **RunQuery** and **RunQuerySync**: Function types that execute a query and return the results.
 - **ListActiveQueries**: A function type that returns active queries.
 - **IsDiscourseNode**: A function type that determines if a node is a discourse node.
 
-The [`smartblocks.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/types/smartblocks.ts#L0) file defines types and interfaces used in the SmartBlocks functionality. Key types include:
+The [`smartblocks.ts`](https://github.com/RoamJS/roamjs-components/blob/main/src/types/smartblocks.ts#L0) file defines types and interfaces used in the [SmartBlocks](https://github.com/RoamJS/smartblocks) extension. Key types include:
 
 - **CommandOutput**: Represents the output of a command handler.
 - **CommandHandler**: A function type that handles commands.

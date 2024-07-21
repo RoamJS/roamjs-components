@@ -129,6 +129,20 @@ const publishToRoamDepot = async ({
     execSync("git add --all", { stdio: "inherit" });
     execSync(`git commit -m "${title}"`, { stdio: "inherit" });
     execSync(`git push origin ${branch} -f`, { stdio: "inherit" });
+    console.log("Creating pull request to Roam-Research/roam-depot:");
+    console.log(`head: ${owner}:${branch}`);
+    console.log(`base: main`);
+    console.log(`title: ${title}`);
+    const options = opts();
+    const authHeader = options.headers.Authorization;
+    const maskedAuthHeader = authHeader
+      ? `${authHeader.slice(0, 4)}****${authHeader.slice(-4)}`
+      : undefined;
+    console.log("Options:", {
+      headers: {
+        Authorization: maskedAuthHeader,
+      },
+    });
     const url = await axios
       .post(
         `https://api.github.com/repos/Roam-Research/roam-depot/pulls`,

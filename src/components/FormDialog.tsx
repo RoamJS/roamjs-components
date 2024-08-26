@@ -316,7 +316,7 @@ const FormDialog = <T extends Record<string, unknown>>({
                 {meta.label}
                 <NumericInput
                   value={data[name] as string}
-                  onChange={(e) => setValue(e.target.value)}
+                  onValueChange={(v) => setValue(v)}
                   autoFocus={index === 0}
                 />
               </Label>

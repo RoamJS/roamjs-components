@@ -128,6 +128,14 @@ const runExtension = (
       })
       .catch((e) => {
         const error = e as Error;
+        if (getNodeEnv() === "development") {
+          renderToast({
+            id: "roamjs-extension-error",
+            content: `Failed to load ${extensionId} extension.`,
+            intent: "danger",
+          });
+          return;
+        }
         apiPost({
           domain: "https://api.samepage.network",
           path: "errors",

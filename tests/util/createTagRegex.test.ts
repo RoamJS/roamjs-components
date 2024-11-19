@@ -12,6 +12,7 @@ test("createTagRegex - Matches tag with special characters", () => {
   const regex = createTagRegex("test.*()+?[]");
   expect("[[test.*()+?[]]]").toMatch(regex);
   expect("#test.*()+?[]").toMatch(regex);
+  expect("#[[test.*()+?[]]]").toMatch(regex);
 });
 
 test("createTagRegex - Complex nested structures", () => {
@@ -26,6 +27,7 @@ test("createTagRegex - Complex nested structures", () => {
     const regex = createTagRegex(content);
     expect(`[[${content}]]`).toMatch(regex);
     expect(`#${content}`).toMatch(regex);
+    expect(`#[[${content}]]`).toMatch(regex);
   });
 });
 
@@ -49,6 +51,7 @@ test("createTagRegex - Handles special regex characters", () => {
     const regex = createTagRegex(tag);
     expect(`[[${tag}]]`).toMatch(regex);
     expect(`#${tag}`).toMatch(regex);
+    expect(`#[[${tag}]]`).toMatch(regex);
   });
 });
 

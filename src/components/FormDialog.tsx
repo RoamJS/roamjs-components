@@ -38,6 +38,8 @@ type Props<T> = {
   submitButtonText?: string;
   cancelButtonText?: string;
   enforceFocus?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
   fields?: Record<
     string,
     (
@@ -217,6 +219,8 @@ const FormDialog = <T extends Record<string, unknown>>({
   submitButtonText = "Submit",
   cancelButtonText = "Cancel",
   enforceFocus,
+  className,
+  style,
 }: RoamOverlayProps<Props<T>>) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -272,6 +276,8 @@ const FormDialog = <T extends Record<string, unknown>>({
       title={title}
       enforceFocus={!title || enforceFocus}
       autoFocus={!title}
+      className={className}
+      style={style}
     >
       <div className={Classes.DIALOG_BODY}>
         {content}

@@ -39,6 +39,7 @@ export type NumberField = {
 export type FlagField = {
   type: "flag";
   defaultValue?: boolean;
+  disabled?: boolean;
   options?: {
     onChange?: (f: boolean, e: React.FormEvent<HTMLInputElement>) => void;
   };

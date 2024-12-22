@@ -11,11 +11,13 @@ const FlagPanel: FieldPanel<FlagField> = ({
   order,
   description,
   options = {},
+  disabled = false,
 }) => {
   const [uid, setUid] = useState(initialUid);
   return (
     <Checkbox
       checked={!!uid}
+      disabled={disabled}
       onChange={(e) => {
         const { checked } = e.target as HTMLInputElement;
         if (checked) {

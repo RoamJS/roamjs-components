@@ -13,7 +13,7 @@ import type { Field, UnionField } from "./ConfigPanels/types";
 import { Brand } from "./ConfigPanels/getBrandColors";
 import { InputTextNode } from "../types";
 
-type ConfigTab = {
+export type ConfigTab = {
   id: string;
   toggleable?: boolean | "premium";
   onEnable?: () => void;

@@ -15,17 +15,17 @@ const extensionDeprecatedWarning = async ({
   extensionId: string;
   reason: string;
 }): Promise<void> => {
-  const configUid = getPageUidByPageTitle(extensionId);
-  const config = getBasicTreeByParentUid(configUid);
+  const configUid = await getPageUidByPageTitle(extensionId);
+  const config = await getBasicTreeByParentUid(configUid);
   const donotShowAgainUid = getSubTree({
     tree: config,
     key: "Do not show again",
   }).uid;
   if (!donotShowAgainUid) {
     const blocks = (
-      window.roamAlphaAPI.data.fast.q(
+      (await window.roamAlphaAPI.data.backend.q(
         `[:find (pull ?roamjs [:block/uid]) :where [?block :block/string ?contents] [(clojure.string/includes? ?contents  "https://roamjs.com/${extensionId}")] [?roamjs :block/children ?block]]`
-      ) as [PullBlock][]
+      )) as [PullBlock][]
     ).map(([block]) => block[":block/uid"] || "");
     renderSimpleAlert({
       content: `RoamJS will soon be deprecating and then removing the ${idToTitle(

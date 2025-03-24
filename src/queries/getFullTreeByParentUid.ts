@@ -36,10 +36,9 @@ const formatRoamNode = (n: PullBlock | null): TreeNode => {
   };
 };
 
-const getFullTreeByParentUid = (uid: string): TreeNode =>
-  formatRoamNode(
-    window.roamAlphaAPI.pull(
-      `[
+const getFullTreeByParentUid = async (uid: string): Promise<TreeNode> => {
+  const result = await window.roamAlphaAPI.data.pull(
+    `[
       :block/string 
       :node/title 
       :block/uid 
@@ -53,8 +52,9 @@ const getFullTreeByParentUid = (uid: string): TreeNode =>
       {:block/parents [:children/view-type]}
       {:block/children ...}
     ]`,
-      [`:block/uid`, uid]
-    )
+    [`:block/uid`, uid]
   );
+  return formatRoamNode(result);
+};
 
 export default getFullTreeByParentUid;

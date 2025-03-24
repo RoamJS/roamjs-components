@@ -1,8 +1,10 @@
 import type { UserSettings } from "../types";
 
-const getSettingsByEmail = (email: string): UserSettings =>
-  (window.roamAlphaAPI.q(
+const getSettingsByEmail = async (email: string): Promise<UserSettings> => {
+  const result = await window.roamAlphaAPI.data.backend.q(
     `[:find ?settings :where[?e :user/settings ?settings] [?e :user/email "${email}"]]`
-  )?.[0]?.[0] as UserSettings) || {};
+  );
+  return (result?.[0]?.[0] as UserSettings) || {};
+};
 
 export default getSettingsByEmail;

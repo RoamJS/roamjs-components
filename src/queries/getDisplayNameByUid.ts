@@ -1,6 +1,8 @@
-const getDisplayNameByUid = (uid: string): string =>
-  (window.roamAlphaAPI.q(
+const getDisplayNameByUid = async (uid: string): Promise<string> => {
+  const result = await window.roamAlphaAPI.data.backend.q(
     `[:find ?s :where [?e :user/uid "${uid}"] [?e :user/display-page ?p] [?p :node/title ?s]]`
-  )?.[0]?.[0] as string) || "";
+  );
+  return (result?.[0]?.[0] as string) || "";
+};
 
 export default getDisplayNameByUid;

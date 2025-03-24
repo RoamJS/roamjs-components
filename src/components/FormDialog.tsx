@@ -25,7 +25,7 @@ import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import nanoid from "nanoid";
 import { getUids } from "../dom";
-import { InputTextNode, PullBlock } from "../types";
+import { InputTextNode } from "../types";
 import getFullTreeByParentUid from "../queries/getFullTreeByParentUid";
 import createPage from "../writes/createPage";
 import { createBlock } from "../writes";
@@ -135,8 +135,11 @@ const EmbedInput = ({
         });
         if (autoFocus) realFocus();
       });
-      // In the future, we can return the whole tree of data from `parentUid`
-      onChange(() => getFullTreeByParentUid(parentUid).children);
+      const updateTreeData = async () => {
+        const tree = await getFullTreeByParentUid(parentUid);
+        onChange(() => tree.children);
+      };
+      updateTreeData();
       return () => {
         window.roamAlphaAPI.deletePage({ page: { uid: parentUid } });
       };
@@ -166,15 +169,15 @@ const EmbedInput = ({
         className="rounded-md bg-white font-normal mt-1 bp3-input h-32 overflow-scroll roamjs-form-embed py-2 px-4"
         tabIndex={0}
         onFocus={realFocus}
-        onKeyDown={(e) => {
+        onKeyDown={async (e) => {
           if (e.key !== "Tab") return;
           const { blockUid } = getUids(e.target as HTMLTextAreaElement);
           if (!blockUid) return;
           const { [":block/order"]: order, [":block/parents"]: parents } =
-            window.roamAlphaAPI.pull(
+            await window.roamAlphaAPI.pull(
               "[:block/order {:block/parents [:block/uid]}]",
               [":block/uid", blockUid]
-            ) as PullBlock;
+            );
           if (
             !(
               order === 0 &&
@@ -207,6 +210,22 @@ const EmbedInput = ({
       />
     </>
   );
+};
+
+const AsyncBlockInput = ({
+  value,
+  setValue,
+  autoFocus,
+}: {
+  value: string;
+  setValue: (text: string, uid?: string) => Promise<void>;
+  autoFocus: boolean;
+}) => {
+  const [text, setText] = useState(value);
+  useEffect(() => {
+    getTextByBlockUid(value).then(setText);
+  }, [value]);
+  return <BlockInput value={text} setValue={setValue} autoFocus={autoFocus} />;
 };
 
 const FormDialog = <T extends Record<string, unknown>>({
@@ -393,21 +412,16 @@ const FormDialog = <T extends Record<string, unknown>>({
                 {...getFieldAttributes(name, meta)}
               >
                 {meta.label}
-                <BlockInput
-                  value={
-                    getTextByBlockUid(data[name] as string) ||
-                    (data[name] as string)
-                  }
-                  setValue={(text, uid) =>
-                    setValue(
-                      window.roamAlphaAPI.pull("[:db/id]", [
-                        ":block/uid",
-                        uid || "",
-                      ])
-                        ? uid
-                        : text
-                    )
-                  }
+                <AsyncBlockInput
+                  value={data[name] as string}
+                  setValue={async (text, uid) => {
+                    if (!uid) return setValue(text);
+                    const result = await window.roamAlphaAPI.pull("[:db/id]", [
+                      ":block/uid",
+                      uid,
+                    ]);
+                    setValue(result ? uid : text);
+                  }}
                   autoFocus={index === 0}
                 />
               </Label>

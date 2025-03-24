@@ -1,7 +1,7 @@
-const getPageUidByPageTitle = (title: string): string => {
+const getPageUidByPageTitle = async (title: string): Promise<string> => {
   if (!title) return "";
   return (
-    window.roamAlphaAPI.pull("[:block/uid]", [":node/title", title])?.[
+    (await window.roamAlphaAPI.pull("[:block/uid]", [":node/title", title]))?.[
       ":block/uid"
     ] || ""
   );

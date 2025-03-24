@@ -5,7 +5,13 @@ import {
   MenuItem,
   InputGroup,
 } from "@blueprintjs/core";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import getAllBlockUidsAndTexts from "../queries/getAllBlockUidsAndTexts";
 import useArrowKeyDown from "../hooks/useArrowKeyDown";
 
@@ -29,16 +35,23 @@ const BlockInput = ({
   setValue: (q: string, uid?: string) => void;
   onBlur?: (v: string) => void;
   onConfirm?: () => void;
-  getAllBlocks?: () => { text: string; uid: string }[];
+  getAllBlocks?: () => Promise<{ text: string; uid: string }[]>;
   autoFocus?: boolean;
 }): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
+  const [allBlocks, setAllBlocks] = useState<{ text: string; uid: string }[]>(
+    []
+  );
   const open = useCallback(() => setIsOpen(true), [setIsOpen]);
   const close = useCallback(() => setIsOpen(false), [setIsOpen]);
-  const allBlocks = useMemo(getAllBlocks, []);
+
+  useEffect(() => {
+    getAllBlocks().then(setAllBlocks);
+  }, [getAllBlocks]);
+
   const items = useMemo(
     () => (value && isOpen ? searchBlocksByString(value, allBlocks) : []),
-    [value, allBlocks]
+    [value, allBlocks, isOpen]
   );
   const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);

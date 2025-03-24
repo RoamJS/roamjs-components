@@ -10,20 +10,35 @@ import { Chrono, Parser } from "chrono-node";
 import { ParsingComponents } from "chrono-node/dist/results";
 import getCurrentUserUid from "../queries/getCurrentUserUid";
 
+type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+let cachedWeekStartsOn: WeekDay | null = null;
+
+const getWeekStartsOn = async (): Promise<WeekDay> => {
+  const weekStartsOn = (
+    await window.roamAlphaAPI.pull("[:user/settings]", [
+      ":user/uid",
+      getCurrentUserUid(),
+    ])
+  )?.[":user/settings"]?.[":first-day-of-week"] as WeekDay;
+  cachedWeekStartsOn = weekStartsOn || 0;
+  return cachedWeekStartsOn;
+};
+
 const startOfWeek = (date: Date) => {
-  const weekStartsOn = window.roamAlphaAPI.pull("[:user/settings]", [
-    ":user/uid",
-    getCurrentUserUid(),
-  ])?.[":user/settings"]?.[":first-day-of-week"];
-  return dateFnsStartOfWeek(date, weekStartsOn ? { weekStartsOn } : undefined);
+  if (cachedWeekStartsOn === null) {
+    getWeekStartsOn().catch(console.error);
+    return dateFnsStartOfWeek(date);
+  }
+  return dateFnsStartOfWeek(date, { weekStartsOn: cachedWeekStartsOn });
 };
 
 const endOfWeek = (date: Date) => {
-  const weekStartsOn = window.roamAlphaAPI.pull("[:user/settings]", [
-    ":user/uid",
-    getCurrentUserUid(),
-  ])?.[":user/settings"]?.[":first-day-of-week"];
-  return dateFnsEndOfWeek(date, weekStartsOn ? { weekStartsOn } : undefined);
+  if (cachedWeekStartsOn === null) {
+    getWeekStartsOn().catch(console.error);
+    return dateFnsEndOfWeek(date);
+  }
+  return dateFnsEndOfWeek(date, { weekStartsOn: cachedWeekStartsOn });
 };
 
 const ORDINAL_WORD_DICTIONARY: { [word: string]: number } = {

@@ -1,12 +1,9 @@
-import getCurrentUser from "./getCurrentUser";
+import getCurrentUserUid from "./getCurrentUserUid";
+import getDisplayNameByUid from "./getDisplayNameByUid";
 
 const getCurrentUserDisplayName = (): string => {
-  const userArray = getCurrentUser();
-  const uidIndex = userArray.findIndex((s) => s === "~:display-name");
-  if (uidIndex > 0) {
-    return userArray[uidIndex + 1] || "";
-  }
-  return "";
+  const uid = getCurrentUserUid();
+  return getDisplayNameByUid(uid);
 };
 
 export default getCurrentUserDisplayName;

@@ -1,6 +1,6 @@
 import getNthChildUidByBlockUid from "./getNthChildUidByBlockUid";
 
-const getFirstChildUidByBlockUid = (blockUid: string): string =>
-  getNthChildUidByBlockUid({ blockUid, order: 0 });
+const getFirstChildUidByBlockUid = async (blockUid: string): Promise<string> =>
+  await getNthChildUidByBlockUid({ blockUid, order: 0 });
 
 export default getFirstChildUidByBlockUid;

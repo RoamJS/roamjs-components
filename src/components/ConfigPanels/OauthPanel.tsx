@@ -1,5 +1,5 @@
 import { Button, Checkbox } from "@blueprintjs/core";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import getBasicTreeByParentUid from "../../queries/getBasicTreeByParentUid";
 import getShallowTreeByParentUid from "../../queries/getShallowTreeByParentUid";
 import localStorageGet from "../../util/localStorageGet";
@@ -10,31 +10,38 @@ import Description from "../Description";
 import ExternalLogin from "../ExternalLogin";
 import type { OauthField, FieldPanel } from "./types";
 
+type Accounts = { text: string; uid: string; data: string };
+
 const OauthPanel: FieldPanel<OauthField> = ({ uid, parentUid, options }) => {
   const key = `oauth-${options.service}`;
   const [useLocal, setUseLocal] = useState(!!localStorageGet(key));
-  const [accounts, setAccounts] = useState<
-    { text: string; uid: string; data: string }[]
-  >(() =>
-    useLocal
-      ? JSON.parse(localStorageGet(key) as string)
-      : uid
-      ? getBasicTreeByParentUid(uid).map((v) => ({
-          text: v.children[0]?.text ? v.text : "Default Account",
-          uid: v.uid,
-          data: v.children[0]?.text || v.text,
-        }))
-      : []
+  const [accounts, setAccounts] = useState<Accounts[]>(() =>
+    useLocal ? JSON.parse(localStorageGet(key) as string) : []
   );
+
+  useEffect(() => {
+    if (!useLocal && uid) {
+      getBasicTreeByParentUid(uid).then((items) => {
+        setAccounts(
+          items.map((v) => ({
+            text: v.children[0]?.text ? v.text : "Default Account",
+            uid: v.uid,
+            data: v.children[0]?.text || v.text,
+          }))
+        );
+      });
+    }
+  }, [uid, useLocal]);
+
   const onCheck = useCallback(
     (e) => {
       const checked = (e.target as HTMLInputElement).checked;
       setUseLocal(checked);
       if (checked) {
         if (uid) {
-          getShallowTreeByParentUid(uid).forEach(({ uid: u }) =>
-            deleteBlock(u)
-          );
+          getShallowTreeByParentUid(uid).then((items) => {
+            items.forEach(({ uid: u }) => deleteBlock(u));
+          });
         }
         localStorageSet(key, JSON.stringify(accounts));
       } else {

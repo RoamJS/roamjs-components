@@ -2,9 +2,9 @@ import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getPageTitleByHtmlElement from "./getPageTitleByHtmlElement";
 import getUids from "./getUids";
 
-const getDropUidOffset = (
+const getDropUidOffset = async (
   d: HTMLDivElement
-): { parentUid: string; offset: number } => {
+): Promise<{ parentUid: string; offset: number }> => {
   const separator = d.parentElement;
   const childrenContainer = separator?.parentElement;
   const children = Array.from(childrenContainer?.children || []);
@@ -23,7 +23,7 @@ const getDropUidOffset = (
   const parentUid = parentBlock
     ? getUids(parentBlock).blockUid
     : childrenContainer
-    ? getPageUidByPageTitle(
+    ? await getPageUidByPageTitle(
         getPageTitleByHtmlElement(childrenContainer)?.textContent || ""
       )
     : "";

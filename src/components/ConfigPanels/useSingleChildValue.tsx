@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import getFirstChildUidByBlockUid from "../../queries/getFirstChildUidByBlockUid";
 import getTextByBlockUid from "../../queries/getTextByBlockUid";
 
@@ -20,12 +20,29 @@ const useSingleChildValue = <T extends string | number | Date>({
   toStr: (t: T) => string;
 }): { value: T; onChange: (v: T) => void } => {
   const [uid, setUid] = useState(initialUid);
-  const [valueUid, setValueUid] = useState(
-    uid && getFirstChildUidByBlockUid(uid)
-  );
-  const [value, setValue] = useState(
-    (valueUid && transform(getTextByBlockUid(valueUid))) || defaultValue
-  );
+  const [valueUid, setValueUid] = useState<string | undefined>(undefined);
+  const [value, setValue] = useState(defaultValue);
+
+  useEffect(() => {
+    if (uid) {
+      const loadValueUid = async () => {
+        const firstChildUid = await getFirstChildUidByBlockUid(uid);
+        setValueUid(firstChildUid);
+      };
+      loadValueUid();
+    }
+  }, [uid]);
+
+  useEffect(() => {
+    if (valueUid) {
+      const loadValue = async () => {
+        const text = await getTextByBlockUid(valueUid);
+        setValue(transform(text));
+      };
+      loadValue();
+    }
+  }, [valueUid, transform]);
+
   const onChange = useCallback(
     (v: T) => {
       setValue(v);

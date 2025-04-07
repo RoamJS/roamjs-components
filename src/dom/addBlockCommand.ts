@@ -18,16 +18,16 @@ const addBlockCommand = ({
   const textareaRef: { current: HTMLTextAreaElement | null } = {
     current: null,
   };
-  const loadBlockUid = (pageUid: string) => {
+  const loadBlockUid = async (pageUid: string) => {
     if (textareaRef.current) {
       const uid = getUids(textareaRef.current).blockUid;
-      const parentUid = getParentUidByBlockUid(uid);
-      const text = getTextByBlockUid(uid);
+      const parentUid = await getParentUidByBlockUid(uid);
+      const text = await getTextByBlockUid(uid);
       if (text.length) {
         return createBlock({
           node: { text: "Loading..." },
           parentUid,
-          order: getOrderByBlockUid(uid) + 1,
+          order: (await getOrderByBlockUid(uid)) + 1,
         });
       }
       return updateBlock({
@@ -38,7 +38,7 @@ const addBlockCommand = ({
     return createBlock({
       node: { text: "Loading..." },
       parentUid: pageUid,
-      order: getChildrenLengthByPageUid(pageUid),
+      order: await getChildrenLengthByPageUid(pageUid),
     });
   };
   createHTMLObserver({

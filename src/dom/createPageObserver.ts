@@ -27,11 +27,13 @@ const createPageObserver = (
       added: false,
     }));
     if (addedNodes.length || removedNodes.length) {
-      const blockUids = new Set(getBlockUidsByPageTitle(name));
-      [...removedNodes, ...addedNodes]
-        .filter(({ blockUid }) => blockUids.has(blockUid))
-        .forEach(({ blockUid, added }) => callback(blockUid, added));
+      getBlockUidsByPageTitle(name).then((blockUids) => {
+        const blockUidSet = new Set(blockUids);
+        [...removedNodes, ...addedNodes]
+          .filter(({ blockUid }) => blockUidSet.has(blockUid))
+          .forEach(({ blockUid, added }) => callback(blockUid, added));
+      });
     }
-  })
+  });
 
 export default createPageObserver;

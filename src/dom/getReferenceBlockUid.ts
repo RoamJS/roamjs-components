@@ -2,16 +2,16 @@ import getBlockUidsReferencingBlock from "../queries/getBlockUidsReferencingBloc
 import getDomRefs from "./getDomRefs";
 import getUids from "./getUids";
 
-const getReferenceBlockUid = (
+const getReferenceBlockUid = async (
   e: HTMLElement,
   className: "rm-block-ref" | "rm-alias--block"
-): string => {
+): Promise<string> => {
   const parent = e.closest(".roam-block") as HTMLDivElement;
   if (!parent) {
     return "";
   }
   const { blockUid } = getUids(parent);
-  const childRefs = getBlockUidsReferencingBlock(blockUid);
+  const childRefs = await getBlockUidsReferencingBlock(blockUid);
   const refs = childRefs.length ? childRefs : getDomRefs(blockUid);
   const index = Array.from(parent.getElementsByClassName(className)).findIndex(
     (el) => el === e || el.contains(e)

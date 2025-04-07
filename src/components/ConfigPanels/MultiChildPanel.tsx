@@ -1,5 +1,5 @@
 import { Button, Label } from "@blueprintjs/core";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import getShallowTreeByParentUid from "../../queries/getShallowTreeByParentUid";
 import idToTitle from "../../util/idToTitle";
 import Description from "../Description";
@@ -22,10 +22,19 @@ const MultiChildPanel: FieldPanel<
   InputComponent,
 }) => {
   const [uid, setUid] = useState(initialUid);
-  const [texts, setTexts] = useState(() =>
-    uid ? getShallowTreeByParentUid(uid) : []
-  );
+  const [texts, setTexts] = useState<{ text: string; uid: string }[]>([]);
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    const loadTexts = async () => {
+      if (uid) {
+        const items = await getShallowTreeByParentUid(uid);
+        setTexts(items);
+      }
+    };
+    loadTexts();
+  }, [uid]);
+
   return (
     <>
       <Label>

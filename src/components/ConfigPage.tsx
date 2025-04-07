@@ -1,5 +1,11 @@
 import { Card, Tab, Tabs } from "@blueprintjs/core";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import ReactDOM from "react-dom";
 import createHTMLObserver from "../dom/createHTMLObserver";
 import createBlock from "../writes/createBlock";
@@ -11,7 +17,7 @@ import localStorageGet from "../util/localStorageGet";
 import idToTitle from "../util/idToTitle";
 import type { Field, UnionField } from "./ConfigPanels/types";
 import { Brand } from "./ConfigPanels/getBrandColors";
-import { InputTextNode } from "../types";
+import { InputTextNode, RoamBasicNode } from "../types";
 
 export type ConfigTab = {
   id: string;
@@ -61,12 +67,25 @@ const FieldTabs = ({
     });
     return newUid;
   }, [pageUid, uid, id, toggleable]);
-  const childUids = Object.fromEntries(
-    getShallowTreeByParentUid(parentUid).map(({ text, uid }) => [
-      text.toLowerCase().trim(),
-      uid,
-    ])
-  );
+
+  const [childUids, setChildUids] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const loadChildUids = async () => {
+      try {
+        const tree = await getShallowTreeByParentUid(parentUid);
+        setChildUids(
+          Object.fromEntries(
+            tree.map(({ text, uid }) => [text.toLowerCase().trim(), uid])
+          )
+        );
+      } catch (error) {
+        console.error("Failed to load child UIDs:", error);
+      }
+    };
+    loadChildUids();
+  }, [parentUid]);
+
   const [selectedTabId, setSelectedTabId] = useState(
     fields.length && typeof toggleable !== "string"
       ? fields[0].title
@@ -121,11 +140,16 @@ const ConfigPage = ({
     ? config.tabs.filter((t) => t.fields.length || t.toggleable)
     : [{ fields: config, id: "home" }];
   const [selectedTabId, setSelectedTabId] = useState(userTabs[0]?.id);
+  const [tree, setTree] = useState<RoamBasicNode[]>([]);
+
+  useEffect(() => {
+    getBasicTreeByParentUid(pageUid).then(setTree);
+  }, [pageUid]);
+
   const onTabsChange = useCallback(
     (tabId: string) => setSelectedTabId(tabId),
     [setSelectedTabId]
   );
-  const tree = getBasicTreeByParentUid(pageUid);
 
   // first character trimmed intentionally for the `v` below
   const titleRef = useRef<HTMLDivElement>(null);
@@ -248,10 +272,10 @@ const createConfigPage = ({
   });
 };
 
-export const render = ({
+export const render = async ({
   h,
   title,
-  pageUid = getPageUidByPageTitle(title),
+  pageUid,
   config,
 }: {
   h: HTMLHeadingElement;
@@ -259,7 +283,7 @@ export const render = ({
   pageUid?: string;
   config: Config;
 }) => {
-  const uid = getPageUidByPageTitle(title);
+  const uid = pageUid || (await getPageUidByPageTitle(title));
   const attribute = `data-roamjs-${uid}`;
   const containerParent = h.parentElement?.parentElement;
   if (containerParent && !containerParent.hasAttribute(attribute)) {
@@ -272,7 +296,7 @@ export const render = ({
       h.parentElement?.nextElementSibling || null
     );
     ReactDOM.render(
-      <ConfigPage id={configPageId} config={config} pageUid={pageUid} />,
+      <ConfigPage id={configPageId} config={config} pageUid={uid} />,
       parent
     );
   }
@@ -286,11 +310,12 @@ export const createConfigObserver = async ({
   config: Config;
 }): Promise<{ pageUid: string; observer?: MutationObserver }> => {
   const pageUid =
-    getPageUidByPageTitle(title) ||
+    (await getPageUidByPageTitle(title)) ||
     (await createConfigPage({
       title,
       config,
     }));
+
   if ("tabs" in config ? !!config.tabs.length : !!config.length) {
     const observer = createHTMLObserver({
       className: "rm-title-display",
@@ -307,14 +332,9 @@ export const createConfigObserver = async ({
         }
       },
     });
-    return {
-      pageUid,
-      observer,
-    };
+    return { pageUid, observer };
   }
-  return {
-    pageUid,
-  };
+  return { pageUid };
 };
 
 export default ConfigPage;

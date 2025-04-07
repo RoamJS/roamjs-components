@@ -28,23 +28,25 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
           )
       )
         .then((formatUid) =>
-          getFirstChildUidByBlockUid(formatUid)
-            ? formatUid
-            : (defaultValue?.length
-                ? Promise.all(
-                    defaultValue.map((node, order) =>
-                      createBlock({
-                        node,
-                        parentUid: formatUid,
-                        order,
-                      })
+          getFirstChildUidByBlockUid(formatUid).then((childUid) =>
+            childUid
+              ? formatUid
+              : (defaultValue?.length
+                  ? Promise.all(
+                      defaultValue.map((node, order) =>
+                        createBlock({
+                          node,
+                          parentUid: formatUid,
+                          order,
+                        })
+                      )
                     )
-                  )
-                : createBlock({
-                    node: { text: " " },
-                    parentUid: formatUid,
-                  })
-              ).then(() => formatUid)
+                  : createBlock({
+                      node: { text: " " },
+                      parentUid: formatUid,
+                    })
+                ).then(() => formatUid)
+          )
         )
         .then((uid) => {
           window.roamAlphaAPI.ui.components.renderBlock({

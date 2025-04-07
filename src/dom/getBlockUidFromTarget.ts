@@ -2,7 +2,7 @@ import getNthChildUidByBlockUid from "../queries/getNthChildUidByBlockUid";
 import getReferenceBlockUid from "./getReferenceBlockUid";
 import getUids from "./getUids";
 
-const getBlockUidFromTarget = (target: HTMLElement): string => {
+const getBlockUidFromTarget = async (target: HTMLElement): Promise<string> => {
   const ref = target.closest(".rm-block-ref") as HTMLSpanElement;
   if (ref) {
     return ref.getAttribute("data-uid") || "";
@@ -30,10 +30,10 @@ const getBlockUidFromTarget = (target: HTMLElement): string => {
       const order = Array.from(container.children).findIndex(
         (d) => d === column
       );
-      return getNthChildUidByBlockUid({ blockUid, order });
+      return await getNthChildUidByBlockUid({ blockUid, order });
     }
   }
   return blockUid;
-}
+};
 
 export default getBlockUidFromTarget;

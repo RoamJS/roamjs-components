@@ -1,5 +1,5 @@
 import { Label } from "@blueprintjs/core";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import toFlexRegex from "../util/toFlexRegex";
@@ -11,14 +11,23 @@ export const useOauthAccounts = (
   accountDropdown: React.ReactElement;
   accountLabel: string;
 } => {
-  const accountLabels = (
-    getBasicTreeByParentUid(getPageUidByPageTitle(`roam/js/${id}`)).find((t) =>
-      toFlexRegex("oauth").test(t.text)
-    )?.children || []
-  )
-    .map((t) => t.text)
-    .filter((t) => !t.startsWith("{") && !t.endsWith("}"));
-  const [accountLabel, setAccountLabel] = useState(accountLabels[0] || "");
+  const [accountLabels, setAccountLabels] = useState<string[]>([]);
+  const [accountLabel, setAccountLabel] = useState("");
+
+  useEffect(() => {
+    const loadAccounts = async () => {
+      const pageUid = await getPageUidByPageTitle(`roam/js/${id}`);
+      const tree = await getBasicTreeByParentUid(pageUid);
+      const oauthNode = tree.find((t) => toFlexRegex("oauth").test(t.text));
+      const labels = (oauthNode?.children || [])
+        .map((t) => t.text)
+        .filter((t) => !t.startsWith("{") && !t.endsWith("}"));
+      setAccountLabels(labels);
+      setAccountLabel(labels[0] || "");
+    };
+    loadAccounts();
+  }, [id]);
+
   const accountDropdown = (
     <>
       {accountLabels.length > 1 && (

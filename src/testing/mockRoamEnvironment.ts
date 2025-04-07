@@ -1387,20 +1387,24 @@ const mockRoamEnvironment = () => {
         // TODO - process exp
         return node;
       };
-      if (Array.isArray(id)) {
-        const [attr, val] = id;
-        if (attr === ":block/uid") {
-          return pick(graph.state[graph.uids[val]]);
-        } else if (attr === ":node/title") {
-          return pick(graph.state[graph.titles[val]]);
-        } else {
-          throw new Error(`Attr is not supported: ${attr}`);
-        }
-      } else if (typeof id === "number") {
-        return pick(graph.state[id]);
-      } else {
-        throw new Error(`Id is not supported: ${id}`);
-      }
+      return Promise.resolve(
+        Array.isArray(id)
+          ? (() => {
+              const [attr, val] = id;
+              if (attr === ":block/uid") {
+                return pick(graph.state[graph.uids[val]]);
+              } else if (attr === ":node/title") {
+                return pick(graph.state[graph.titles[val]]);
+              } else {
+                throw new Error(`Attr is not supported: ${attr}`);
+              }
+            })()
+          : typeof id === "number"
+          ? pick(graph.state[id])
+          : (() => {
+              throw new Error(`Id is not supported: ${id}`);
+            })()
+      );
     },
     q: (query, ..._params) => {
       return mockQuery({ graph, query });

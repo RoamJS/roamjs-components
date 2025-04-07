@@ -1,6 +1,9 @@
-const getChildrenLengthByPageUid = (uid: string): number =>
-  window.roamAlphaAPI.pull("[:block/children]", [":block/uid", uid])?.[
-    ":block/children"
-  ]?.length || 0;
+const getChildrenLengthByPageUid = async (uid: string): Promise<number> => {
+  const result = await window.roamAlphaAPI.data.pull("[:block/children]", [
+    ":block/uid",
+    uid,
+  ]);
+  return result?.[":block/children"]?.length || 0;
+};
 
 export default getChildrenLengthByPageUid;

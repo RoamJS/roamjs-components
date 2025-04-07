@@ -85,7 +85,7 @@ declare global {
       pull: (
         selector: string,
         id: number | string | [string, string]
-      ) => PullBlock;
+      ) => Promise<PullBlock>;
       createBlock: WriteAction;
       updateBlock: WriteAction;
       createPage: WriteAction;
@@ -102,6 +102,12 @@ declare global {
       };
       data: {
         addPullWatch: AddPullWatch;
+        async: {
+          q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+        };
+        backend: {
+          q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+        };
         block: {
           create: WriteAction;
           update: WriteAction;
@@ -119,7 +125,7 @@ declare global {
         pull: (
           selector: string,
           id: number | string | [string, string]
-        ) => PullBlock;
+        ) => Promise<PullBlock>;
         pull_many: (pattern: string, eid: string[][]) => PullBlock[];
         q: (query: string, ...params: unknown[]) => unknown[][];
         removePullWatch: (

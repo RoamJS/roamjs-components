@@ -1,6 +1,9 @@
-const getCreateTimeByBlockUid = (uid: string): number =>
-  window.roamAlphaAPI.pull(`[:edit/time]`, [":block/uid", uid])?.[
-    ":create/time"
-  ] || 0;
+const getCreateTimeByBlockUid = async (uid: string): Promise<number> => {
+  const result = await window.roamAlphaAPI.data.pull(`[:create/time]`, [
+    ":block/uid",
+    uid,
+  ]);
+  return result?.[":create/time"] || 0;
+};
 
 export default getCreateTimeByBlockUid;

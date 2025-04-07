@@ -2,7 +2,7 @@ import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import createBlock from "../writes/createBlock";
 import toFlexRegex from "./toFlexRegex";
 
-const addInputSetting = ({
+const addInputSetting = async ({
   blockUid,
   value,
   key,
@@ -13,7 +13,7 @@ const addInputSetting = ({
   key: string;
   index?: number;
 }): Promise<string> => {
-  const tree = getBasicTreeByParentUid(blockUid);
+  const tree = await getBasicTreeByParentUid(blockUid);
   const keyNode = tree.find((t) => toFlexRegex(key).test(t.text));
   if (keyNode) {
     return createBlock({

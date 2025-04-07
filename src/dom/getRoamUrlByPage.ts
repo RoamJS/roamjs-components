@@ -1,8 +1,8 @@
 import getPageUidByPageTitle from "../queries/getPageUidByPageTitle";
 import getRoamUrl from "./getRoamUrl";
 
-const getRoamUrlByPage = (page: string): string => {
-  const uid = getPageUidByPageTitle(page);
+const getRoamUrlByPage = async (page: string): Promise<string> => {
+  const uid = await getPageUidByPageTitle(page);
   return uid && getRoamUrl(uid);
 };
 

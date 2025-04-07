@@ -81,32 +81,43 @@ const ExternalLogin = ({
                 );
                 localStorageSet(key, JSON.stringify([...accounts, account]));
               } else {
-                const existingTree = getBasicTreeByParentUid(parentUid).find(
-                  (t) => /oauth/i.test(t.text)
-                );
-                const blockUid =
-                  existingTree?.uid ||
-                  (await createBlock({ node: { text: "oauth" }, parentUid }));
-                window.roamAlphaAPI.createBlock({
-                  block: { string: label, uid: labelUid },
-                  location: {
-                    "parent-uid": blockUid,
-                    order: existingTree?.children?.length || 0,
-                  },
-                });
+                try {
+                  const tree = await getBasicTreeByParentUid(parentUid);
+                  const existingTree = tree.find((t) => /oauth/i.test(t.text));
+                  const blockUid =
+                    existingTree?.uid ||
+                    (await createBlock({
+                      node: { text: "oauth" },
+                      parentUid,
+                    }));
+                  window.roamAlphaAPI.createBlock({
+                    block: { string: label, uid: labelUid },
+                    location: {
+                      "parent-uid": blockUid,
+                      order: existingTree?.children?.length || 0,
+                    },
+                  });
 
-                const valueUid = window.roamAlphaAPI.util.generateUID();
-                const block = {
-                  string: oauthData,
-                  uid: valueUid,
-                };
-                window.roamAlphaAPI.createBlock({
-                  location: { "parent-uid": labelUid, order: 0 },
-                  block,
-                });
-                window.roamAlphaAPI.updateBlock({
-                  block: { open: false, string: "oauth", uid: blockUid },
-                });
+                  const valueUid = window.roamAlphaAPI.util.generateUID();
+                  const block = {
+                    string: oauthData,
+                    uid: valueUid,
+                  };
+                  window.roamAlphaAPI.createBlock({
+                    location: { "parent-uid": labelUid, order: 0 },
+                    block,
+                  });
+                  window.roamAlphaAPI.updateBlock({
+                    block: { open: false, string: "oauth", uid: blockUid },
+                  });
+                } catch (error: unknown) {
+                  setError(
+                    `Failed to save OAuth data: ${
+                      error instanceof Error ? error.message : String(error)
+                    }`
+                  );
+                  return;
+                }
               }
               onSuccess(account);
             })

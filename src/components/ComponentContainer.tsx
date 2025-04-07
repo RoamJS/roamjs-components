@@ -49,20 +49,22 @@ export const createComponentRender =
   (b: HTMLButtonElement, args?: OnloadArgs): void => {
     if (b.parentElement) {
       b.parentElement.onmousedown = (e: MouseEvent) => e.stopPropagation();
-      const blockUid = getBlockUidFromTarget(b);
-      const possibleBlockId = b.closest(".roam-block")?.id;
-      const blockId = possibleBlockId?.endsWith?.(blockUid)
-        ? possibleBlockId
-        : undefined;
-      if (blockUid) {
-        renderWithUnmount(
-          <ComponentContainer blockId={blockId} className={className}>
-            <Fc blockUid={blockUid} />
-          </ComponentContainer>,
-          b.parentElement,
-          args
-        );
-      }
+      getBlockUidFromTarget(b).then((blockUid) => {
+        if (!b.parentElement) return;
+        const possibleBlockId = b.closest(".roam-block")?.id;
+        const blockId = possibleBlockId?.endsWith?.(blockUid)
+          ? possibleBlockId
+          : undefined;
+        if (blockUid) {
+          renderWithUnmount(
+            <ComponentContainer blockId={blockId} className={className}>
+              <Fc blockUid={blockUid} />
+            </ComponentContainer>,
+            b.parentElement,
+            args
+          );
+        }
+      });
     }
   };
 

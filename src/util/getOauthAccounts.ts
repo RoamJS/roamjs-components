@@ -4,7 +4,7 @@ import localStorageGet from "./localStorageGet";
 import toConfigPageName from "./toConfigPageName";
 import toFlexRegex from "./toFlexRegex";
 
-const getOauthAccounts = (service: string): string[] => {
+const getOauthAccounts = async (service: string): Promise<string[]> => {
   const fromStorage = localStorageGet(`oauth-${service}`);
   if (fromStorage) {
     const accounts = JSON.parse(fromStorage) as {
@@ -13,14 +13,14 @@ const getOauthAccounts = (service: string): string[] => {
     }[];
     return accounts.map((a) => a.text);
   }
-  const tree = getShallowTreeByParentUid(
-    getPageUidByPageTitle(toConfigPageName(service))
-  );
+  const pageUid = await getPageUidByPageTitle(toConfigPageName(service));
+  const tree = await getShallowTreeByParentUid(pageUid);
   const node = tree.find((s) => toFlexRegex("oauth").test(s.text.trim()));
   if (!node) {
     return [];
   }
-  return getShallowTreeByParentUid(node.uid).map((t) => t.text);
+  const nodeChildren = await getShallowTreeByParentUid(node.uid);
+  return nodeChildren.map((t) => t.text);
 };
 
 export default getOauthAccounts;

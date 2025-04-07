@@ -1,7 +1,7 @@
 import type { RoamBasicNode } from "../types/native";
 import getSettingValueFromTree from "../util/getSettingValueFromTree";
 
-const addKeybordTriggers = ({
+const addKeybordTriggers = async ({
   triggers: inputTriggers,
 }: {
   triggers: {
@@ -12,26 +12,30 @@ const addKeybordTriggers = ({
     callback: () => void;
   }[];
 }) => {
-  const triggers = inputTriggers.map(({ trigger, callback }) => {
-    if (trigger instanceof RegExp) {
-      return { trigger, callback };
-    } else if (typeof trigger === "function") {
-      return { callback, trigger: trigger() };
-    } else {
-      const triggerValue = getSettingValueFromTree({
-        tree: trigger.tree,
-        key: "trigger",
-        defaultValue: trigger.defaultValue || "\\\\",
-      })
-        .replace(/"/g, "")
-        .replace(/\\/g, "\\\\")
-        .replace(/\+/g, "\\+")
-        .trim();
+  const triggers = await Promise.all(
+    inputTriggers.map(async ({ trigger, callback }) => {
+      if (trigger instanceof RegExp) {
+        return { trigger, callback };
+      } else if (typeof trigger === "function") {
+        return { callback, trigger: trigger() };
+      } else {
+        const triggerValue = (
+          await getSettingValueFromTree({
+            tree: trigger.tree,
+            key: "trigger",
+            defaultValue: trigger.defaultValue || "\\\\",
+          })
+        )
+          .replace(/"/g, "")
+          .replace(/\\/g, "\\\\")
+          .replace(/\+/g, "\\+")
+          .trim();
 
-      const triggerRegex = new RegExp(`${triggerValue}$`);
-      return { callback, trigger: triggerRegex };
-    }
-  });
+        const triggerRegex = new RegExp(`${triggerValue}$`);
+        return { callback, trigger: triggerRegex };
+      }
+    })
+  );
 
   document.addEventListener("input", (e) => {
     const target = e.target as HTMLElement;

@@ -2,9 +2,9 @@ import getBasicTreeByParentUid from "../queries/getBasicTreeByParentUid";
 import type { InputTextNode } from "../types";
 import toFlexRegex from "./toFlexRegex";
 
-const getSettingValueFromTree = ({
+const getSettingValueFromTree = async ({
   parentUid = "",
-  tree = getBasicTreeByParentUid(parentUid),
+  tree,
   key,
   defaultValue = "",
 }: {
@@ -12,8 +12,12 @@ const getSettingValueFromTree = ({
   tree?: InputTextNode[];
   key: string;
   defaultValue?: string;
-}): string => {
-  const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
+}): Promise<string> => {
+  // results in type errors via `npx tsc --noEmit`
+  // const resolvedTree = tree || (await getBasicTreeByParentUid(parentUid));
+  let resolvedTree = tree;
+  if (!resolvedTree) resolvedTree = await getBasicTreeByParentUid(parentUid);
+  const node = resolvedTree.find((s) => toFlexRegex(key).test(s.text.trim()));
   const value = node?.children?.[0]
     ? node?.children?.[0].text.trim()
     : defaultValue;

@@ -15,23 +15,24 @@ const createPageTitleObserver = ({
       "roam-article"
     )[0] as HTMLDivElement;
     if (d) {
-      const uid = getPageUidByPageTitle(title);
-      const attribute = `data-roamjs-${uid}`;
-      if ((uid && url === getRoamUrl(uid)) || (log && url === getRoamUrl())) {
-        // React's rerender crushes the old article/heading
-        setTimeout(() => {
-          if (!d.hasAttribute(attribute)) {
-            d.setAttribute(attribute, "true");
-            callback(
-              document.getElementsByClassName(
-                "roam-article"
-              )[0] as HTMLDivElement
-            );
-          }
-        }, 1);
-      } else {
-        d.removeAttribute(attribute);
-      }
+      getPageUidByPageTitle(title).then((uid) => {
+        const attribute = `data-roamjs-${uid}`;
+        if ((uid && url === getRoamUrl(uid)) || (log && url === getRoamUrl())) {
+          // React's rerender crushes the old article/heading
+          setTimeout(() => {
+            if (!d.hasAttribute(attribute)) {
+              d.setAttribute(attribute, "true");
+              callback(
+                document.getElementsByClassName(
+                  "roam-article"
+                )[0] as HTMLDivElement
+              );
+            }
+          }, 1);
+        } else {
+          d.removeAttribute(attribute);
+        }
+      });
     }
   };
   const wrapped = (e: HashChangeEvent) => listener(e.newURL);

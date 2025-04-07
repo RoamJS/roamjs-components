@@ -22,18 +22,18 @@ type HandleFetch = <T extends Record<string, unknown> | ArrayBuffer>(
   // ) => HandleFetchReturn<T, B>;
 ) => Promise<T>;
 
-const handleFetch: HandleFetch = (
+const handleFetch: HandleFetch = async (
   transformArgs,
   { method, anonymous, authorization, path, href, domain, headers = {}, buffer }
 ) => {
   const url = new URL(href || `${domain || getApiUrlEnv()}/${path}`);
-  const defaultHeaders = !anonymous
-    ? { Authorization: authorization || getAuthorizationHeader() }
+  const authHeader = !anonymous
+    ? { Authorization: authorization || (await getAuthorizationHeader()) }
     : ({} as HeadersInit);
   return fetch(
     ...transformArgs(url, {
       method,
-      headers: { ...defaultHeaders, ...headers },
+      headers: { ...authHeader, ...headers },
     })
   ).then((r) => {
     if (!r.ok) {

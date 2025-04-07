@@ -17,10 +17,11 @@ const extensionDeprecatedWarning = async ({
 }): Promise<void> => {
   const configUid = await getPageUidByPageTitle(extensionId);
   const config = await getBasicTreeByParentUid(configUid);
-  const donotShowAgainUid = getSubTree({
+  const donotShowAgainNode = await getSubTree({
     tree: config,
     key: "Do not show again",
-  }).uid;
+  });
+  const donotShowAgainUid = donotShowAgainNode.uid;
   if (!donotShowAgainUid) {
     const blocks = (
       (await window.roamAlphaAPI.data.backend.q(

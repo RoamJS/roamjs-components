@@ -3,23 +3,25 @@ import type { RoamBasicNode } from "../types/native";
 import createBlock from "../writes/createBlock";
 import toFlexRegex from "./toFlexRegex";
 
-const getSubTree = ({
+const getSubTree = async ({
   key,
   parentUid,
   order = 0,
-  tree = parentUid ? getBasicTreeByParentUid(parentUid) : [],
+  tree,
 }: {
   key: string;
   parentUid?: string;
   tree?: RoamBasicNode[];
   order?: number;
-}): RoamBasicNode => {
-  const node = tree.find((s) => toFlexRegex(key).test(s.text.trim()));
+}): Promise<RoamBasicNode> => {
+  const resolvedTree =
+    tree || (parentUid ? await getBasicTreeByParentUid(parentUid) : []);
+  const node = resolvedTree.find((s) => toFlexRegex(key).test(s.text.trim()));
   if (node) return node;
   const defaultNode = { text: "", children: [] };
   if (parentUid) {
     const uid = window.roamAlphaAPI.util.generateUID();
-    createBlock({ node: { text: key, uid }, parentUid, order });
+    await createBlock({ node: { text: key, uid }, parentUid, order });
     return {
       uid,
       ...defaultNode,

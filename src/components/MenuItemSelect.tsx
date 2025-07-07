@@ -11,6 +11,7 @@ type MenuItemSelectProps<T extends ReactText> = Omit<
   ButtonProps?: ButtonProps & ButtonHTMLAttributes<HTMLButtonElement>;
   emptyValueText?: string;
   transformItem?: TransformItem<T>;
+  disabledOptions?: T[];
   children?: (props: {
     activeItem: ActiveItem<T>;
     emptyValueText?: string;
@@ -32,6 +33,7 @@ const MenuItemSelect = <T extends ReactText>(
     children,
     transformItem,
     emptyValueText,
+    disabledOptions,
     ...selectProps
   } = props;
 
@@ -58,14 +60,18 @@ const MenuItemSelect = <T extends ReactText>(
   return (
     <TypeSelect
       {...selectProps}
-      itemRenderer={(item, { modifiers, handleClick }) => (
-        <MenuItem
-          key={item}
-          text={transformItem ? transformItem(item) : item}
-          active={modifiers.active}
-          onClick={handleClick}
-        />
-      )}
+      itemRenderer={(item, { modifiers, handleClick }) => {
+        const isDisabled = disabledOptions?.includes(item);
+        return (
+          <MenuItem
+            key={item}
+            text={transformItem ? transformItem(item) : item}
+            active={modifiers.active}
+            onClick={isDisabled ? undefined : handleClick}
+            disabled={isDisabled}
+          />
+        );
+      }}
       filterable={filterable}
       itemPredicate={filterable ? itemPredicate : undefined}
       popoverProps={{

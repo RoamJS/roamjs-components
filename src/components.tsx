@@ -40,7 +40,8 @@ const components = [
       rootRender(() => {
         const [value, setValue] = useState("");
         const [filterable, setFilterable] = useState(false);
-        const options = useMemo(() => ["apple", "banana", "orange"], []);
+        const options = useMemo(() => ["apple", "banana", "orange", "pear"], []);
+        const disabledOptions = useMemo(() => ["pear"], []);
         return (
           <>
             <div>Chosen value: {value}</div>
@@ -56,6 +57,7 @@ const components = [
               items={options}
               onItemSelect={(item) => setValue(item)}
               filterable={filterable}
+              disabledOptions={disabledOptions}
             />
           </>
         );

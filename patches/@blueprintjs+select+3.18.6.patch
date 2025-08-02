@@ -1,0 +1,12 @@
+diff --git a/node_modules/@blueprintjs/select/lib/esm/components/select/select.d.ts b/node_modules/@blueprintjs/select/lib/esm/components/select/select.d.ts
+index f8b9bc6..ee0b6da 100644
+--- a/node_modules/@blueprintjs/select/lib/esm/components/select/select.d.ts
++++ b/node_modules/@blueprintjs/select/lib/esm/components/select/select.d.ts
+@@ -4,6 +4,7 @@ import { IListItemsProps } from "../../common";
+ export declare type SelectProps<T> = ISelectProps<T>;
+ /** @deprecated use SelectProps */
+ export interface ISelectProps<T> extends IListItemsProps<T> {
++    children?: React.ReactNode;
+     /**
+      * Whether the component should take up the full width of its container.
+      * This overrides `popoverProps.fill`. You also have to ensure that the child

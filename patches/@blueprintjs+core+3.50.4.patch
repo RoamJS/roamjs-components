@@ -1,0 +1,48 @@
+diff --git a/node_modules/@blueprintjs/core/lib/esm/components/alert/alert.d.ts b/node_modules/@blueprintjs/core/lib/esm/components/alert/alert.d.ts
+index 09b06be..f74f6a3 100644
+--- a/node_modules/@blueprintjs/core/lib/esm/components/alert/alert.d.ts
++++ b/node_modules/@blueprintjs/core/lib/esm/components/alert/alert.d.ts
+@@ -5,6 +5,7 @@ import { IOverlayLifecycleProps } from "../overlay/overlay";
+ export declare type AlertProps = IAlertProps;
+ /** @deprecated use AlertProps */
+ export interface IAlertProps extends IOverlayLifecycleProps, Props {
++    children?: React.ReactNode;
+     /**
+      * Whether pressing <kbd>escape</kbd> when focused on the Alert should cancel the alert.
+      * If this prop is enabled, then either `onCancel` or `onClose` must also be defined.
+diff --git a/node_modules/@blueprintjs/core/lib/esm/components/dialog/dialog.d.ts b/node_modules/@blueprintjs/core/lib/esm/components/dialog/dialog.d.ts
+index e90ee31..3e4f4ef 100644
+--- a/node_modules/@blueprintjs/core/lib/esm/components/dialog/dialog.d.ts
++++ b/node_modules/@blueprintjs/core/lib/esm/components/dialog/dialog.d.ts
+@@ -6,6 +6,7 @@ import { IBackdropProps, OverlayableProps } from "../overlay/overlay";
+ export declare type DialogProps = IDialogProps;
+ /** @deprecated use DialogProps */
+ export interface IDialogProps extends OverlayableProps, IBackdropProps, Props {
++    children?: React.ReactNode;
+     /**
+      * Toggles the visibility of the overlay and its children.
+      * This prop is required because the component is controlled.
+diff --git a/node_modules/@blueprintjs/core/lib/esm/components/tabs/tabs.d.ts b/node_modules/@blueprintjs/core/lib/esm/components/tabs/tabs.d.ts
+index 2ca5fe5..870a32e 100644
+--- a/node_modules/@blueprintjs/core/lib/esm/components/tabs/tabs.d.ts
++++ b/node_modules/@blueprintjs/core/lib/esm/components/tabs/tabs.d.ts
+@@ -6,6 +6,7 @@ export declare const Expander: React.FunctionComponent;
+ export declare type TabsProps = ITabsProps;
+ /** @deprecated use TabsProps */
+ export interface ITabsProps extends Props {
++    children?: React.ReactNode;
+     /**
+      * Whether the selected tab indicator should animate its movement.
+      *
+diff --git a/node_modules/@blueprintjs/core/lib/esm/components/tooltip/tooltip.d.ts b/node_modules/@blueprintjs/core/lib/esm/components/tooltip/tooltip.d.ts
+index 94f4af9..4db48a9 100644
+--- a/node_modules/@blueprintjs/core/lib/esm/components/tooltip/tooltip.d.ts
++++ b/node_modules/@blueprintjs/core/lib/esm/components/tooltip/tooltip.d.ts
+@@ -6,6 +6,7 @@ import { IPopoverSharedProps } from "../popover/popoverSharedProps";
+ export declare type TooltipProps = ITooltipProps;
+ /** @deprecated use TooltipProps */
+ export interface ITooltipProps extends IPopoverSharedProps, IntentProps {
++    children?: React.ReactNode;
+     /**
+      * The content that will be displayed inside of the tooltip.
+      */

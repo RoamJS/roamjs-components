@@ -27,7 +27,7 @@ const OauthPanel: FieldPanel<OauthField> = ({ uid, parentUid, options }) => {
       : []
   );
   const onCheck = useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const checked = (e.target as HTMLInputElement).checked;
       setUseLocal(checked);
       if (checked) {

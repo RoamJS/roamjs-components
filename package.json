@@ -26,8 +26,8 @@
     "@types/jsdom": "^20.0.1",
     "@types/marked": "^4.0.3",
     "@types/nanoid": "2.0.0",
-    "@types/react": "17.0.39",
-    "@types/react-dom": "17.0.13",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
     "@types/use-sync-external-store": "^0.0.3",
     "chrono-node": "2.3.0",
     "crypto-js": "3.1.9-1",
@@ -40,8 +40,8 @@
     "marked": "4.0.16",
     "marked-react": "1.1.2",
     "nanoid": "2.0.4",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "tslib": "2.2.0",
     "use-sync-external-store": "^1.2.0"
   },
@@ -78,9 +78,17 @@
     "roamjs": "./scripts/index.js"
   },
   "overrides": {
-    "@testing-library/react": {
-      "react": "17.0.2",
-      "react-dom": "17.0.2"
+    "@blueprintjs/core": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0"
+    },
+    "@blueprintjs/datetime": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0"
+    },
+    "@blueprintjs/select": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0"
     }
   },
   "samepage": {

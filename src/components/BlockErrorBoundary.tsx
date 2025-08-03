@@ -1,7 +1,11 @@
 import React from "react";
 import createBlock from "../writes/createBlock";
 
-type BlockErrorBoundaryProps = { blockUid: string; message: string };
+type BlockErrorBoundaryProps = {
+  blockUid: string;
+  message: string;
+  children: React.ReactNode;
+};
 type BlockErrorBoundaryState = { hasError: boolean };
 
 class BlockErrorBoundary extends React.Component<

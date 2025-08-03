@@ -8,6 +8,7 @@ import { OnloadArgs } from "../types/native";
 const ComponentContainer: React.FunctionComponent<{
   blockId?: string;
   className?: string;
+  children?: React.ReactNode;
 }> = ({ blockId, className, children }) => {
   const [showIcons, setShowIcons] = useState(false);
   const appear = useCallback(() => setShowIcons(true), [setShowIcons]);

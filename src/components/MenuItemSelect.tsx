@@ -1,5 +1,10 @@
 import { Button, ButtonProps, MenuItem } from "@blueprintjs/core";
-import { SelectProps, Select, ICreateNewItem } from "@blueprintjs/select";
+import {
+  SelectProps,
+  Select,
+  ICreateNewItem,
+  isCreateNewItem,
+} from "@blueprintjs/select";
 import React, { ReactText, ButtonHTMLAttributes, ReactNode } from "react";
 
 type ActiveItem<T> = T | ICreateNewItem | null | undefined;
@@ -38,7 +43,7 @@ const MenuItemSelect = <T extends ReactText>(
   const defaultButton = (
     <Button
       text={
-        activeItem ? (
+        activeItem && !isCreateNewItem(activeItem) ? (
           transformItem ? (
             transformItem(activeItem as T)
           ) : (

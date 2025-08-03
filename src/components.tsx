@@ -12,6 +12,7 @@ import runExtension from "./util/runExtension";
 
 import { createBlock } from "./writes";
 import MenuItemSelect from "./components/MenuItemSelect";
+import TimePanel from "./components/ConfigPanels/TimePanel";
 
 // const blockRender = (Component: React.FC) => {
 //   const block = window.roamAlphaAPI.ui.getFocusedBlock();
@@ -214,6 +215,47 @@ const components = [
       }),
     label: "PageInput",
   },
+  {
+    callback: () =>
+      rootRender(() => {
+        const [value] = useState(new Date());
+        const [uid, setUid] = useState<string>("");
+
+        React.useEffect(() => {
+          const createUid = async () => {
+            const currentPageUid =
+              (await window.roamAlphaAPI.ui.mainWindow.getOpenPageOrBlockUid()) ||
+              window.roamAlphaAPI.util.dateToPageUid(new Date());
+
+            if (!currentPageUid) throw new Error("No current page uid");
+            console.log(currentPageUid);
+            const newUid = await createBlock({
+              parentUid: currentPageUid,
+              node: { text: "time-field" },
+            });
+            setUid(newUid);
+          };
+          createUid();
+        }, []);
+
+        if (!uid) return <div>Loading...</div>;
+
+        return (
+          <>
+            <div>Selected time: {value.toLocaleTimeString()}</div>
+            <TimePanel
+              title="time-field"
+              uid={uid}
+              parentUid="test-parent-uid"
+              order={0}
+              description="Select a time"
+              defaultValue={value}
+            />
+          </>
+        );
+      }),
+    label: "TimePanel",
+  },
 ];
 
 export default runExtension(async (args) => {
@@ -229,6 +271,7 @@ export default runExtension(async (args) => {
       FormDialog,
       PageInput,
       renderToast,
+      TimePanel,
     },
     util: {
       renderOverlay,

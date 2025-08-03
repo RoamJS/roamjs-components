@@ -147,7 +147,7 @@ const CursorMenu = <T extends Record<string, string>>({
     [filter, initialItems]
   );
   const onSelect = useCallback(
-    (item) => {
+    (item: { text: string; id: string } & T) => {
       if (menuRef.current) {
         onItemSelect(item);
         onClose();

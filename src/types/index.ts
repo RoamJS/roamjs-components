@@ -107,8 +107,37 @@ declare global {
           update: WriteAction;
           move: WriteAction;
           delete: WriteAction;
+          reorderBlocks: (
+            args: {
+              location: { "parent-uid": string };
+              blocks: string[];
+            }
+          ) => Promise<void>;
         };
         fast: {
+          q: (query: string, ...params: unknown[]) => unknown[][];
+        };
+        async: {
+          q: (
+            query: string,
+            ...params: unknown[]
+          ) => Promise<unknown[][]>;
+          pull: (
+            selector: string,
+            id: number | string | [string, string]
+          ) => Promise<PullBlock>;
+          pull_many: (
+            pattern: string,
+            eids: string[][]
+          ) => Promise<PullBlock[]>;
+          fast: {
+            q: (
+              query: string,
+              ...params: unknown[]
+            ) => Promise<unknown[][]>;
+          };
+        };
+        backend: {
           q: (query: string, ...params: unknown[]) => unknown[][];
         };
         page: {
@@ -173,6 +202,45 @@ declare global {
           }) => void;
           removeCommand: (action: { label: string }) => void;
         };
+        individualMultiselect: {
+          getSelectedUids: () => string[];
+        };
+        msContextMenu: {
+          addCommand: (action: {
+            label: string;
+            callback: () => void;
+            "display-conditional"?: () => boolean;
+          }) => void;
+          removeCommand: (action: { label: string }) => void;
+        };
+        filters: {
+          addGlobalFilter: (args: { title: string; type: "includes" | "removes" }) => Promise<void>;
+          removeGlobalFilter: (args: { title: string; type: "includes" | "removes" }) => Promise<void>;
+          getGlobalFilters: () => { includes: string[]; removes: string[] };
+          getPageFilters: (args: { page: { uid?: string; title?: string } }) => {
+            includes: string[];
+            removes: string[];
+          };
+          getPageLinkedRefsFilters: (args: { page: { uid?: string; title?: string } }) => {
+            includes: string[];
+            removes: string[];
+          };
+          getSidebarWindowFilters: (args: {
+            window: { type: string; "block-uid": string };
+          }) => { includes: string[]; removes: string[] };
+          setPageFilters: (args: {
+            page: { uid?: string; title?: string };
+            filters: { includes?: string[]; removes?: string[] };
+          }) => Promise<void>;
+          setPageLinkedRefsFilters: (args: {
+            page: { uid?: string; title?: string };
+            filters: { includes?: string[]; removes?: string[] };
+          }) => Promise<void>;
+          setSidebarWindowFilters: (args: {
+            window: { type: string; "block-uid": string };
+            filters: { includes?: string[]; removes?: string[] };
+          }) => Promise<void>;
+        };
         getFocusedBlock: () => null | {
           "window-id": string;
           "block-uid": string;
@@ -182,14 +250,36 @@ declare global {
             uid: string;
             el: HTMLElement;
             zoomPath?: boolean;
+            open?: boolean;
           }) => null;
           renderPage: (args: {
             uid: string;
             el: HTMLElement;
             hideMentions?: boolean;
+            open?: boolean;
           }) => null;
+          renderSearch: (args: {
+            "search-query-str": string;
+            el: HTMLElement;
+            closed?: boolean;
+            "group-by-page"?: boolean;
+            "hide-paths"?: boolean;
+            "config-changed-callback"?: (config: unknown) => void;
+          }) => null;
+          renderString: (args: { string: string; el: HTMLElement }) => null;
+          unmountNode: (args: { el: HTMLElement }) => void;
         };
         graphView: {
+          addCallback: (props: {
+            label: string;
+            callback: (context: {
+              cytoscape: unknown;
+              elements: unknown[];
+              type: "page" | "all-pages";
+            }) => void;
+            type?: "page" | "all-pages";
+          }) => Promise<void>;
+          removeCallback: (props: { label: string }) => Promise<void>;
           wholeGraph: {
             addCallback: (props: {
               label: string;
@@ -227,6 +317,17 @@ declare global {
         name: string;
         type: "hosted" | "offline";
         isEncrypted: boolean;
+      };
+      file: {
+        upload: (args: { file: File; toast?: { hide: boolean } }) => Promise<string>;
+        get: (args: { url: string }) => Promise<File>;
+        delete: (args: { url: string }) => Promise<void>;
+      };
+      user: {
+        uid: () => string | null;
+      };
+      constants: {
+        corsAnywhereProxyUrl: string;
       };
     };
 

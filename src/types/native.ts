@@ -371,11 +371,12 @@ type SidebarWindowType =
   | SidebarBlockWindow
   | SidebarMentionsWindow
   | SidebarGraphWindow
-  | SidebarOutlineWindow;
+  | SidebarOutlineWindow
+  | SidebarSearchQueryWindow;
 
 export type SidebarWindowInput = {
-  "block-uid": string;
   type: SidebarWindowType["type"];
+  order?: number;
 };
 
 type SidebarBlockWindow = {
@@ -397,6 +398,11 @@ type SidebarGraphWindow = {
   type: "graph";
   // "page-uid": string; Currently not working despite documentation
   "block-uid": string;
+};
+
+type SidebarSearchQueryWindow = {
+  type: "search-query";
+  "search-query-uid": string;
 };
 
 export type SidebarAction = (action: {

@@ -163,12 +163,8 @@ declare global {
           open: () => Promise<void>;
           close: () => Promise<void>;
           getWindows: () => SidebarWindow[];
-          addWindow: (action: {
-            window: SidebarWindowInput & { order?: number };
-          }) => Promise<void>;
-          setWindowOrder: (action: {
-            window: SidebarWindowInput & { order: number };
-          }) => Promise<void>;
+          addWindow: SidebarAction;
+          setWindowOrder: SidebarAction;
           collapseWindow: SidebarAction;
           pinWindow: (action: {
             window: SidebarWindowInput;
@@ -275,7 +271,7 @@ declare global {
             "hide-paths?"?: boolean;
             "config-changed-callback"?: (config: unknown) => void;
           }) => null;
-          renderString: (args: { string: string; el: HTMLElement }) => null;
+          // renderString: (args: { string: string; el: HTMLElement }) => null; Not available yet in the API
           unmountNode: (args: { el: HTMLElement }) => void;
         };
         graphView: {

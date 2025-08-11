@@ -374,8 +374,7 @@ type SidebarWindowType =
   | SidebarOutlineWindow
   | SidebarSearchQueryWindow;
 
-export type SidebarWindowInput = {
-  type: SidebarWindowType["type"];
+export type SidebarWindowInput = SidebarWindowType & {
   order?: number;
 };
 

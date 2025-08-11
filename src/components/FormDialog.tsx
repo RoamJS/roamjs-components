@@ -131,7 +131,7 @@ const EmbedInput = ({
         window.roamAlphaAPI.ui.components.renderPage({
           uid: parentUid,
           el,
-          hideMentions: true,
+          "hide-mentions?": true,
         });
         if (autoFocus) realFocus();
       });

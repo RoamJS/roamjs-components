@@ -374,9 +374,11 @@ type SidebarWindowType =
   | SidebarOutlineWindow;
 
 export type SidebarWindowInput = {
-  "block-uid": string;
-  type: SidebarWindowType["type"];
-};
+  type: SidebarWindowType["type"] | "search-query";
+} & (
+  | { type: "block" | "outline" | "mentions" | "graph"; "block-uid": string }
+  | { type: "search-query"; "search-query-str": string }
+);
 
 type SidebarBlockWindow = {
   type: "block";

@@ -141,7 +141,7 @@ declare global {
           selector: string,
           id: number | string | [string, string]
         ) => PullBlock;
-        pull_many: (pattern: string, eid: string[][]) => PullBlock[];
+        pull_many: (pattern: string, eids: string[][]) => PullBlock[];
         q: (query: string, ...params: unknown[]) => unknown[][];
         removePullWatch: (
           pullPattern: string,

@@ -42,6 +42,7 @@ export type AutocompleteInputProps<T = string> = {
   onNewItem?: OnNewItem<T>;
   disabled?: boolean;
   maxItemsDisplayed?: number;
+  autoSelectFirstOption?: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
@@ -62,6 +63,7 @@ const AutocompleteInput = <T extends unknown = string>({
   onNewItem: _onNewItem,
   disabled,
   maxItemsDisplayed = Infinity,
+  autoSelectFirstOption = true,
 }: AutocompleteInputProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const itemToQuery = useMemo<ItemToQuery<T>>(
@@ -121,9 +123,22 @@ const AutocompleteInput = <T extends unknown = string>({
     else open();
   }, [items, close, open, isTyping]);
   useEffect(() => {
-    if (query && isOpen) setValue(items[activeIndex] || onNewItem(query));
-    else if (query) setValue(onNewItem(query));
-  }, [setValue, activeIndex, items, onNewItem, query]);
+    if (!query || !isTyping) return;
+    if (autoSelectFirstOption && isOpen) {
+      setValue(items[activeIndex] || onNewItem(query));
+      return;
+    }
+    setValue(onNewItem(query));
+  }, [
+    setValue,
+    activeIndex,
+    items,
+    onNewItem,
+    isTyping,
+    query,
+    isOpen,
+    autoSelectFirstOption,
+  ]);
   useEffect(() => {
     if (
       inputRef.current &&

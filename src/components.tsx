@@ -69,6 +69,8 @@ const components = [
         const [numResults, setNumResults] = useState(100);
         const [disabled, setDisabled] = useState(false);
         const [maxItemsDisplayed, setMaxItemsDisplayed] = useState(0);
+        const [autoSelectFirstOption, setAutoSelectFirstOption] =
+          useState(true);
         const options = useMemo(() => {
           const items = [];
           for (let i = 0; i < numResults; i++) {
@@ -102,9 +104,17 @@ const components = [
               }
               label={"Disabled"}
             />
+            <Checkbox
+              checked={autoSelectFirstOption}
+              onChange={(e) =>
+                setAutoSelectFirstOption((e.target as HTMLInputElement).checked)
+              }
+              label={"Auto Select First Option"}
+            />
             <Label>
               Autocomplete
               <AutocompleteInput
+                autoSelectFirstOption={autoSelectFirstOption}
                 disabled={disabled}
                 value={value}
                 setValue={setValue}

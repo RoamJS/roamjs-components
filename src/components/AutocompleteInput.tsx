@@ -123,12 +123,8 @@ const AutocompleteInput = <T extends unknown = string>({
     else open();
   }, [items, close, open, isTyping]);
   useEffect(() => {
-    if (!query) return;
-    if (!isOpen) {
-      setValue(onNewItem(query));
-      return;
-    }
-    if (autoSelectFirstOption) {
+    if (!query || !isTyping) return;
+    if (autoSelectFirstOption && isOpen) {
       setValue(items[activeIndex] || onNewItem(query));
       return;
     }
@@ -138,6 +134,7 @@ const AutocompleteInput = <T extends unknown = string>({
     activeIndex,
     items,
     onNewItem,
+    isTyping,
     query,
     isOpen,
     autoSelectFirstOption,

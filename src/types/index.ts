@@ -130,7 +130,7 @@ declare global {
           };
         };
         backend: {
-          q: (query: string, ...params: unknown[]) => unknown[][];
+          q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
         };
         page: {
           create: WriteAction;

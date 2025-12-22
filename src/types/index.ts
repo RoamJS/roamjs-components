@@ -1,10 +1,11 @@
-import {
+import type {
   AddPullWatch,
   PullBlock,
   SidebarAction,
   SidebarWindow,
   SidebarWindowInput,
   WriteAction,
+  GenericQueryResult,
 } from "./native";
 import {
   RunQuery,
@@ -81,7 +82,7 @@ declare global {
     // END TODO remove
 
     roamAlphaAPI: {
-      q: (query: string, ...params: unknown[]) => unknown[][];
+      q: (query: string, ...params: unknown[]) => GenericQueryResult;
       pull: (
         selector: string,
         id: number | string | [string, string]
@@ -113,10 +114,13 @@ declare global {
           }) => Promise<void>;
         };
         fast: {
-          q: (query: string, ...params: unknown[]) => unknown[][];
+          q: (query: string, ...params: unknown[]) => GenericQueryResult;
         };
         async: {
-          q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+          q: (
+            query: string,
+            ...params: unknown[]
+          ) => Promise<GenericQueryResult>;
           pull: (
             selector: string,
             id: number | string | [string, string]
@@ -126,11 +130,17 @@ declare global {
             eids: string[][]
           ) => Promise<PullBlock[]>;
           fast: {
-            q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+            q: (
+              query: string,
+              ...params: unknown[]
+            ) => Promise<GenericQueryResult>;
           };
         };
         backend: {
-          q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+          q: (
+            query: string,
+            ...params: unknown[]
+          ) => Promise<GenericQueryResult>;
         };
         page: {
           create: WriteAction;
@@ -142,7 +152,7 @@ declare global {
           id: number | string | [string, string]
         ) => PullBlock;
         pull_many: (pattern: string, eids: string[][]) => PullBlock[];
-        q: (query: string, ...params: unknown[]) => unknown[][];
+        q: (query: string, ...params: unknown[]) => GenericQueryResult;
         removePullWatch: (
           pullPattern: string,
           entityId: string,

@@ -1,4 +1,4 @@
-import { PullBlock } from "../types";
+import type { PullBlock } from "../types";
 import normalizePageTitle from "./normalizePageTitle";
 
 const getAttributeValueByBlockAndName = ({
@@ -9,13 +9,11 @@ const getAttributeValueByBlockAndName = ({
   uid: string;
 }) =>
   (
-    (
-      window.roamAlphaAPI.data.fast.q(
-        `[:find (pull ?b [:block/string]) :where [?a :node/title "${normalizePageTitle(
-          name
-        )}"] [?p :block/uid "${uid}"] [?b :block/refs ?a] [?b :block/parents ?p]]`
-      )?.[0]?.[0] as PullBlock
-    )?.[":block/string"] || ""
+    window.roamAlphaAPI.data.fast.q<[PullBlock]>(
+      `[:find (pull ?b [:block/string]) :where [?a :node/title "${normalizePageTitle(
+        name
+      )}"] [?p :block/uid "${uid}"] [?b :block/refs ?a] [?b :block/parents ?p]]`
+    )?.[0]?.[0]?.[":block/string"] || ""
   )
     .slice(name.length + 2)
     .trim();

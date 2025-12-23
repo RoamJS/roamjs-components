@@ -12,10 +12,10 @@ const sortBasicNodes = (c: PullBlock[]): RoamBasicNode[] =>
 const getBasicTreeByParentUid = (uid: string): RoamBasicNode[] =>
   sortBasicNodes(
     window.roamAlphaAPI.data.fast
-      .q(
+      .q<[PullBlock]>(
         `[:find (pull ?c [:block/string :block/uid :block/order {:block/children ...}]) :where [?b :block/uid "${uid}"] [?b :block/children ?c]]`
       )
-      .map((a) => a[0] as PullBlock)
+      .map((a) => a[0])
   );
 
 export default getBasicTreeByParentUid;

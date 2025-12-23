@@ -1,5 +1,6 @@
 import {
   AddPullWatch,
+  GenericQueryResult,
   PullBlock,
   SidebarAction,
   SidebarWindow,
@@ -81,7 +82,10 @@ declare global {
     // END TODO remove
 
     roamAlphaAPI: {
-      q: (query: string, ...params: unknown[]) => unknown[][];
+      q: <T extends GenericQueryResult>(
+        query: string,
+        ...params: unknown[]
+      ) => T[];
       pull: (
         selector: string,
         id: number | string | [string, string]
@@ -113,10 +117,16 @@ declare global {
           }) => Promise<void>;
         };
         fast: {
-          q: (query: string, ...params: unknown[]) => unknown[][];
+          q: <T extends GenericQueryResult>(
+            query: string,
+            ...params: unknown[]
+          ) => T[];
         };
         async: {
-          q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+          q: <T extends GenericQueryResult>(
+            query: string,
+            ...params: unknown[]
+          ) => Promise<T[]>;
           pull: (
             selector: string,
             id: number | string | [string, string]
@@ -126,11 +136,17 @@ declare global {
             eids: string[][]
           ) => Promise<PullBlock[]>;
           fast: {
-            q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+            q: <T extends GenericQueryResult>(
+              query: string,
+              ...params: unknown[]
+            ) => Promise<T[]>;
           };
         };
         backend: {
-          q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
+          q: <T extends GenericQueryResult>(
+            query: string,
+            ...params: unknown[]
+          ) => Promise<T[]>;
         };
         page: {
           create: WriteAction;
@@ -142,7 +158,10 @@ declare global {
           id: number | string | [string, string]
         ) => PullBlock;
         pull_many: (pattern: string, eids: string[][]) => PullBlock[];
-        q: (query: string, ...params: unknown[]) => unknown[][];
+        q: <T extends GenericQueryResult>(
+          query: string,
+          ...params: unknown[]
+        ) => T[];
         removePullWatch: (
           pullPattern: string,
           entityId: string,

@@ -25,7 +25,7 @@ import MenuItemSelect from "./MenuItemSelect";
 import PageInput from "./PageInput";
 import nanoid from "nanoid";
 import { getUids } from "../dom";
-import { InputTextNode, PullBlock } from "../types";
+import { InputTextNode } from "../types";
 import getFullTreeByParentUid from "../queries/getFullTreeByParentUid";
 import createPage from "../writes/createPage";
 import { createBlock } from "../writes";
@@ -174,7 +174,7 @@ const EmbedInput = ({
             window.roamAlphaAPI.pull(
               "[:block/order {:block/parents [:block/uid]}]",
               [":block/uid", blockUid]
-            ) as PullBlock;
+            );
           if (
             !(
               order === 0 &&

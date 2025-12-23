@@ -22,11 +22,11 @@ const extensionDeprecatedWarning = async ({
     key: "Do not show again",
   }).uid;
   if (!donotShowAgainUid) {
-    const blocks = (
-      window.roamAlphaAPI.data.fast.q(
+    const blocks = window.roamAlphaAPI.data.fast
+      .q<[PullBlock]>(
         `[:find (pull ?roamjs [:block/uid]) :where [?block :block/string ?contents] [(clojure.string/includes? ?contents  "https://roamjs.com/${extensionId}")] [?roamjs :block/children ?block]]`
-      ) as [PullBlock][]
-    ).map(([block]) => block[":block/uid"] || "");
+      )
+      .map(([block]) => block[":block/uid"] || "");
     renderSimpleAlert({
       content: `RoamJS will soon be deprecating and then removing the ${idToTitle(
         extensionId

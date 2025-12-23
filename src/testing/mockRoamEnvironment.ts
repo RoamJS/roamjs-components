@@ -3,6 +3,7 @@ import {
   DatalogConstant,
   DatalogVariable,
   PullBlock,
+  GenericQueryResult,
 } from "../types/native";
 import { parseEDNString } from "edn-data";
 import nanoid from "nanoid";
@@ -111,7 +112,7 @@ const resolvePattern = (
         })
       );
 
-const fireQuery = ({
+const fireQuery = <T extends GenericQueryResult>({
   graph,
   find,
   where,
@@ -122,7 +123,7 @@ const fireQuery = ({
   with?: DatalogVariable[];
   // inputs?
   where: DatalogClause[];
-}) => {
+}): T[] => {
   const getAssignments = (
     where: DatalogClause[],
     initialVars = [] as string[]
@@ -1182,10 +1183,16 @@ const fireQuery = ({
       throw new Error(`Unexpected Find element type: ${el.type}`);
     })
   );
-  return results;
+  return results as T[];
 };
 
-const mockQuery = ({ graph, query }: { graph: Graph; query: string }) => {
+const mockQuery = <T extends GenericQueryResult>({
+  graph,
+  query,
+}: {
+  graph: Graph;
+  query: string;
+}): T[] => {
   const data = parseEDNString(query) as EDNValue[];
   const findIndex = data.findIndex(
     (d) => typeof d === "object" && "key" in d && d.key === "find"
@@ -1370,7 +1377,7 @@ const mockQuery = ({ graph, query }: { graph: Graph; query: string }) => {
     throw new Error(`Unknown value for datalog clause: ${JSON.stringify(e)}`);
   };
   const where = wherePattern.map(toDatalog);
-  return fireQuery({ graph, find, where });
+  return fireQuery<T>({ graph, find, where });
 };
 
 const mockRoamEnvironment = () => {
@@ -1402,8 +1409,11 @@ const mockRoamEnvironment = () => {
         throw new Error(`Id is not supported: ${id}`);
       }
     },
-    q: (query, ..._params) => {
-      return mockQuery({ graph, query });
+    q: <T extends GenericQueryResult>(
+      query: string,
+      ..._params: any[]
+    ): T[] => {
+      return mockQuery<T>({ graph, query });
     },
     createBlock: async (action) => {
       if (!action.block) throw new Error(`block field is required`);

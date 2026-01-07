@@ -256,7 +256,7 @@ declare global {
             uid: string;
             el: HTMLElement;
             "zoom-path?"?: boolean;
-            // "open?"?: boolean; Not available yet in the API
+            "open?"?: boolean;
           }) => Promise<null>;
           renderPage: (args: {
             uid: string;

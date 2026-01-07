@@ -271,7 +271,10 @@ declare global {
             "hide-paths?"?: boolean;
             "config-changed-callback"?: (config: unknown) => void;
           }) => null;
-          // renderString: (args: { string: string; el: HTMLElement }) => null; Not available yet in the API
+          renderString: (args: {
+            string: string;
+            el: HTMLElement;
+          }) => Promise<null>;
           unmountNode: (args: { el: HTMLElement }) => void;
         };
         graphView: {

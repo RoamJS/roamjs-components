@@ -30,7 +30,7 @@ const BlockPanel: FieldPanel<BlockField> = ({
             })
         )
         .then((uid) => {
-          window.roamAlphaAPI.ui.components.renderBlock({
+          return window.roamAlphaAPI.ui.components.renderBlock({
             uid,
             el,
           });

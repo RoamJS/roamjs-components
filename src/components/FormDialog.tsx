@@ -127,14 +127,17 @@ const EmbedInput = ({
         uid: parentUid,
         title: nanoid(),
         tree: defaultEmbed,
-      }).then(() => {
-        window.roamAlphaAPI.ui.components.renderPage({
-          uid: parentUid,
-          el,
-          "hide-mentions?": true,
+      })
+        .then(() => {
+          return window.roamAlphaAPI.ui.components.renderPage({
+            uid: parentUid,
+            el,
+            "hide-mentions?": true,
+          });
+        })
+        .then(() => {
+          if (autoFocus) realFocus();
         });
-        if (autoFocus) realFocus();
-      });
       // In the future, we can return the whole tree of data from `parentUid`
       onChange(() => getFullTreeByParentUid(parentUid).children);
       return () => {

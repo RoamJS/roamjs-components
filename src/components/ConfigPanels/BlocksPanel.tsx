@@ -47,7 +47,7 @@ const BlocksPanel: FieldPanel<BlocksField> = ({
               ).then(() => formatUid)
         )
         .then((uid) => {
-          window.roamAlphaAPI.ui.components.renderBlock({
+          return window.roamAlphaAPI.ui.components.renderBlock({
             uid,
             el,
           });

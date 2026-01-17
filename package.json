@@ -1,7 +1,7 @@
 {
   "name": "roamjs-components",
   "description": "Expansive toolset, utilities, & components for developing RoamJS extensions.",
-  "version": "0.85.8",
+  "version": "0.86.5",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -16,6 +16,10 @@
   },
   "sideEffects": false,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RoamJS/roamjs-components"
+  },
   "peerDependencies": {
     "@blueprintjs/core": "3.50.4",
     "@blueprintjs/datetime": "3.23.14",

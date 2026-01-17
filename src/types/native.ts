@@ -422,6 +422,7 @@ export type ActionParams = {
   page?: {
     title?: string;
     uid?: string;
+    props?: Record<string, unknown>;
   };
 };
 

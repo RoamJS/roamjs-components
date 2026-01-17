@@ -256,13 +256,13 @@ declare global {
             uid: string;
             el: HTMLElement;
             "zoom-path?"?: boolean;
-            // "open?"?: boolean; Not available yet in the API
-          }) => null;
+            "open?"?: boolean;
+          }) => Promise<null>;
           renderPage: (args: {
             uid: string;
             el: HTMLElement;
             "hide-mentions?"?: boolean;
-          }) => null;
+          }) => Promise<null>;
           renderSearch: (args: {
             "search-query-str": string;
             el: HTMLElement;
@@ -270,9 +270,12 @@ declare global {
             "group-by-page?"?: boolean;
             "hide-paths?"?: boolean;
             "config-changed-callback"?: (config: unknown) => void;
-          }) => null;
-          // renderString: (args: { string: string; el: HTMLElement }) => null; Not available yet in the API
-          unmountNode: (args: { el: HTMLElement }) => void;
+          }) => Promise<null>;
+          renderString: (args: {
+            string: string;
+            el: HTMLElement;
+          }) => Promise<null>;
+          unmountNode: (args: { el: HTMLElement }) => Promise<null>;
         };
         graphView: {
           addCallback: (props: {

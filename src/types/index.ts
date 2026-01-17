@@ -98,7 +98,7 @@ declare global {
         dateToPageTitle: (date: Date) => string;
         dateToPageUid: (date: Date) => string;
         pageTitleToDate: (title: string) => Date | null;
-        uploadFile: (args: { file: File }) => string;
+        uploadFile: (args: { file: File }) => Promise<string>;
       };
       data: {
         addPullWatch: AddPullWatch;

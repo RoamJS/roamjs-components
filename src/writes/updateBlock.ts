@@ -7,6 +7,7 @@ const updateBlock = ({
   heading,
   textAlign,
   viewType,
+  blockViewType,
   open,
   props,
 }: { uid: string } & Partial<
@@ -22,6 +23,7 @@ const updateBlock = ({
           heading,
           "text-align": textAlign,
           "children-view-type": viewType,
+          "view-type": blockViewType,
           open,
           props,
         },

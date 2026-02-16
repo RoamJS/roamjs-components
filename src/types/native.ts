@@ -421,7 +421,7 @@ export type ActionParams = {
     heading?: number;
     "text-align"?: TextAlignment;
     "children-view-type"?: ViewType;
-    "view-type"?: BlockViewType;
+    "block-view-type"?: BlockViewType;
     props?: Record<string, unknown>;
   };
   page?: {

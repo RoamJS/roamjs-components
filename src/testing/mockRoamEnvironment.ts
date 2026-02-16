@@ -1425,8 +1425,8 @@ const mockRoamEnvironment = () => {
         ":db/id": id,
         ":block/order": action.location.order,
       };
-      if (typeof action.block["view-type"] !== "undefined") {
-        (block as PullBlock)[":block/view-type"] = `:${action.block["view-type"]}`;
+      if (typeof action.block["block-view-type"] !== "undefined") {
+        (block as PullBlock)[":block/view-type"] = `:${action.block["block-view-type"]}`;
       }
       graph.uids[block[":block/uid"]] = id;
       parentBlock[":block/children"] = (
@@ -1460,8 +1460,8 @@ const mockRoamEnvironment = () => {
           ":children/view-type"
         ] = `:${action.block["children-view-type"]}`;
       }
-      if (typeof action.block["view-type"] !== "undefined") {
-        graph.state[block][":block/view-type"] = `:${action.block["view-type"]}`;
+      if (typeof action.block["block-view-type"] !== "undefined") {
+        graph.state[block][":block/view-type"] = `:${action.block["block-view-type"]}`;
       }
     },
     createPage: async (action) => {

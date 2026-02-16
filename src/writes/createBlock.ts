@@ -29,7 +29,7 @@ export const gatherActions = ({
         heading,
         "text-align": textAlign,
         "children-view-type": viewType,
-        "view-type": blockViewType,
+        "block-view-type": blockViewType,
         open,
         props,
       },

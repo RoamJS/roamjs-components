@@ -1,4 +1,4 @@
-import type { PullBlock, TreeNode, ViewType } from "../types";
+import type { BlockViewType, PullBlock, TreeNode, ViewType } from "../types";
 
 const formatRoamNode = (n: PullBlock | null): TreeNode => {
   if (!n)
@@ -11,6 +11,7 @@ const formatRoamNode = (n: PullBlock | null): TreeNode => {
       parents: [],
       heading: 0,
       viewType: "bullet",
+      blockViewType: "outline",
       editTime: new Date(0),
       props: { imageResize: {}, iframe: {} },
       textAlign: "left",
@@ -19,6 +20,8 @@ const formatRoamNode = (n: PullBlock | null): TreeNode => {
     ((n[":block/parents"] || [])
       .find((a) => typeof a[":children/view-type"] === "string")
       ?.[":children/view-type"]?.replace?.(/^:/, "") as ViewType) || "bullet";
+  const blockViewType =
+    (n[":block/view-type"]?.replace?.(/^:/, "") as BlockViewType) || "outline";
   return {
     text: n[":block/string"] || n[":node/title"] || "",
     open: typeof n[":block/open"] === "undefined" ? true : n[":block/open"],
@@ -26,6 +29,7 @@ const formatRoamNode = (n: PullBlock | null): TreeNode => {
     uid: n[":block/uid"] || "",
     heading: n[":block/heading"] || 0,
     viewType,
+    blockViewType,
     editTime: new Date(n[":edit/time"] || 0),
     props: { imageResize: {}, iframe: {} },
     textAlign: n[":block/text-align"] || "left",
@@ -46,6 +50,7 @@ const getFullTreeByParentUid = (uid: string): TreeNode =>
       :block/order 
       :block/heading 
       :block/open 
+      :block/view-type
       :children/view-type
       :block/text-align
       :edit/time 

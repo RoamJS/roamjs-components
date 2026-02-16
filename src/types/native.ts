@@ -225,6 +225,7 @@ export type RoamPull = {
   "block/parents"?: RoamNode[];
   "block/refs"?: RoamNode[];
   "block/string"?: string;
+  "block/view-type"?: `:${BlockViewType}`;
   "block/uid"?: string;
   "children/view-type"?: `:${ViewType}`;
   "create/time"?: number;
@@ -306,6 +307,7 @@ export type BlockViewType =
   | "tabs"
   | "outline"
   | "horizontal"
+  | "horizontal-outline"
   | "popout"
   | "comment"
   | "side"
@@ -339,6 +341,7 @@ export type TreeNode = {
   heading: number;
   open: boolean;
   viewType: ViewType;
+  blockViewType: BlockViewType;
   editTime: Date;
   textAlign: TextAlignment;
   props: {
@@ -369,6 +372,7 @@ export type InputTextNode = {
   heading?: number;
   textAlign?: TextAlignment;
   viewType?: ViewType;
+  blockViewType?: BlockViewType;
   open?: boolean;
   props?: Record<string, unknown>;
 };
@@ -417,6 +421,7 @@ export type ActionParams = {
     heading?: number;
     "text-align"?: TextAlignment;
     "children-view-type"?: ViewType;
+    "view-type"?: BlockViewType;
     props?: Record<string, unknown>;
   };
   page?: {

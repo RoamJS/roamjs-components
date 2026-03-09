@@ -29,7 +29,7 @@ export type Registry = {
         type: keyof WindowEventMap;
         listener: (
           this: Window,
-          ev: WindowEventMap[keyof WindowEventMap]
+          ev: WindowEventMap[keyof WindowEventMap],
         ) => void;
       }
     | {
@@ -37,7 +37,7 @@ export type Registry = {
         type: keyof DocumentEventMap;
         listener: (
           this: Document,
-          ev: DocumentEventMap[keyof DocumentEventMap]
+          ev: DocumentEventMap[keyof DocumentEventMap],
         ) => void;
       }
     | {
@@ -45,7 +45,7 @@ export type Registry = {
         type: keyof HTMLElementEventMap | `roamjs:${string}`;
         listener: (
           this: HTMLElement,
-          ev: HTMLElementEventMap[keyof HTMLElementEventMap]
+          ev: HTMLElementEventMap[keyof HTMLElementEventMap],
         ) => void;
       }
   )[];
@@ -71,7 +71,7 @@ declare global {
         identifiers: (M: unknown) => unknown;
         initialEnvironment: { values: unknown; functions: unknown };
         repl: (
-          fmt: (M: unknown) => unknown
+          fmt: (M: unknown) => unknown,
         ) => (env: {
           values: unknown;
           functions: unknown;
@@ -84,7 +84,7 @@ declare global {
       q: (query: string, ...params: unknown[]) => unknown[][];
       pull: (
         selector: string,
-        id: number | string | [string, string]
+        id: number | string | [string, string],
       ) => PullBlock;
       createBlock: WriteAction;
       updateBlock: WriteAction;
@@ -119,11 +119,11 @@ declare global {
           q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
           pull: (
             selector: string,
-            id: number | string | [string, string]
+            id: number | string | [string, string],
           ) => Promise<PullBlock>;
           pull_many: (
             pattern: string,
-            eids: string[][]
+            eids: string[][],
           ) => Promise<PullBlock[]>;
           fast: {
             q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
@@ -139,14 +139,14 @@ declare global {
         };
         pull: (
           selector: string,
-          id: number | string | [string, string]
+          id: number | string | [string, string],
         ) => PullBlock;
         pull_many: (pattern: string, eids: string[][]) => PullBlock[];
         q: (query: string, ...params: unknown[]) => unknown[][];
         removePullWatch: (
           pullPattern: string,
           entityId: string,
-          callback?: (before: PullBlock, after: PullBlock) => void
+          callback?: (before: PullBlock, after: PullBlock) => void,
         ) => boolean;
         redo: () => void;
         undo: () => void;
@@ -277,6 +277,39 @@ declare global {
           }) => Promise<null>;
           unmountNode: (args: { el: HTMLElement }) => Promise<null>;
         };
+        react: {
+          Block: (props: {
+            uid: string;
+            open?: boolean;
+            zoomPath?: boolean;
+            zoomStartAfterUid?: string;
+          }) => JSX.Element;
+          Page: (props:
+            | {
+                uid: string;
+                title?: never;
+                hideMentions?: boolean;
+              }
+            | {
+                uid?: never;
+                title: string;
+                hideMentions?: boolean;
+              }) => JSX.Element;
+          Search: (props: {
+            searchQueryStr: string;
+            closed?: boolean;
+            groupByPage?: boolean;
+            hidePaths?: boolean;
+            onConfigChange?: (config: {
+              closed?: boolean;
+              groupByPage?: boolean;
+              hidePaths?: boolean;
+            }) => void;
+          }) => JSX.Element;
+          BlockString: (props: {
+            string: string;
+          }) => JSX.Element;
+        };
         graphView: {
           addCallback: (props: {
             label: string;
@@ -370,3 +403,4 @@ declare global {
     };
   }
 }
+

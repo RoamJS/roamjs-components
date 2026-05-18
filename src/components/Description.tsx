@@ -4,7 +4,7 @@ import React from "react";
 const Description = ({
   description,
 }: {
-  description: string;
+  description: React.ReactNode;
 }): React.ReactElement => {
   return (
     <span

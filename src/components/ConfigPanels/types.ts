@@ -106,6 +106,6 @@ export type UnionField =
 
 export type Field<T extends UnionField> = Omit<T, "type"> & {
   title: string;
-  description: string;
+  description: React.ReactNode;
   Panel: FieldPanel<T>;
 };

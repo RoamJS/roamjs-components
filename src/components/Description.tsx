@@ -1,11 +1,19 @@
-import { Tooltip, Icon } from "@blueprintjs/core";
+import { Tooltip, Icon, PopoverInteractionKind } from "@blueprintjs/core";
 import React from "react";
+
+type TooltipInteractionKind = React.ComponentProps<
+  typeof Tooltip
+>["interactionKind"];
+
+type DescriptionProps = {
+  description: React.ReactNode;
+  interactionKind?: TooltipInteractionKind;
+};
 
 const Description = ({
   description,
-}: {
-  description: React.ReactNode;
-}): React.ReactElement => {
+  interactionKind = PopoverInteractionKind.HOVER_TARGET_ONLY,
+}: DescriptionProps): React.ReactElement => {
   return (
     <span
       style={{
@@ -16,6 +24,7 @@ const Description = ({
       }}
     >
       <Tooltip
+        interactionKind={interactionKind}
         content={
           <span style={{ maxWidth: 400, display: "inline-block" }}>
             {description}

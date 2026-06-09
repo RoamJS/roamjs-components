@@ -1480,9 +1480,18 @@ const mockRoamEnvironment = () => {
   };
   global.window.roamAlphaAPI.data = {
     ...global.window.roamAlphaAPI.data,
+    semanticSearchEnabled: () => false,
     fast: {
       q: (query, ..._params) => {
         return mockQuery({ graph, query });
+      },
+    },
+    async: {
+      ...global.window.roamAlphaAPI.data?.async,
+      semanticSearch: async () => {
+        throw new Error(
+          "Semantic search is not available in mockRoamEnvironment"
+        );
       },
     },
   };

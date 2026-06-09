@@ -332,6 +332,22 @@ export type RoamError = {
   "status-code": number;
 };
 
+export type SemanticSearchArgs = {
+  "search-str": string;
+  k?: number;
+  "hide-code-blocks"?: boolean;
+};
+
+export type SemanticSearchHit = {
+  type: "chunk" | "block" | "page";
+  uid: string;
+  topUids: string[];
+};
+
+export type SemanticSearch = (
+  args: SemanticSearchArgs
+) => Promise<SemanticSearchHit[]>;
+
 export type TreeNode = {
   text: string;
   order: number;

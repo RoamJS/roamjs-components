@@ -1,6 +1,7 @@
 import {
   AddPullWatch,
   PullBlock,
+  SemanticSearch,
   SidebarAction,
   SidebarWindow,
   SidebarWindowInput,
@@ -102,6 +103,7 @@ declare global {
       };
       data: {
         addPullWatch: AddPullWatch;
+        semanticSearchEnabled: () => boolean;
         block: {
           create: WriteAction;
           update: WriteAction;
@@ -125,6 +127,7 @@ declare global {
             pattern: string,
             eids: string[][],
           ) => Promise<PullBlock[]>;
+          semanticSearch: SemanticSearch;
           fast: {
             q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
           };

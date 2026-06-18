@@ -244,7 +244,7 @@ export type PullBlock = {
     {
       ":source": [":block/uid", string];
       ":value": string | [":block/uid", string];
-    }
+    },
   ][];
   ":block/children"?: PullBlock[];
   ":block/heading"?: number;
@@ -335,6 +335,8 @@ export type RoamError = {
 export type SemanticSearchArgs = {
   "search-str": string;
   k?: number;
+  "search-blocks"?: boolean;
+  "search-pages"?: boolean;
   "hide-code-blocks"?: boolean;
 };
 
@@ -345,7 +347,7 @@ export type SemanticSearchHit = {
 };
 
 export type SemanticSearch = (
-  args: SemanticSearchArgs
+  args: SemanticSearchArgs,
 ) => Promise<SemanticSearchHit[]>;
 
 export type TreeNode = {
@@ -507,7 +509,7 @@ export type SidebarWindow = {
 export type AddPullWatch = (
   pullPattern: string,
   entityId: string,
-  callback: (before: PullBlock | null, after: PullBlock | null) => void
+  callback: (before: PullBlock | null, after: PullBlock | null) => void,
 ) => boolean;
 
 type ButtonAction = {

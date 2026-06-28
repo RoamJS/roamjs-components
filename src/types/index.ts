@@ -54,6 +54,13 @@ export type Registry = {
   timeouts: { timeout: number }[];
 };
 
+export type InstalledExtension = {
+  id: string;
+  name: string;
+  enabled: boolean;
+  version: string;
+};
+
 declare global {
   interface Window {
     // TODO remove
@@ -361,6 +368,9 @@ declare global {
         name: string;
         type: "hosted" | "offline";
         isEncrypted: boolean;
+      };
+      depot: {
+        getInstalledExtensions: () => Record<string, InstalledExtension>;
       };
       file: {
         upload: (args: {

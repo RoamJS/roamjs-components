@@ -369,7 +369,7 @@ declare global {
         type: "hosted" | "offline";
         isEncrypted: boolean;
       };
-      extension: {
+      depot: {
         getInstalledExtensions: () => Record<string, InstalledExtension>;
       };
       file: {

@@ -19,6 +19,20 @@ type RunReturn =
 
 type RunExtension = (args: OnloadArgs) => Promise<RunReturn>;
 
+const renderLoadFailure = ({
+  id,
+  content,
+}: {
+  id: string;
+  content: string;
+}) => {
+  try {
+    renderToast({ id, content, intent: "danger" });
+  } catch (toastError) {
+    console.error("Failed to display the extension load error.", toastError);
+  }
+};
+
 const runExtension = (
   run: RunExtension
 ): { onload: (args: OnloadArgs) => void; onunload: () => void } => {
@@ -128,13 +142,22 @@ const runExtension = (
       })
       .catch((e) => {
         const error = e as Error;
+        console.error(`Failed to load ${extensionId} extension.`, error);
         if (getNodeEnv() === "development") {
-          renderToast({
+          renderLoadFailure({
             id: "roamjs-extension-error",
             content: `Failed to load ${extensionId} extension.`,
-            intent: "danger",
           });
           return;
+        }
+        let settings: Record<string, unknown> = {};
+        try {
+          settings = args.extensionAPI?.settings?.getAll?.() || {};
+        } catch (settingsError) {
+          console.error(
+            "Failed to read extension settings for the error report.",
+            settingsError
+          );
         }
         apiPost({
           domain: "https://api.samepage.network",
@@ -144,8 +167,8 @@ const runExtension = (
             type: "RoamJS Extension Failed to Load",
             data: {
               extensionId,
-              settings: args.extensionAPI.settings.getAll(),
-              roamDepotVersion: args.extension.version,
+              settings,
+              roamDepotVersion: args.extension?.version || "unknown",
             },
             message: error.message,
             stack: error.stack,
@@ -158,17 +181,19 @@ const runExtension = (
           },
         })
           .then(() =>
-            renderToast({
+            renderLoadFailure({
               id: "roamjs-extension-error",
               content: `Failed to load ${extensionId} extension. An Error Report has been sent to the SamePage team.`,
-              intent: "danger",
             })
           )
-          .catch(() => {
-            renderToast({
+          .catch((reportError) => {
+            console.error(
+              "Failed to send the extension load error report.",
+              reportError
+            );
+            renderLoadFailure({
               id: "roamjs-email-error",
               content: `Failed to load ${extensionId} extension. The Error Report also failed to send to the SamePage team, please reach out to them directly at support@samepage.network.`,
-              intent: "danger",
             });
           });
       });

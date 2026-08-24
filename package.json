@@ -1,7 +1,7 @@
 {
   "name": "roamjs-components",
   "description": "Expansive toolset, utilities, & components for developing RoamJS extensions.",
-  "version": "0.88.4",
+  "version": "0.88.5",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -50,6 +50,7 @@
     "use-sync-external-store": "^1.2.0"
   },
   "dependencies": {
+    "@posthog/core": "1.48.2",
     "@samepage/scripts": "^0.74.2",
     "color": "^4.0.1",
     "date-fns": "^2.27.0",

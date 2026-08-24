@@ -11,7 +11,7 @@ const handleUrlFetch =
       typeof args === "string" ? { path: args, data: _data } : args;
 
     return handleFetch<T>((url, init) => {
-      if (getNodeEnv() === "development") {
+      if (getNodeEnv() === "development" && url.host.includes("roamjs")) {
         url.searchParams.set("dev", "true");
       }
       Object.entries(data).forEach(([k, v]) =>

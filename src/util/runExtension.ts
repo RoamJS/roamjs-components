@@ -3,14 +3,16 @@ import { OnloadArgs } from "../types/native";
 import ReactDOM from "react-dom";
 import {
   getNodeEnv,
+  getPostHogHostEnv,
+  getPostHogTokenEnv,
   getRoamJSExtensionIdEnv,
   getRoamJSVersionEnv,
 } from "./env";
 import type { Registry } from "../types";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { provideExtensionApi } from "./extensionApiContext";
-import apiPost from "./apiPost";
 import renderToast from "../components/Toast";
+import captureExtensionStartupFailure from "./captureExtensionStartupFailure";
 
 type RunReturn =
   | void
@@ -128,49 +130,28 @@ const runExtension = (
       })
       .catch((e) => {
         const error = e as Error;
-        if (getNodeEnv() === "development") {
-          renderToast({
-            id: "roamjs-extension-error",
-            content: `Failed to load ${extensionId} extension.`,
-            intent: "danger",
-          });
-          return;
+        const environment = getNodeEnv();
+        let graphName = "";
+        try {
+          graphName = window.roamAlphaAPI.graph.name;
+        } catch {
+          // The graph API may itself be unavailable during startup failures.
         }
-        apiPost({
-          domain: "https://api.samepage.network",
-          path: "errors",
-          data: {
-            method: "extension-error",
-            type: "RoamJS Extension Failed to Load",
-            data: {
-              extensionId,
-              settings: args.extensionAPI.settings.getAll(),
-              roamDepotVersion: args.extension.version,
-            },
-            message: error.message,
-            stack: error.stack,
-            version: process.env.VERSION,
-            notebookUuid: JSON.stringify({
-              owner: "RoamJS",
-              app: extensionId,
-              workspace: window.roamAlphaAPI.graph.name,
-            }),
-          },
-        })
-          .then(() =>
-            renderToast({
-              id: "roamjs-extension-error",
-              content: `Failed to load ${extensionId} extension. An Error Report has been sent to the SamePage team.`,
-              intent: "danger",
-            })
-          )
-          .catch(() => {
-            renderToast({
-              id: "roamjs-email-error",
-              content: `Failed to load ${extensionId} extension. The Error Report also failed to send to the SamePage team, please reach out to them directly at support@samepage.network.`,
-              intent: "danger",
-            });
-          });
+        void captureExtensionStartupFailure({
+          error,
+          extensionId,
+          extensionVersion: args.extension.version,
+          roamJSBuildVersion: getRoamJSVersionEnv(),
+          environment,
+          postHogToken: getPostHogTokenEnv(),
+          postHogHost: getPostHogHostEnv(),
+          sensitiveValues: [graphName],
+        });
+        renderToast({
+          id: "roamjs-extension-error",
+          content: `Failed to load ${extensionId} extension.`,
+          intent: "danger",
+        });
       });
   };
 

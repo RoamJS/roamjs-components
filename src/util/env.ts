@@ -15,7 +15,14 @@ export const getNodeEnv = (defaultValue = "production") => {
 
 export const getRoamJSVersionEnv = () => {
   try {
-    return process.env.ROAMJS_VERSION || process.env.VERSION || getNodeEnv("");
+    if (process.env.ROAMJS_VERSION) {
+      return process.env.ROAMJS_VERSION;
+    }
+  } catch {
+    // Fall through when a bundler did not interpolate this optional override.
+  }
+  try {
+    return process.env.VERSION || getNodeEnv("");
   } catch {
     return getNodeEnv("");
   }
@@ -40,5 +47,21 @@ export const getRoamJSExtensionIdEnv = () => {
     );
   } catch {
     return "roamjs";
+  }
+};
+
+export const getPostHogTokenEnv = (): string => {
+  try {
+    return process.env.POSTHOG_TOKEN || "";
+  } catch {
+    return "";
+  }
+};
+
+export const getPostHogHostEnv = (): string => {
+  try {
+    return process.env.POSTHOG_HOST || "";
+  } catch {
+    return "";
   }
 };

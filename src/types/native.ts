@@ -1,11 +1,7 @@
 // emulating Datalog Grammar
 // https://docs.datomic.com/cloud/query/query-data-reference.html#or-clauses
 
-import type {
-  ChangeEvent,
-  MouseEvent as ReactMouseEvent,
-  ReactElement,
-} from "react";
+import type { ChangeEvent, ReactElement } from "react";
 
 export type DatalogSrcVar = {
   type: "src-var";
@@ -241,6 +237,7 @@ export type RoamPull = {
 } & RoamNode;
 
 export type PullBlock = {
+  [key: string]: unknown;
   ":attrs/lookup"?: PullBlock[];
   ":entity/attrs"?: [
     { ":source": [":block/uid", string]; ":value": [":block/uid", string] },
@@ -461,6 +458,72 @@ export type ActionParams = {
 
 export type WriteAction = (a: ActionParams) => Promise<void>;
 
+type BlockDisplayProperties = {
+  open?: boolean;
+  heading?: 0 | 1 | 2 | 3;
+  "text-align"?: TextAlignment;
+  "children-view-type"?: ViewType;
+  "block-view-type"?: Exclude<BlockViewType, "horizontal">;
+};
+
+type WriteAttribution = {
+  "user-uid"?: string;
+};
+
+export type CreateBlockArgs = {
+  location: {
+    "parent-uid": string;
+    order: number | "first" | "last";
+  };
+  block: BlockDisplayProperties &
+    WriteAttribution & {
+      string: string;
+      uid?: string;
+    };
+};
+
+export type UpdateBlockArgs = {
+  block: BlockDisplayProperties &
+    WriteAttribution & {
+      uid: string;
+      string?: string;
+    };
+};
+
+export type MoveBlockArgs = {
+  location: {
+    "parent-uid": string;
+    order: number | "first" | "last";
+  };
+  block: WriteAttribution & { uid: string };
+};
+
+export type DeleteBlockArgs = {
+  block: WriteAttribution & { uid: string };
+};
+
+export type CreatePageArgs = {
+  page: WriteAttribution & {
+    title: string;
+    uid?: string;
+    "children-view-type"?: ViewType;
+  };
+};
+
+export type UpdatePageArgs = {
+  page: WriteAttribution & {
+    uid: string;
+    title?: string;
+    "children-view-type"?: ViewType;
+  };
+};
+
+export type DeletePageArgs = {
+  page: WriteAttribution & { uid: string };
+};
+
+export type WriteApi<TArgs> = (args: TArgs) => Promise<void>;
+
 export type UserSettings = {
   "global-filters": {
     includes: string[];
@@ -568,11 +631,17 @@ export type SearchArgs = SearchString & {
 export type RoamQueryArgs =
   | {
       uid: string;
+      query?: never;
+      groupByPage?: never;
+      nestUnderParent?: never;
+      sort?: never;
+      sortOrder?: never;
       offset?: number;
       limit?: number | null;
       pull?: string;
     }
   | {
+      uid?: never;
       query: string;
       groupByPage?: boolean;
       nestUnderParent?: boolean;
@@ -701,7 +770,7 @@ export type AiToolApi = {
 
 type ButtonAction = {
   type: "button";
-  onClick?: (e: ReactMouseEvent<HTMLElement>) => void;
+  onClick?: (e: MouseEvent) => void;
   content: string;
   class?: string;
 };

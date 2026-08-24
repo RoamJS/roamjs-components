@@ -4,6 +4,10 @@ import {
   BlockContext,
   BlockRefContext,
   ContextMenu,
+  CreateBlockArgs,
+  CreatePageArgs,
+  DeleteBlockArgs,
+  DeletePageArgs,
   FocusedBlock,
   OpenMainWindowView,
   PageContext,
@@ -21,7 +25,10 @@ import {
   SidebarWindow,
   SidebarWindowInput,
   SlashCommandApi,
-  WriteAction,
+  MoveBlockArgs,
+  UpdateBlockArgs,
+  UpdatePageArgs,
+  WriteApi,
 } from "./native";
 import {
   RunQuery,
@@ -113,13 +120,13 @@ declare global {
         id: PullEntityId,
         options?: PullOptions,
       ) => PullBlock;
-      createBlock: WriteAction;
-      updateBlock: WriteAction;
-      createPage: WriteAction;
-      moveBlock: WriteAction;
-      deleteBlock: WriteAction;
-      updatePage: WriteAction;
-      deletePage: WriteAction;
+      createBlock: WriteApi<CreateBlockArgs>;
+      updateBlock: WriteApi<UpdateBlockArgs>;
+      createPage: WriteApi<CreatePageArgs>;
+      moveBlock: WriteApi<MoveBlockArgs>;
+      deleteBlock: WriteApi<DeleteBlockArgs>;
+      updatePage: WriteApi<UpdatePageArgs>;
+      deletePage: WriteApi<DeletePageArgs>;
       util: {
         generateUID: () => string;
         dateToPageTitle: (date: Date) => string;
@@ -131,10 +138,10 @@ declare global {
         addPullWatch: AddPullWatch;
         semanticSearchEnabled: () => boolean;
         block: {
-          create: WriteAction;
-          update: WriteAction;
-          move: WriteAction;
-          delete: WriteAction;
+          create: WriteApi<CreateBlockArgs>;
+          update: WriteApi<UpdateBlockArgs>;
+          move: WriteApi<MoveBlockArgs>;
+          delete: WriteApi<DeleteBlockArgs>;
           reorderBlocks: (args: {
             location: { "parent-uid": string };
             blocks: string[];
@@ -183,9 +190,9 @@ declare global {
           q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
         };
         page: {
-          create: WriteAction;
-          update: WriteAction;
-          delete: WriteAction;
+          create: WriteApi<CreatePageArgs>;
+          update: WriteApi<UpdatePageArgs>;
+          delete: WriteApi<DeletePageArgs>;
           fromMarkdown: (args: {
             page: {
               title: string;
@@ -420,10 +427,6 @@ declare global {
           location?: { "block-uid": string; "window-id": string };
           selection?: { start: number; end?: number };
         }) => Promise<void>;
-        callout: {
-          addType: (args: { type: string }) => null;
-          removeType: (args: { type: string }) => null;
-        };
       };
       platform: {
         isDesktop: boolean;
@@ -449,14 +452,14 @@ declare global {
           file: File;
           toast?: { hide?: boolean };
         }) => Promise<string>;
-        get: {
-          (args: { url: string }): Promise<File>;
-          (args: { url: string; format: "base64" }): Promise<{
-            base64: string;
-            filename: string;
-            mimetype: string;
-          }>;
-        };
+        get: <TFormat extends "base64" | undefined = undefined>(args: {
+          url: string;
+          format?: TFormat;
+        }) => Promise<
+          TFormat extends "base64"
+            ? { base64: string; filename: string; mimetype: string }
+            : File
+        >;
         delete: (args: { url: string }) => Promise<void>;
       };
       user: {

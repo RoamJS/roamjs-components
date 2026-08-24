@@ -13,7 +13,7 @@ const FlagPanel: FieldPanel<FlagField> = ({
   options = {},
   disabled = false,
 }) => {
-  const [uid, setUid] = useState(initialUid);
+  const [uid, setUid] = useState(initialUid || "");
   return (
     <Checkbox
       checked={!!uid}

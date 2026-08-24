@@ -1,6 +1,81 @@
 import type { OnloadArgs } from "../../src/types";
 import type { FC } from "react";
 
+type Assert<T extends true> = T;
+type AssertFalse<T extends false> = T;
+type IsAssignable<T, U> = T extends U ? true : false;
+type IsExact<T, U> = (<V>() => V extends T ? 1 : 2) extends <V>() => V extends U
+  ? 1
+  : 2
+  ? true
+  : false;
+
+type CreateBlockArgs = Parameters<
+  typeof window.roamAlphaAPI.data.block.create
+>[0];
+type UpdateBlockArgs = Parameters<
+  typeof window.roamAlphaAPI.data.block.update
+>[0];
+type MoveBlockArgs = Parameters<typeof window.roamAlphaAPI.data.block.move>[0];
+type DeleteBlockArgs = Parameters<
+  typeof window.roamAlphaAPI.data.block.delete
+>[0];
+type CreatePageArgs = Parameters<
+  typeof window.roamAlphaAPI.data.page.create
+>[0];
+type UpdatePageArgs = Parameters<
+  typeof window.roamAlphaAPI.data.page.update
+>[0];
+type DeletePageArgs = Parameters<
+  typeof window.roamAlphaAPI.data.page.delete
+>[0];
+type RoamQueryArgs = Parameters<typeof window.roamAlphaAPI.data.roamQuery>[0];
+type CreateBlockRequiresFields = AssertFalse<
+  IsAssignable<Record<string, never>, CreateBlockArgs>
+>;
+type CreateBlockRequiresString = AssertFalse<
+  IsAssignable<
+    {
+      location: { "parent-uid": string; order: number };
+      block: Record<string, never>;
+    },
+    CreateBlockArgs
+  >
+>;
+type UpdateBlockRequiresUid = AssertFalse<
+  IsAssignable<{ block: { string: string } }, UpdateBlockArgs>
+>;
+type MoveBlockRequiresLocation = AssertFalse<
+  IsAssignable<{ block: { uid: string } }, MoveBlockArgs>
+>;
+type DeleteBlockRequiresUid = AssertFalse<
+  IsAssignable<{ block: Record<string, never> }, DeleteBlockArgs>
+>;
+type CreatePageRequiresTitle = AssertFalse<
+  IsAssignable<{ page: Record<string, never> }, CreatePageArgs>
+>;
+type UpdatePageRequiresUid = AssertFalse<
+  IsAssignable<{ page: { title: string } }, UpdatePageArgs>
+>;
+type DeletePageRequiresUid = AssertFalse<
+  IsAssignable<{ page: Record<string, never> }, DeletePageArgs>
+>;
+type RoamQueryModesAreExclusive = AssertFalse<
+  IsAssignable<{ uid: string; query: string }, RoamQueryArgs>
+>;
+type QueryResultIsExact = Assert<
+  IsExact<
+    Awaited<ReturnType<typeof window.roamAlphaAPI.data.roamQuery>>["total"],
+    number
+  >
+>;
+type CustomPullAttributesAreRepresentable = Assert<
+  IsAssignable<
+    { ":custom/attribute": string },
+    ReturnType<typeof window.roamAlphaAPI.data.search>[number]
+  >
+>;
+
 export const exerciseDocumentedApis = async ({
   extensionAPI,
 }: OnloadArgs): Promise<void> => {
@@ -80,9 +155,6 @@ export const exerciseDocumentedApis = async ({
   window.roamAlphaAPI.ui.mainWindow.openComponent("custom-view", "argument");
   window.roamAlphaAPI.ui.mainWindow.closeComponent("custom-view");
   window.roamAlphaAPI.ui.mainWindow.unregisterComponent("custom-view");
-  window.roamAlphaAPI.ui.callout.addType({ type: "recipe" });
-  window.roamAlphaAPI.ui.callout.removeType({ type: "recipe" });
-
   await window.roamAlphaAPI.ui.rightSidebar.addWindow({
     window: { type: "outline", "block-uid": "abc123xyz" },
   });
@@ -92,6 +164,18 @@ export const exerciseDocumentedApis = async ({
     url: "https://example.com/file",
     format: "base64",
   });
+  const optionalFormat = Date.now() % 2 === 0 ? ("base64" as const) : undefined;
+  const optionallyBase64File = await window.roamAlphaAPI.file.get({
+    url: "https://example.com/file",
+    format: optionalFormat,
+  });
+  const optionalFileResult:
+    | File
+    | {
+        base64: string;
+        filename: string;
+        mimetype: string;
+      } = optionallyBase64File;
   const isAdmin = window.roamAlphaAPI.user.isAdmin();
   window.roamAlphaAPI.ai.addTool({
     name: "word-count",
@@ -142,4 +226,19 @@ export const exerciseDocumentedApis = async ({
   void base64File;
   void isAdmin;
   void canSet;
+  void optionallyBase64File;
+  void optionalFileResult;
 };
+
+export type DocumentedApiTypeAssertions =
+  | CreateBlockRequiresFields
+  | CreateBlockRequiresString
+  | UpdateBlockRequiresUid
+  | MoveBlockRequiresLocation
+  | DeleteBlockRequiresUid
+  | CreatePageRequiresTitle
+  | UpdatePageRequiresUid
+  | DeletePageRequiresUid
+  | RoamQueryModesAreExclusive
+  | QueryResultIsExact
+  | CustomPullAttributesAreRepresentable;

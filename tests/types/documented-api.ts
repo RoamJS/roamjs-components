@@ -87,6 +87,15 @@ type RoamQueryUngroupedSortIsConstrained = AssertFalse<
     RoamQueryArgs
   >
 >;
+type RoamQueryAcceptsComputedGroupingWithoutSort = Assert<
+  IsAssignable<{ query: string; groupByPage: boolean }, RoamQueryArgs>
+>;
+type RoamQueryComputedGroupingStillRejectsSort = AssertFalse<
+  IsAssignable<
+    { query: string; groupByPage: boolean; sort: "page-title" },
+    RoamQueryArgs
+  >
+>;
 type SidebarOrderIsRequired = AssertFalse<
   IsAssignable<
     { window: { type: "outline"; "block-uid": string } },
@@ -96,6 +105,23 @@ type SidebarOrderIsRequired = AssertFalse<
 type RenderBlockZoomStartRequiresZoomPath = AssertFalse<
   IsAssignable<
     { uid: string; el: HTMLElement; "zoom-start-after-uid": string },
+    RenderBlockArgs
+  >
+>;
+type RenderBlockAcceptsComputedZoomPathWithoutStartUid = Assert<
+  IsAssignable<
+    { uid: string; el: HTMLElement; "zoom-path?": boolean },
+    RenderBlockArgs
+  >
+>;
+type RenderBlockComputedZoomPathStillRejectsStartUid = AssertFalse<
+  IsAssignable<
+    {
+      uid: string;
+      el: HTMLElement;
+      "zoom-path?": boolean;
+      "zoom-start-after-uid": string;
+    },
     RenderBlockArgs
   >
 >;
@@ -305,8 +331,12 @@ export type DocumentedApiTypeAssertions =
   | RoamQueryModesAreExclusive
   | RoamQueryGroupedSortIsConstrained
   | RoamQueryUngroupedSortIsConstrained
+  | RoamQueryAcceptsComputedGroupingWithoutSort
+  | RoamQueryComputedGroupingStillRejectsSort
   | SidebarOrderIsRequired
   | RenderBlockZoomStartRequiresZoomPath
+  | RenderBlockAcceptsComputedZoomPathWithoutStartUid
+  | RenderBlockComputedZoomPathStillRejectsStartUid
   | AsyncTokenUserCallbackIsRejected
   | PartialRemovePullWatchIsRejected
   | BlockPropsRemainSupported

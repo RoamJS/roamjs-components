@@ -680,6 +680,10 @@ export type RoamQueryArgs =
           groupByPage: false;
           sort?: "created-date" | "edited-date" | "daily-note-date";
         }
+      | {
+          groupByPage: boolean;
+          sort?: never;
+        }
     ));
 
 export type RoamQueryResponse = {
@@ -788,6 +792,10 @@ export type RenderBlockArgs = {
     }
   | {
       "zoom-path?"?: false;
+      "zoom-start-after-uid"?: never;
+    }
+  | {
+      "zoom-path?": boolean;
       "zoom-start-after-uid"?: never;
     }
 );

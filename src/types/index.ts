@@ -16,12 +16,15 @@ import {
   PullBlock,
   PullEntityId,
   PullOptions,
+  RemovePullWatch,
+  RenderBlockArgs,
   RoamQueryArgs,
   RoamQueryResponse,
   SearchArgs,
   SemanticSearch,
   SidebarAction,
   SidebarFilterWindowInput,
+  SidebarOrderedWindowInput,
   SidebarWindow,
   SidebarWindowInput,
   SlashCommandApi,
@@ -217,14 +220,7 @@ declare global {
         q: (query: string, ...params: unknown[]) => unknown[][];
         search: (args: SearchArgs) => PullBlock[];
         roamQuery: (args: RoamQueryArgs) => Promise<RoamQueryResponse>;
-        removePullWatch: (
-          pullPattern?: string,
-          entityId?: string,
-          callback?: (
-            before: PullBlock | null,
-            after: PullBlock | null,
-          ) => void,
-        ) => Promise<null | true>;
+        removePullWatch: RemovePullWatch;
         redo: () => Promise<void>;
         undo: () => Promise<void>;
         user: {
@@ -246,7 +242,9 @@ declare global {
           close: () => Promise<void>;
           getWindows: () => SidebarWindow[];
           addWindow: SidebarAction;
-          setWindowOrder: SidebarAction;
+          setWindowOrder: (action: {
+            window: SidebarOrderedWindowInput;
+          }) => Promise<void>;
           collapseWindow: SidebarAction;
           pinWindow: (action: {
             window: SidebarWindowInput;
@@ -328,13 +326,7 @@ declare global {
         };
         getFocusedBlock: () => FocusedBlock | null;
         components: {
-          renderBlock: (args: {
-            uid: string;
-            el: HTMLElement;
-            "zoom-path?"?: boolean;
-            "open?"?: boolean;
-            "zoom-start-after-uid"?: string;
-          }) => Promise<null>;
+          renderBlock: (args: RenderBlockArgs) => Promise<null>;
           renderPage: (args: {
             uid: string;
             el: HTMLElement;

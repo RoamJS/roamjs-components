@@ -464,6 +464,7 @@ type BlockDisplayProperties = {
   "text-align"?: TextAlignment;
   "children-view-type"?: ViewType;
   "block-view-type"?: Exclude<BlockViewType, "horizontal">;
+  props?: Record<string, unknown>;
 };
 
 type WriteAttribution = {
@@ -542,6 +543,10 @@ export type SidebarWindowInput = SidebarWindowInputType & {
   order?: number;
 };
 
+export type SidebarOrderedWindowInput = SidebarWindowInputType & {
+  order: number;
+};
+
 export type SidebarFilterWindowInput = Exclude<
   SidebarWindowInputType,
   SidebarSearchQueryWindow
@@ -614,6 +619,20 @@ export type AddPullWatch = (
   callback: (before: PullBlock | null, after: PullBlock | null) => void,
 ) => Promise<null>;
 
+type PullWatchCallback = (
+  before: PullBlock | null,
+  after: PullBlock | null,
+) => void;
+
+type RemovePullWatchArgs =
+  | []
+  | [pullPattern: string, entityId: string]
+  | [pullPattern: string, entityId: string, callback: PullWatchCallback];
+
+export type RemovePullWatch = <TArgs extends RemovePullWatchArgs>(
+  ...args: TArgs
+) => Promise<TArgs extends [string, string] ? true : null>;
+
 export type PullEntityId = number | string | [string, string];
 
 export type PullOptions = {
@@ -640,24 +659,28 @@ export type RoamQueryArgs =
       limit?: number | null;
       pull?: string;
     }
-  | {
+  | ({
       uid?: never;
       query: string;
-      groupByPage?: boolean;
       nestUnderParent?: boolean;
-      sort?:
-        | "page-most-recent"
-        | "page-title"
-        | "page-created-date"
-        | "daily-note"
-        | "created-date"
-        | "edited-date"
-        | "daily-note-date";
       sortOrder?: "asc" | "desc";
       offset?: number;
       limit?: number | null;
       pull?: string;
-    };
+    } & (
+      | {
+          groupByPage?: true;
+          sort?:
+            | "page-most-recent"
+            | "page-title"
+            | "page-created-date"
+            | "daily-note";
+        }
+      | {
+          groupByPage: false;
+          sort?: "created-date" | "edited-date" | "daily-note-date";
+        }
+    ));
 
 export type RoamQueryResponse = {
   total: number;
@@ -749,8 +772,25 @@ export type JsonValue =
 
 export type AiToolContext = {
   tokenUserUid?: string;
-  asTokenUser: <T>(callback: () => T) => T;
+  asTokenUser: <T>(
+    callback: () => T & (T extends PromiseLike<unknown> ? never : unknown),
+  ) => T;
 };
+
+export type RenderBlockArgs = {
+  uid: string;
+  el: HTMLElement;
+  "open?"?: boolean;
+} & (
+  | {
+      "zoom-path?": true;
+      "zoom-start-after-uid"?: string;
+    }
+  | {
+      "zoom-path?"?: false;
+      "zoom-start-after-uid"?: never;
+    }
+);
 
 export type AiToolDefinition = {
   name: string;

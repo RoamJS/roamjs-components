@@ -30,6 +30,18 @@ type DeletePageArgs = Parameters<
   typeof window.roamAlphaAPI.data.page.delete
 >[0];
 type RoamQueryArgs = Parameters<typeof window.roamAlphaAPI.data.roamQuery>[0];
+type SetWindowOrderArgs = Parameters<
+  typeof window.roamAlphaAPI.ui.rightSidebar.setWindowOrder
+>[0];
+type RenderBlockArgs = Parameters<
+  typeof window.roamAlphaAPI.ui.components.renderBlock
+>[0];
+type AsTokenUser = Parameters<
+  Parameters<typeof window.roamAlphaAPI.ai.addTool>[0]["handler"]
+>[1]["asTokenUser"];
+type RemovePullWatchArgs = Parameters<
+  typeof window.roamAlphaAPI.data.removePullWatch
+>;
 type CreateBlockRequiresFields = AssertFalse<
   IsAssignable<Record<string, never>, CreateBlockArgs>
 >;
@@ -62,6 +74,42 @@ type DeletePageRequiresUid = AssertFalse<
 >;
 type RoamQueryModesAreExclusive = AssertFalse<
   IsAssignable<{ uid: string; query: string }, RoamQueryArgs>
+>;
+type RoamQueryGroupedSortIsConstrained = AssertFalse<
+  IsAssignable<
+    { query: string; groupByPage: true; sort: "created-date" },
+    RoamQueryArgs
+  >
+>;
+type RoamQueryUngroupedSortIsConstrained = AssertFalse<
+  IsAssignable<
+    { query: string; groupByPage: false; sort: "page-title" },
+    RoamQueryArgs
+  >
+>;
+type SidebarOrderIsRequired = AssertFalse<
+  IsAssignable<
+    { window: { type: "outline"; "block-uid": string } },
+    SetWindowOrderArgs
+  >
+>;
+type RenderBlockZoomStartRequiresZoomPath = AssertFalse<
+  IsAssignable<
+    { uid: string; el: HTMLElement; "zoom-start-after-uid": string },
+    RenderBlockArgs
+  >
+>;
+type AsyncTokenUserCallbackIsRejected = AssertFalse<
+  IsAssignable<(callback: () => Promise<void>) => Promise<void>, AsTokenUser>
+>;
+type PartialRemovePullWatchIsRejected = AssertFalse<
+  IsAssignable<[pullPattern: string], RemovePullWatchArgs>
+>;
+type BlockPropsRemainSupported = Assert<
+  IsAssignable<
+    { block: { uid: string; props: Record<string, unknown> } },
+    UpdateBlockArgs
+  >
 >;
 type QueryResultIsExact = Assert<
   IsExact<
@@ -103,7 +151,19 @@ export const exerciseDocumentedApis = async ({
     '[:block/uid "abc123xyz"]',
     () => undefined,
   );
-  await window.roamAlphaAPI.data.removePullWatch();
+  const removeAllPullWatchesResult: null =
+    await window.roamAlphaAPI.data.removePullWatch();
+  const removeMatchingPullWatchesResult: true =
+    await window.roamAlphaAPI.data.removePullWatch(
+      "[:block/string]",
+      '[:block/uid "abc123xyz"]',
+    );
+  const removePullWatchCallbackResult: null =
+    await window.roamAlphaAPI.data.removePullWatch(
+      "[:block/string]",
+      '[:block/uid "abc123xyz"]',
+      () => undefined,
+    );
   await window.roamAlphaAPI.data.block.fromMarkdown({
     location: { "parent-uid": "abc123xyz", order: "last" },
     "markdown-string": "- First block",
@@ -228,6 +288,9 @@ export const exerciseDocumentedApis = async ({
   void canSet;
   void optionallyBase64File;
   void optionalFileResult;
+  void removeAllPullWatchesResult;
+  void removeMatchingPullWatchesResult;
+  void removePullWatchCallbackResult;
 };
 
 export type DocumentedApiTypeAssertions =
@@ -240,5 +303,12 @@ export type DocumentedApiTypeAssertions =
   | UpdatePageRequiresUid
   | DeletePageRequiresUid
   | RoamQueryModesAreExclusive
+  | RoamQueryGroupedSortIsConstrained
+  | RoamQueryUngroupedSortIsConstrained
+  | SidebarOrderIsRequired
+  | RenderBlockZoomStartRequiresZoomPath
+  | AsyncTokenUserCallbackIsRejected
+  | PartialRemovePullWatchIsRejected
+  | BlockPropsRemainSupported
   | QueryResultIsExact
   | CustomPullAttributesAreRepresentable;

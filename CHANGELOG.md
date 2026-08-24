@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.91.0
+
+- Updated the Roam Alpha API and extension API types to match the latest developer documentation, including search, markdown import, comments, context menus, custom views, AI tools, and current sidebar window identifiers.
+
 ## 0.90.0
 
 - Preserve Roam's built-in React 18 external-store hook when extensions initialize.

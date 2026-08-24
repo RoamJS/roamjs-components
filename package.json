@@ -9,6 +9,7 @@
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
     "build": "tsc",
+    "test:types": "tsc --project tsconfig.types-test.json",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "test": "playwright test",

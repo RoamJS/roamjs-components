@@ -1,7 +1,7 @@
 {
   "name": "roamjs-components",
   "description": "Expansive toolset, utilities, & components for developing RoamJS extensions.",
-  "version": "0.89.0",
+  "version": "0.90.0",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -12,7 +12,8 @@
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "test": "playwright test",
-    "start": "samepage dev"
+    "start": "samepage dev",
+    "test:unit": "node --test tests/react-host.test.cjs"
   },
   "sideEffects": false,
   "license": "MIT",
@@ -102,7 +103,7 @@
       "marked=window.RoamLazy.Marked",
       "marked-react=window.RoamLazy.MarkedReact",
       "nanoid=window.Nanoid;module.exports.nanoid=window.Nanoid",
-      "react=window.React;module.exports.useSyncExternalStore=require(\"use-sync-external-store/shim\").useSyncExternalStore",
+      "react=window.React",
       "react/jsx-runtime=./node_modules/react/jsx-runtime.js",
       "react-dom=window.ReactDOM",
       "react-youtube=window.ReactYoutube",

@@ -7,7 +7,6 @@ import {
   getRoamJSVersionEnv,
 } from "./env";
 import type { Registry } from "../types";
-import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { provideExtensionApi } from "./extensionApiContext";
 import apiPost from "./apiPost";
 import renderToast from "../components/Toast";
@@ -36,9 +35,6 @@ const renderLoadFailure = ({
 const runExtension = (
   run: RunExtension
 ): { onload: (args: OnloadArgs) => void; onunload: () => void } => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore React17 shim
-  window.React.useSyncExternalStore = useSyncExternalStore;
   let unload: (() => void) | undefined;
   const extensionId = getRoamJSExtensionIdEnv();
   const registry: Registry = {

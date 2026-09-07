@@ -508,6 +508,7 @@ export type CreatePageArgs = {
     title: string;
     uid?: string;
     "children-view-type"?: ViewType;
+    props?: Record<string, unknown>;
   };
 };
 
@@ -516,6 +517,7 @@ export type UpdatePageArgs = {
     uid: string;
     title?: string;
     "children-view-type"?: ViewType;
+    props?: Record<string, unknown>;
   };
 };
 
@@ -523,7 +525,17 @@ export type DeletePageArgs = {
   page: WriteAttribution & { uid: string };
 };
 
-export type WriteApi<TArgs> = (args: TArgs) => Promise<void>;
+export type DeleteResult =
+  | { deleted: true }
+  | { deleted: false; reason: string };
+
+export type WriteApi<TArgs, TResult = void> = (args: TArgs) => Promise<TResult>;
+
+export type Base64File = {
+  base64: string;
+  filename: string;
+  mimetype: string;
+};
 
 export type UserSettings = {
   "global-filters": {
@@ -776,9 +788,12 @@ export type JsonValue =
 
 export type AiToolContext = {
   tokenUserUid?: string;
-  asTokenUser: <T>(
-    callback: () => T & (T extends PromiseLike<unknown> ? never : unknown),
-  ) => T;
+  /**
+   * Issue writes synchronously inside the callback; await its return value outside.
+   * Do not pass an async callback: writes after its first await lose AI attribution.
+   * TypeScript cannot distinguish it from a synchronous callback returning a promise.
+   */
+  asTokenUser: <T>(callback: () => T) => T;
 };
 
 export type RenderBlockArgs = {

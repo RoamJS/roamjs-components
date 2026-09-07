@@ -36,9 +36,6 @@ type SetWindowOrderArgs = Parameters<
 type RenderBlockArgs = Parameters<
   typeof window.roamAlphaAPI.ui.components.renderBlock
 >[0];
-type AsTokenUser = Parameters<
-  Parameters<typeof window.roamAlphaAPI.ai.addTool>[0]["handler"]
->[1]["asTokenUser"];
 type RemovePullWatchArgs = Parameters<
   typeof window.roamAlphaAPI.data.removePullWatch
 >;
@@ -124,9 +121,6 @@ type RenderBlockComputedZoomPathStillRejectsStartUid = AssertFalse<
     },
     RenderBlockArgs
   >
->;
-type AsyncTokenUserCallbackIsRejected = AssertFalse<
-  IsAssignable<(callback: () => Promise<void>) => Promise<void>, AsTokenUser>
 >;
 type PartialRemovePullWatchIsRejected = AssertFalse<
   IsAssignable<[pullPattern: string], RemovePullWatchArgs>
@@ -337,7 +331,6 @@ export type DocumentedApiTypeAssertions =
   | RenderBlockZoomStartRequiresZoomPath
   | RenderBlockAcceptsComputedZoomPathWithoutStartUid
   | RenderBlockComputedZoomPathStillRejectsStartUid
-  | AsyncTokenUserCallbackIsRejected
   | PartialRemovePullWatchIsRejected
   | BlockPropsRemainSupported
   | QueryResultIsExact

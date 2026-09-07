@@ -1,6 +1,7 @@
 import {
   AddPullWatch,
   AiToolApi,
+  Base64File,
   BlockContext,
   BlockRefContext,
   ContextMenu,
@@ -8,6 +9,7 @@ import {
   CreatePageArgs,
   DeleteBlockArgs,
   DeletePageArgs,
+  DeleteResult,
   FocusedBlock,
   OpenMainWindowView,
   PageContext,
@@ -127,9 +129,9 @@ declare global {
       updateBlock: WriteApi<UpdateBlockArgs>;
       createPage: WriteApi<CreatePageArgs>;
       moveBlock: WriteApi<MoveBlockArgs>;
-      deleteBlock: WriteApi<DeleteBlockArgs>;
+      deleteBlock: WriteApi<DeleteBlockArgs, DeleteResult>;
       updatePage: WriteApi<UpdatePageArgs>;
-      deletePage: WriteApi<DeletePageArgs>;
+      deletePage: WriteApi<DeletePageArgs, DeleteResult>;
       util: {
         generateUID: () => string;
         dateToPageTitle: (date: Date) => string;
@@ -144,7 +146,7 @@ declare global {
           create: WriteApi<CreateBlockArgs>;
           update: WriteApi<UpdateBlockArgs>;
           move: WriteApi<MoveBlockArgs>;
-          delete: WriteApi<DeleteBlockArgs>;
+          delete: WriteApi<DeleteBlockArgs, DeleteResult>;
           reorderBlocks: (args: {
             location: { "parent-uid": string };
             blocks: string[];
@@ -195,7 +197,7 @@ declare global {
         page: {
           create: WriteApi<CreatePageArgs>;
           update: WriteApi<UpdatePageArgs>;
-          delete: WriteApi<DeletePageArgs>;
+          delete: WriteApi<DeletePageArgs, DeleteResult>;
           fromMarkdown: (args: {
             page: {
               title: string;
@@ -233,6 +235,10 @@ declare global {
         ai: Record<string, unknown>;
       };
       ui: {
+        callout: {
+          addType: (args: { type: string }) => null;
+          removeType: (args: { type: string }) => null;
+        };
         leftSidebar: {
           open: () => Promise<void>;
           close: () => Promise<void>;
@@ -444,14 +450,13 @@ declare global {
           file: File;
           toast?: { hide?: boolean };
         }) => Promise<string>;
-        get: <TFormat extends "base64" | undefined = undefined>(args: {
-          url: string;
-          format?: TFormat;
-        }) => Promise<
-          TFormat extends "base64"
-            ? { base64: string; filename: string; mimetype: string }
-            : File
-        >;
+        get: {
+          (args: { url: string; format: "base64" }): Promise<Base64File>;
+          (args: { url: string; format?: undefined }): Promise<File>;
+          (args: { url: string; format?: "base64" }): Promise<
+            File | Base64File
+          >;
+        };
         delete: (args: { url: string }) => Promise<void>;
       };
       user: {

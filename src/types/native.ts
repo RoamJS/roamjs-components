@@ -1,7 +1,7 @@
 // emulating Datalog Grammar
 // https://docs.datomic.com/cloud/query/query-data-reference.html#or-clauses
 
-import { ChangeEvent } from "react";
+import type { ChangeEvent, ReactElement } from "react";
 
 export type DatalogSrcVar = {
   type: "src-var";
@@ -237,6 +237,7 @@ export type RoamPull = {
 } & RoamNode;
 
 export type PullBlock = {
+  [key: string]: unknown;
   ":attrs/lookup"?: PullBlock[];
   ":entity/attrs"?: [
     { ":source": [":block/uid", string]; ":value": [":block/uid", string] },
@@ -332,8 +333,11 @@ export type RoamError = {
   "status-code": number;
 };
 
-export type SemanticSearchArgs = {
-  "search-str": string;
+type SearchString =
+  | { "search-str": string; "search-string"?: never }
+  | { "search-str"?: never; "search-string": string };
+
+export type SemanticSearchArgs = SearchString & {
   k?: number;
   "search-blocks"?: boolean;
   "search-pages"?: boolean;
@@ -430,7 +434,7 @@ export type ClientParams = {
 export type ActionParams = {
   location?: {
     "parent-uid": string;
-    order: number | "last";
+    order: number | "first" | "last";
   };
   block?: {
     string?: string;
@@ -440,16 +444,98 @@ export type ActionParams = {
     "text-align"?: TextAlignment;
     "children-view-type"?: ViewType;
     "block-view-type"?: BlockViewType;
+    "user-uid"?: string;
     props?: Record<string, unknown>;
   };
   page?: {
     title?: string;
     uid?: string;
+    "children-view-type"?: ViewType;
+    "user-uid"?: string;
     props?: Record<string, unknown>;
   };
 };
 
 export type WriteAction = (a: ActionParams) => Promise<void>;
+
+type BlockDisplayProperties = {
+  open?: boolean;
+  heading?: 0 | 1 | 2 | 3;
+  "text-align"?: TextAlignment;
+  "children-view-type"?: ViewType;
+  "block-view-type"?: Exclude<BlockViewType, "horizontal">;
+  props?: Record<string, unknown>;
+};
+
+type WriteAttribution = {
+  "user-uid"?: string;
+};
+
+export type CreateBlockArgs = {
+  location: {
+    "parent-uid": string;
+    order: number | "first" | "last";
+  };
+  block: BlockDisplayProperties &
+    WriteAttribution & {
+      string: string;
+      uid?: string;
+    };
+};
+
+export type UpdateBlockArgs = {
+  block: BlockDisplayProperties &
+    WriteAttribution & {
+      uid: string;
+      string?: string;
+    };
+};
+
+export type MoveBlockArgs = {
+  location: {
+    "parent-uid": string;
+    order: number | "first" | "last";
+  };
+  block: WriteAttribution & { uid: string };
+};
+
+export type DeleteBlockArgs = {
+  block: WriteAttribution & { uid: string };
+};
+
+export type CreatePageArgs = {
+  page: WriteAttribution & {
+    title: string;
+    uid?: string;
+    "children-view-type"?: ViewType;
+    props?: Record<string, unknown>;
+  };
+};
+
+export type UpdatePageArgs = {
+  page: WriteAttribution & {
+    uid: string;
+    title?: string;
+    "children-view-type"?: ViewType;
+    props?: Record<string, unknown>;
+  };
+};
+
+export type DeletePageArgs = {
+  page: WriteAttribution & { uid: string };
+};
+
+export type DeleteResult =
+  | { deleted: true }
+  | { deleted: false; reason: string };
+
+export type WriteApi<TArgs, TResult = void> = (args: TArgs) => Promise<TResult>;
+
+export type Base64File = {
+  base64: string;
+  filename: string;
+  mimetype: string;
+};
 
 export type UserSettings = {
   "global-filters": {
@@ -458,16 +544,25 @@ export type UserSettings = {
   };
 };
 
-type SidebarWindowType =
+type SidebarWindowInputType =
   | SidebarBlockWindow
   | SidebarMentionsWindow
   | SidebarGraphWindow
   | SidebarOutlineWindow
   | SidebarSearchQueryWindow;
 
-export type SidebarWindowInput = SidebarWindowType & {
+export type SidebarWindowInput = SidebarWindowInputType & {
   order?: number;
 };
+
+export type SidebarOrderedWindowInput = SidebarWindowInputType & {
+  order: number;
+};
+
+export type SidebarFilterWindowInput = Exclude<
+  SidebarWindowInputType,
+  SidebarSearchQueryWindow
+>;
 
 type SidebarBlockWindow = {
   type: "block";
@@ -476,23 +571,22 @@ type SidebarBlockWindow = {
 
 type SidebarOutlineWindow = {
   type: "outline";
-  "page-uid": string;
+  "block-uid": string;
 };
 
 type SidebarMentionsWindow = {
   type: "mentions";
-  "mentions-uid": string;
+  "block-uid": string;
 };
 
 type SidebarGraphWindow = {
   type: "graph";
-  // "page-uid": string; Currently not working despite documentation
   "block-uid": string;
 };
 
 type SidebarSearchQueryWindow = {
   type: "search-query";
-  "search-query-uid": string;
+  "search-query-str": string;
 };
 
 export type SidebarAction = (action: {
@@ -503,19 +597,245 @@ export type SidebarWindow = {
   "collapsed?": boolean;
   order: number;
   "pinned?": boolean;
+  "pinned-to-top?": boolean;
   "window-id": string;
-} & SidebarWindowType;
+} & (
+  | {
+      type: "block";
+      "block-uid": string;
+      "block-string": string;
+    }
+  | {
+      type: "outline" | "graph";
+      "page-uid": string;
+      title: string;
+    }
+  | {
+      type: "mentions";
+      "mentions-uid": string;
+    }
+  | {
+      type: "mentions";
+      "page-uid": string;
+      title: string;
+    }
+  | {
+      type: "search-query";
+      "search-query-str": string;
+    }
+);
 
 export type AddPullWatch = (
   pullPattern: string,
   entityId: string,
   callback: (before: PullBlock | null, after: PullBlock | null) => void,
-) => boolean;
+) => Promise<null>;
+
+type PullWatchCallback = (
+  before: PullBlock | null,
+  after: PullBlock | null,
+) => void;
+
+type RemovePullWatchArgs =
+  | []
+  | [pullPattern: string, entityId: string]
+  | [pullPattern: string, entityId: string, callback: PullWatchCallback];
+
+export type RemovePullWatch = <TArgs extends RemovePullWatchArgs>(
+  ...args: TArgs
+) => Promise<TArgs extends [string, string] ? true : null>;
+
+export type PullEntityId = number | string | [string, string];
+
+export type PullOptions = {
+  timeout?: number;
+};
+
+export type SearchArgs = SearchString & {
+  "search-blocks"?: boolean;
+  "search-pages"?: boolean;
+  "hide-code-blocks"?: boolean;
+  limit?: number;
+  pull?: string | unknown[];
+};
+
+export type RoamQueryArgs =
+  | {
+      uid: string;
+      query?: never;
+      groupByPage?: never;
+      nestUnderParent?: never;
+      sort?: never;
+      sortOrder?: never;
+      offset?: number;
+      limit?: number | null;
+      pull?: string;
+    }
+  | ({
+      uid?: never;
+      query: string;
+      nestUnderParent?: boolean;
+      sortOrder?: "asc" | "desc";
+      offset?: number;
+      limit?: number | null;
+      pull?: string;
+    } & (
+      | {
+          groupByPage?: true;
+          sort?:
+            | "page-most-recent"
+            | "page-title"
+            | "page-created-date"
+            | "daily-note";
+        }
+      | {
+          groupByPage: false;
+          sort?: "created-date" | "edited-date" | "daily-note-date";
+        }
+      | {
+          groupByPage: boolean;
+          sort?: never;
+        }
+    ));
+
+export type RoamQueryResponse = {
+  total: number;
+  results: PullBlock[];
+};
+
+export type FocusedBlock = {
+  "block-uid": string;
+  "window-id": string;
+};
+
+export type SlashCommandContext = FocusedBlock & {
+  indexes: [number, number];
+};
+
+export type BlockContext = FocusedBlock & {
+  "block-string": string;
+  heading: 0 | 1 | 2 | 3 | null;
+  "page-uid": string;
+  "read-only?": boolean;
+};
+
+export type PageContext = {
+  "page-uid": string;
+  "page-title": string;
+  "window-id": string;
+};
+
+export type PageLinkContext = Pick<PageContext, "page-uid" | "page-title">;
+
+export type BlockRefContext = FocusedBlock & {
+  "ref-uid": string;
+  indexes: [number, number];
+};
+
+export type PageRefContext = BlockRefContext & {
+  type: "page-ref" | "attribute" | "tag" | "multitag" | "inline-link";
+};
+
+export type MenuCommand<TContext> = {
+  label: string;
+  callback: (context: TContext) => void;
+  "display-conditional"?: (context: TContext) => boolean;
+};
+
+export type ContextMenu<TContext, TReturn = null> = {
+  addCommand: (action: MenuCommand<TContext>) => TReturn;
+  removeCommand: (action: { label: string }) => TReturn;
+};
+
+export type SlashCommandApi = {
+  addCommand: (action: {
+    label: string;
+    callback: (context: SlashCommandContext) => string | null;
+    "display-conditional"?: (
+      context: Omit<SlashCommandContext, "indexes">,
+    ) => boolean;
+  }) => null;
+  removeCommand: (action: { label: string }) => null;
+};
+
+export type OpenMainWindowView =
+  | {
+      type: "outline";
+      uid: string;
+      title: string;
+    }
+  | {
+      type: "outline";
+      uid: string;
+      "block-string": string;
+    }
+  | {
+      type: "log";
+      uids: string[];
+    }
+  | { type: "graph" }
+  | { type: "diagram"; uid: string }
+  | { type: "pdf"; uid: string; url: string }
+  | { type: "search" }
+  | { type: "custom"; id: string; args: unknown[] };
+
+export type JsonPrimitive = string | number | boolean | null;
+
+export type JsonValue =
+  | JsonPrimitive
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+export type AiToolContext = {
+  tokenUserUid?: string;
+  /**
+   * Issue writes synchronously inside the callback; await its return value outside.
+   * Do not pass an async callback: writes after its first await lose AI attribution.
+   * TypeScript cannot distinguish it from a synchronous callback returning a promise.
+   */
+  asTokenUser: <T>(callback: () => T) => T;
+};
+
+export type RenderBlockArgs = {
+  uid: string;
+  el: HTMLElement;
+  "open?"?: boolean;
+} & (
+  | {
+      "zoom-path?": true;
+      "zoom-start-after-uid"?: string;
+    }
+  | {
+      "zoom-path?"?: false;
+      "zoom-start-after-uid"?: never;
+    }
+  | {
+      "zoom-path?": boolean;
+      "zoom-start-after-uid"?: never;
+    }
+);
+
+export type AiToolDefinition = {
+  name: string;
+  description: string;
+  handler: (
+    args: Record<string, unknown>,
+    context: AiToolContext,
+  ) => JsonValue | Promise<JsonValue>;
+  scope?: "read" | "append" | "edit";
+  inputSchema?: Record<string, JsonValue>;
+};
+
+export type AiToolApi = {
+  addTool: (tool: AiToolDefinition) => null;
+  removeTool: (args: { name: string }) => null;
+};
 
 type ButtonAction = {
   type: "button";
   onClick?: (e: MouseEvent) => void;
   content: string;
+  class?: string;
 };
 
 type SwitchAction = {
@@ -532,7 +852,7 @@ type InputAction = {
 type SelectAction = {
   type: "select";
   items: string[];
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (item: string) => void;
 };
 
 type CustomAction = {
@@ -551,8 +871,9 @@ type PanelConfig = {
   tabTitle: string;
   settings: {
     id: string;
-    name: string;
-    description: string;
+    name: string | ReactElement;
+    description?: string | ReactElement;
+    className?: string;
     action: Action;
   }[];
 };
@@ -560,31 +881,36 @@ type PanelConfig = {
 export type AddCommandOptions = {
   label: string;
   callback: () => void;
-  disableHotkey?: boolean;
-  defaultHotkey?: string | string[];
+  "disable-hotkey"?: boolean;
+  "default-hotkey"?: string | string[];
 };
 
-type RemoveCommandOptions = {
+export type RemoveCommandOptions = {
   label: string;
 };
 
-export type OnloadArgs = {
-  extensionAPI: {
-    settings: {
-      get: (k: string) => unknown;
-      getAll: () => Record<string, unknown>;
-      panel: {
-        create: (c: PanelConfig) => void;
-      };
-      set: (k: string, v: unknown) => Promise<void>;
+export type ExtensionAPI = {
+  settings: {
+    canSet: boolean;
+    get: (key: string) => JsonValue | null;
+    getAll: () => Record<string, JsonValue> | null;
+    panel: {
+      create: (config: PanelConfig) => Promise<null>;
     };
-    ui: {
-      commandPalette: {
-        addCommand: (c: AddCommandOptions) => Promise<void>;
-        removeCommand: (c: RemoveCommandOptions) => Promise<void>;
-      };
-    };
+    set: (key: string, value: JsonValue) => Promise<null>;
   };
+  ui: {
+    commandPalette: {
+      addCommand: (command: AddCommandOptions) => Promise<null>;
+      removeCommand: (command: RemoveCommandOptions) => Promise<null>;
+    };
+    slashCommand: SlashCommandApi;
+  };
+  ai: AiToolApi;
+};
+
+export type OnloadArgs = {
+  extensionAPI: ExtensionAPI;
   extension: {
     version: string;
   };

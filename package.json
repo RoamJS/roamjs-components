@@ -1,7 +1,7 @@
 {
   "name": "roamjs-components",
   "description": "Expansive toolset, utilities, & components for developing RoamJS extensions.",
-  "version": "0.90.0",
+  "version": "0.91.0",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -9,6 +9,7 @@
     "format": "prettier --write \"src/**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",
     "build": "tsc",
+    "test:types": "tsc --project tsconfig.types-test.json",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "test": "playwright test",

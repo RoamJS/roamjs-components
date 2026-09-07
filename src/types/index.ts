@@ -1,11 +1,39 @@
 import {
   AddPullWatch,
+  AiToolApi,
+  Base64File,
+  BlockContext,
+  BlockRefContext,
+  ContextMenu,
+  CreateBlockArgs,
+  CreatePageArgs,
+  DeleteBlockArgs,
+  DeletePageArgs,
+  DeleteResult,
+  FocusedBlock,
+  OpenMainWindowView,
+  PageContext,
+  PageLinkContext,
+  PageRefContext,
   PullBlock,
+  PullEntityId,
+  PullOptions,
+  RemovePullWatch,
+  RenderBlockArgs,
+  RoamQueryArgs,
+  RoamQueryResponse,
+  SearchArgs,
   SemanticSearch,
   SidebarAction,
+  SidebarFilterWindowInput,
+  SidebarOrderedWindowInput,
   SidebarWindow,
   SidebarWindowInput,
-  WriteAction,
+  SlashCommandApi,
+  MoveBlockArgs,
+  UpdateBlockArgs,
+  UpdatePageArgs,
+  WriteApi,
 } from "./native";
 import {
   RunQuery,
@@ -58,6 +86,7 @@ export type InstalledExtension = {
   id: string;
   name: string;
   enabled: boolean;
+  adminEnabled: boolean;
   version: string;
 };
 
@@ -89,18 +118,20 @@ declare global {
     // END TODO remove
 
     roamAlphaAPI: {
+      apiVersion: string;
       q: (query: string, ...params: unknown[]) => unknown[][];
       pull: (
         selector: string,
-        id: number | string | [string, string],
+        id: PullEntityId,
+        options?: PullOptions,
       ) => PullBlock;
-      createBlock: WriteAction;
-      updateBlock: WriteAction;
-      createPage: WriteAction;
-      moveBlock: WriteAction;
-      deleteBlock: WriteAction;
-      updatePage: WriteAction;
-      deletePage: WriteAction;
+      createBlock: WriteApi<CreateBlockArgs>;
+      updateBlock: WriteApi<UpdateBlockArgs>;
+      createPage: WriteApi<CreatePageArgs>;
+      moveBlock: WriteApi<MoveBlockArgs>;
+      deleteBlock: WriteApi<DeleteBlockArgs, DeleteResult>;
+      updatePage: WriteApi<UpdatePageArgs>;
+      deletePage: WriteApi<DeletePageArgs, DeleteResult>;
       util: {
         generateUID: () => string;
         dateToPageTitle: (date: Date) => string;
@@ -112,14 +143,32 @@ declare global {
         addPullWatch: AddPullWatch;
         semanticSearchEnabled: () => boolean;
         block: {
-          create: WriteAction;
-          update: WriteAction;
-          move: WriteAction;
-          delete: WriteAction;
+          create: WriteApi<CreateBlockArgs>;
+          update: WriteApi<UpdateBlockArgs>;
+          move: WriteApi<MoveBlockArgs>;
+          delete: WriteApi<DeleteBlockArgs, DeleteResult>;
           reorderBlocks: (args: {
             location: { "parent-uid": string };
             blocks: string[];
+            "user-uid"?: string;
           }) => Promise<void>;
+          fromMarkdown: (args: {
+            location: {
+              "parent-uid": string;
+              order: number | "first" | "last";
+            };
+            "markdown-string": string;
+          }) => Promise<{ uids: string[] }>;
+          addComment: (
+            args: {
+              "block-uid": string;
+              "reply-uid"?: string;
+              "open-comment"?: boolean;
+            } & (
+              | { "reply-string": string; "reply-markdown"?: never }
+              | { "reply-string"?: never; "reply-markdown": string }
+            ),
+          ) => Promise<{ uids: string[]; parentUid: string }>;
         };
         fast: {
           q: (query: string, ...params: unknown[]) => unknown[][];
@@ -128,12 +177,15 @@ declare global {
           q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
           pull: (
             selector: string,
-            id: number | string | [string, string],
+            id: PullEntityId,
+            options?: PullOptions,
           ) => Promise<PullBlock>;
           pull_many: (
             pattern: string,
-            eids: string[][],
+            eids: PullEntityId[],
+            options?: PullOptions,
           ) => Promise<PullBlock[]>;
+          search: (args: SearchArgs) => Promise<PullBlock[]>;
           semanticSearch: SemanticSearch;
           fast: {
             q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
@@ -143,28 +195,50 @@ declare global {
           q: (query: string, ...params: unknown[]) => Promise<unknown[][]>;
         };
         page: {
-          create: WriteAction;
-          update: WriteAction;
-          delete: WriteAction;
+          create: WriteApi<CreatePageArgs>;
+          update: WriteApi<UpdatePageArgs>;
+          delete: WriteApi<DeletePageArgs, DeleteResult>;
+          fromMarkdown: (args: {
+            page: {
+              title: string;
+              uid?: string;
+              "children-view-type"?: "bullet" | "numbered" | "document";
+            };
+            "markdown-string": string;
+          }) => Promise<{ uid: string }>;
+          addShortcut: (uid: string, index?: number) => Promise<void>;
+          removeShortcut: (uid: string) => Promise<void>;
         };
         pull: (
           selector: string,
-          id: number | string | [string, string],
+          id: PullEntityId,
+          options?: PullOptions,
         ) => PullBlock;
-        pull_many: (pattern: string, eids: string[][]) => PullBlock[];
+        pull_many: (
+          pattern: string,
+          eids: PullEntityId[],
+          options?: PullOptions,
+        ) => PullBlock[];
         q: (query: string, ...params: unknown[]) => unknown[][];
-        removePullWatch: (
-          pullPattern: string,
-          entityId: string,
-          callback?: (before: PullBlock, after: PullBlock) => void,
-        ) => boolean;
-        redo: () => void;
-        undo: () => void;
+        search: (args: SearchArgs) => PullBlock[];
+        roamQuery: (args: RoamQueryArgs) => Promise<RoamQueryResponse>;
+        removePullWatch: RemovePullWatch;
+        redo: () => Promise<void>;
+        undo: () => Promise<void>;
         user: {
-          upsert: () => void;
+          upsert: (args: {
+            "user-uid": string;
+            "display-name"?: string;
+            "photo-url"?: string;
+          }) => Promise<void>;
         };
+        ai: Record<string, unknown>;
       };
       ui: {
+        callout: {
+          addType: (args: { type: string }) => null;
+          removeType: (args: { type: string }) => null;
+        };
         leftSidebar: {
           open: () => Promise<void>;
           close: () => Promise<void>;
@@ -174,7 +248,9 @@ declare global {
           close: () => Promise<void>;
           getWindows: () => SidebarWindow[];
           addWindow: SidebarAction;
-          setWindowOrder: SidebarAction;
+          setWindowOrder: (action: {
+            window: SidebarOrderedWindowInput;
+          }) => Promise<void>;
           collapseWindow: SidebarAction;
           pinWindow: (action: {
             window: SidebarWindowInput;
@@ -190,33 +266,28 @@ declare global {
             callback: () => void;
             "disable-hotkey"?: boolean;
             "default-hotkey"?: string | string[];
-          }) => Promise<void>;
-          removeCommand: (action: { label: string }) => Promise<void>;
+          }) => Promise<null>;
+          removeCommand: (action: { label: string }) => Promise<null>;
         };
-        blockContextMenu: {
-          addCommand: (action: {
-            label: string;
-            callback: (props: {
-              "block-string": string;
-              "block-uid": string;
-              heading: 0 | 1 | 2 | 3 | null;
-              "page-uid": string;
-              "read-only?": boolean;
-              "window-id": string;
-            }) => void;
-          }) => void;
-          removeCommand: (action: { label: string }) => void;
-        };
+        slashCommand: SlashCommandApi;
+        blockContextMenu: ContextMenu<BlockContext, Promise<null>>;
+        pageContextMenu: ContextMenu<PageContext>;
+        pageRefContextMenu: ContextMenu<PageRefContext>;
+        blockRefContextMenu: ContextMenu<BlockRefContext>;
+        pageLinkContextMenu: ContextMenu<PageLinkContext>;
         individualMultiselect: {
           getSelectedUids: () => string[];
+        };
+        multiselect: {
+          getSelected: () => FocusedBlock[];
         };
         msContextMenu: {
           addCommand: (action: {
             label: string;
             callback: () => void;
             "display-conditional"?: () => boolean;
-          }) => void;
-          removeCommand: (action: { label: string }) => void;
+          }) => null;
+          removeCommand: (action: { label: string }) => null;
         };
         filters: {
           addGlobalFilter: (args: {
@@ -240,7 +311,9 @@ declare global {
             includes: string[];
             removes: string[];
           };
-          getSidebarWindowFilters: (args: { window: SidebarWindowInput }) => {
+          getSidebarWindowFilters: (args: {
+            window: SidebarFilterWindowInput;
+          }) => {
             includes: string[];
             removes: string[];
           };
@@ -253,21 +326,13 @@ declare global {
             filters: { includes?: string[]; removes?: string[] };
           }) => Promise<void>;
           setSidebarWindowFilters: (args: {
-            window: SidebarWindowInput;
+            window: SidebarFilterWindowInput;
             filters: { includes?: string[]; removes?: string[] };
           }) => Promise<void>;
         };
-        getFocusedBlock: () => null | {
-          "window-id": string;
-          "block-uid": string;
-        };
+        getFocusedBlock: () => FocusedBlock | null;
         components: {
-          renderBlock: (args: {
-            uid: string;
-            el: HTMLElement;
-            "zoom-path?"?: boolean;
-            "open?"?: boolean;
-          }) => Promise<null>;
+          renderBlock: (args: RenderBlockArgs) => Promise<null>;
           renderPage: (args: {
             uid: string;
             el: HTMLElement;
@@ -294,17 +359,19 @@ declare global {
             zoomPath?: boolean;
             zoomStartAfterUid?: string;
           }) => JSX.Element;
-          Page: (props:
-            | {
-                uid: string;
-                title?: never;
-                hideMentions?: boolean;
-              }
-            | {
-                uid?: never;
-                title: string;
-                hideMentions?: boolean;
-              }) => JSX.Element;
+          Page: (
+            props:
+              | {
+                  uid: string;
+                  title?: never;
+                  hideMentions?: boolean;
+                }
+              | {
+                  uid?: never;
+                  title: string;
+                  hideMentions?: boolean;
+                },
+          ) => JSX.Element;
           Search: (props: {
             searchQueryStr: string;
             closed?: boolean;
@@ -316,9 +383,7 @@ declare global {
               hidePaths?: boolean;
             }) => void;
           }) => JSX.Element;
-          BlockString: (props: {
-            string: string;
-          }) => JSX.Element;
+          BlockString: (props: { string: string }) => JSX.Element;
         };
         graphView: {
           addCallback: (props: {
@@ -329,14 +394,14 @@ declare global {
               type: "page" | "all-pages";
             }) => void;
             type?: "page" | "all-pages";
-          }) => Promise<void>;
-          removeCallback: (props: { label: string }) => Promise<void>;
+          }) => void;
+          removeCallback: (props: { label: string }) => null;
           wholeGraph: {
             addCallback: (props: {
               label: string;
               callback: (arg: { "sigma-renderer": unknown }) => void;
-            }) => any;
-            removeCallback: (props: { label: string }) => void;
+            }) => null;
+            removeCallback: (props: { label: string }) => null;
             setExplorePages: (pages: string[]) => void;
             getExplorePages: () => string[];
             setMode: (mode: "Whole Graph" | "Explore") => void;
@@ -349,7 +414,12 @@ declare global {
             page: { uid: string } | { title: string };
           }) => Promise<void>;
           getOpenPageOrBlockUid: () => Promise<string | null>;
+          getOpenView: () => Promise<OpenMainWindowView>;
           openDailyNotes: () => Promise<void>;
+          registerComponent: (id: string, component: React.ElementType) => void;
+          unregisterComponent: (id: string) => void;
+          openComponent: (id: string, ...args: unknown[]) => void;
+          closeComponent: (id: string) => void;
         };
         setBlockFocusAndSelection: (a: {
           location?: { "block-uid": string; "window-id": string };
@@ -371,18 +441,29 @@ declare global {
       };
       depot: {
         getInstalledExtensions: () => Record<string, InstalledExtension>;
+        reloadDeveloperExtensions: () => Promise<{
+          reloaded: { id: string; name: string }[];
+        }>;
       };
       file: {
         upload: (args: {
           file: File;
-          toast?: { hide: boolean };
+          toast?: { hide?: boolean };
         }) => Promise<string>;
-        get: (args: { url: string }) => Promise<File>;
+        get: {
+          (args: { url: string; format: "base64" }): Promise<Base64File>;
+          (args: { url: string; format?: undefined }): Promise<File>;
+          (args: { url: string; format?: "base64" }): Promise<
+            File | Base64File
+          >;
+        };
         delete: (args: { url: string }) => Promise<void>;
       };
       user: {
         uid: () => string | null;
+        isAdmin: () => boolean;
       };
+      ai: AiToolApi;
       constants: {
         corsAnywhereProxyUrl: string;
       };
@@ -416,4 +497,3 @@ declare global {
     };
   }
 }
-

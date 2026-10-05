@@ -1,4 +1,4 @@
-import type { ActionParams } from "../types";
+import type { ActionParams, WriteAction } from "../types";
 import { ID, render as renderProgressDialog } from "../components/ProgressDialog";
 import nanoid from "nanoid";
 
@@ -26,7 +26,7 @@ const submitActions = (
           const { params, type } = action;
           const id = nanoid();
           const fire = () =>
-            window.roamAlphaAPI[type](params)
+            (window.roamAlphaAPI[type] as WriteAction)(params)
               .then(resolve)
               .catch((e) => {
                 if (e.code === "busy") {
